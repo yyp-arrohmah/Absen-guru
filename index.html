@@ -681,7 +681,7 @@
         // LOGIN
         window.prosesLogin = (e) => {
             e.preventDefault(); const u=document.getElementById('login-user').value.trim(), p=document.getElementById('login-pass').value, err=document.getElementById('login-error'), s=window.appState.pengaturan||{};
-            if(u===(s.admin_user||'admin')&&p===(s.admin_pass||'12345')) { window.currentUser={role:'admin',user:'Admin Utama',akses:{guru:true,pengaturan:true}}; return window.masukSistem(); }
+            if(u===(s.admin_user||'')&&p===(s.admin_pass||'')) { window.currentUser={role:'admin',user:'Admin Utama',akses:{guru:true,pengaturan:true}}; return window.masukSistem(); }
             const op=(s.operators||[]).find(x=>x.user===u&&x.pass===p); if(op) { window.currentUser={role:'operator',user:op.user,akses:op.akses||{}}; return window.masukSistem(); }
             const g=(window.appState.guru||[]).find(x=>String(x.nip)===u||String(x.id)===u); if(g) { window.currentUser={role:'guru',user:g.nama,id_guru:g.id,akses:{}}; return window.masukSistem(); }
             err.classList.remove('hidden');
