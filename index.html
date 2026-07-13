@@ -360,6 +360,95 @@
         </div>
     </div>
 
+    <!-- MODAL PENGATURAN -->
+    <div id="modal-pengaturan" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100002] hidden items-center justify-center p-4 transition-opacity">
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-4xl w-full flex flex-col max-h-[95vh]">
+            <div class="bg-gray-800 p-4 text-white flex justify-between items-center">
+                <h3 class="font-bold flex items-center"><i class="fa-solid fa-gear mr-2"></i> Pengaturan Sistem</h3>
+                <button onclick="document.getElementById('modal-pengaturan').classList.replace('flex','hidden')" class="text-white/70 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <div class="flex bg-gray-50 border-b border-gray-200 overflow-x-auto hide-scrollbar">
+                <button id="tab-btn-lokasi" onclick="window.switchSettingTab('lokasi')" class="px-5 py-3 text-sm font-bold border-b-2 border-blue-600 text-blue-600 whitespace-nowrap"><i class="fa-solid fa-map-location-dot mr-1"></i> Lokasi GPS</button>
+                <button id="tab-btn-login" onclick="window.switchSettingTab('login')" class="px-5 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fa-solid fa-shield-halved mr-1"></i> Akun Utama</button>
+                <button id="tab-btn-operator" onclick="window.switchSettingTab('operator')" class="px-5 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fa-solid fa-users-gear mr-1"></i> Operator</button>
+            </div>
+            
+            <div class="p-4 lg:p-6 overflow-y-auto bg-gray-50 flex-1">
+                <!-- TAB LOKASI -->
+                <div id="setting-tab-lokasi" class="space-y-4" style="display: block;">
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+                        <form onsubmit="window.simpanPengaturanLokasi(event)">
+                            <div class="flex items-center gap-3 mb-4 p-3 bg-blue-50 rounded-xl border border-blue-100">
+                                <input type="checkbox" id="setting-lokasi-aktif" class="w-5 h-5 accent-blue-600 cursor-pointer">
+                                <label for="setting-lokasi-aktif" class="font-bold text-blue-800 text-sm cursor-pointer">Aktifkan Validasi Lokasi (GPS) saat Absen Hadir</label>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-3">
+                                    <div><label class="block text-xs font-bold text-gray-700 mb-1">Latitude</label><input type="text" id="setting-lokasi-lat" class="w-full border border-gray-300 p-2.5 rounded-xl text-sm outline-none focus:ring-1 focus:ring-blue-500" required oninput="if(settingMarker)settingMarker.setLatLng([this.value, document.getElementById('setting-lokasi-lng').value]); if(settingCircle)settingCircle.setLatLng([this.value, document.getElementById('setting-lokasi-lng').value]); if(settingMap)settingMap.setView([this.value, document.getElementById('setting-lokasi-lng').value]);"></div>
+                                    <div><label class="block text-xs font-bold text-gray-700 mb-1">Longitude</label><input type="text" id="setting-lokasi-lng" class="w-full border border-gray-300 p-2.5 rounded-xl text-sm outline-none focus:ring-1 focus:ring-blue-500" required oninput="if(settingMarker)settingMarker.setLatLng([document.getElementById('setting-lokasi-lat').value, this.value]); if(settingCircle)settingCircle.setLatLng([document.getElementById('setting-lokasi-lat').value, this.value]); if(settingMap)settingMap.setView([document.getElementById('setting-lokasi-lat').value, this.value]);"></div>
+                                    <div><label class="block text-xs font-bold text-gray-700 mb-1">Radius Toleransi (Meter)</label><input type="number" id="setting-lokasi-radius" class="w-full border border-gray-300 p-2.5 rounded-xl text-sm outline-none focus:ring-1 focus:ring-blue-500" value="100" required onchange="window.updateMapCircle()"></div>
+                                    <div class="flex gap-2">
+                                        <button type="button" onclick="window.getLocationBrowser()" class="flex-1 bg-gray-100 text-gray-700 font-bold py-2.5 rounded-xl text-xs hover:bg-gray-200 border border-gray-300 transition-colors"><i class="fa-solid fa-location-crosshairs"></i> Gunakan GPS Saat Ini</button>
+                                        <button type="submit" class="flex-1 bg-blue-600 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-blue-700 shadow-sm transition-colors"><i class="fa-solid fa-save"></i> Simpan Lokasi</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 mb-1">Pratinjau Peta (Geser pin merah muda)</label>
+                                    <div id="map-setting" class="w-full h-[250px] bg-gray-200 rounded-xl border-2 border-gray-300 overflow-hidden z-0 relative flex items-center justify-center text-sm font-bold text-gray-500">Memuat Peta...</div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- TAB LOGIN -->
+                <div id="setting-tab-login" class="space-y-4" style="display: none;">
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm max-w-md mx-auto">
+                        <h4 class="font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-shield text-blue-500 mr-2"></i>Ubah Akun Admin Utama</h4>
+                        <form onsubmit="window.simpanPengaturanLogin(event)" class="space-y-4">
+                            <div><label class="block text-xs font-bold text-gray-700 mb-1">Username Admin Baru</label><input type="text" id="setting-admin-user" class="w-full border border-gray-300 p-2.5 rounded-xl text-sm outline-none focus:ring-1 focus:ring-blue-500" required></div>
+                            <div><label class="block text-xs font-bold text-gray-700 mb-1">Password Baru <span class="text-[10px] font-normal text-gray-400">(Kosongkan jika tidak diubah)</span></label><input type="password" id="setting-admin-pass" class="w-full border border-gray-300 p-2.5 rounded-xl text-sm outline-none focus:ring-1 focus:ring-blue-500"></div>
+                            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 shadow-sm transition-colors text-sm"><i class="fa-solid fa-check mr-2"></i> Update Akun Admin</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- TAB OPERATOR -->
+                <div id="setting-tab-operator" class="space-y-4" style="display: none;">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2" id="form-operator-title">Tambah Operator Baru</h4>
+                            <form onsubmit="window.simpanOperator(event)" class="space-y-4">
+                                <input type="hidden" id="op-id" value="">
+                                <div><label class="block text-xs font-bold text-gray-700 mb-1">Username</label><input type="text" id="op-user" class="w-full border border-gray-300 p-2.5 rounded-xl text-sm outline-none focus:ring-1 focus:ring-blue-500" required></div>
+                                <div><label class="block text-xs font-bold text-gray-700 mb-1">Password</label><input type="password" id="op-pass" class="w-full border border-gray-300 p-2.5 rounded-xl text-sm outline-none focus:ring-1 focus:ring-blue-500" placeholder="Biarkan kosong jika tidak diubah (saat edit)"></div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 mb-2">Hak Akses Menu</label>
+                                    <div class="flex flex-col gap-2 bg-gray-50 p-3 rounded-xl border border-gray-200">
+                                        <label class="flex items-center gap-2 text-sm cursor-pointer hover:opacity-80"><input type="checkbox" id="akses-guru" class="w-4 h-4 accent-blue-600"> <span>Kelola Data Guru & Absensi</span></label>
+                                        <label class="flex items-center gap-2 text-sm cursor-pointer hover:opacity-80"><input type="checkbox" id="akses-pengaturan" class="w-4 h-4 accent-blue-600"> <span>Akses Pengaturan Sistem</span></label>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2 pt-2">
+                                    <button type="button" onclick="window.resetFormOperator()" class="w-1/3 bg-gray-100 text-gray-700 font-bold py-2.5 rounded-xl text-sm hover:bg-gray-200 transition-colors">Batal</button>
+                                    <button type="submit" class="w-2/3 bg-blue-600 text-white font-bold py-2.5 rounded-xl text-sm hover:bg-blue-700 shadow-sm transition-colors"><i class="fa-solid fa-save mr-1"></i> Simpan Operator</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex flex-col">
+                            <h4 class="font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-users text-blue-500 mr-2"></i>Daftar Operator</h4>
+                            <div id="list-operator" class="flex-1 overflow-y-auto pr-2 max-h-[300px]">
+                                <!-- list operator disini -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <!-- Scanner Camera -->
     <div id="scanner-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[99999] hidden flex-col items-center justify-center p-4">
         <div class="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-sm w-full relative">
@@ -499,7 +588,7 @@
                     </div>
                     
                     <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4 border-t border-gray-200 pt-8">
-                        <div><h2 class="text-2xl font-bold text-gray-800">Riwayat Absensi</h2><p class="text-gray-500 text-sm">Pilih nama guru untuk melihat portal & riwayat kehadiran.</p></div>
+                        <div><h2 class="text-2xl font-bold text-gray-800">Profil Guru</h2><p class="text-gray-500 text-sm">Pilih nama guru untuk melihat portal & riwayat kehadiran.</p></div>
                         <div id="search-container-riwayat" class="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm w-full md:w-auto"><i class="fa-solid fa-search text-gray-400"></i><input type="text" id="search-riwayat-guru" placeholder="Cari nama guru..." class="outline-none text-sm bg-transparent w-full min-w-[200px]" onkeyup="window.renderGridRiwayat()"></div>
                     </div>
                     <div id="grid-riwayat-guru" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
@@ -1022,7 +1111,7 @@
             document.getElementById('struk-sesi').innerText = sJam; 
             document.getElementById('struk-nama').innerText = g.nama; 
             document.getElementById('struk-nip').innerText = g.nip; 
-            document.getElementById('struk-jenis').innerText = `PENGAJUAN ${st.toUpperCase()}`; 
+            document.getElementById('struk-jenis').innerText = ${st.toUpperCase()}`; 
             document.getElementById('struk-alasan').innerText = hr > 1 ? `${al} (Selama ${hr} Hari)` : al;
             const namaBawah = document.getElementById('struk-nama-bawah'); if(namaBawah) namaBawah.innerText = g.nama;
             
