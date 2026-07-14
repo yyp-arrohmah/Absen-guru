@@ -978,12 +978,6 @@
             if (activeScannerMode === 'absen-cepat' || activeScannerMode === 'absen-guru-tab') {
                 cekWaktu = window.checkWaktuAbsenGuru(isGuru, tgl, statusScan);
                 if (!cekWaktu.allowed) {
-                    if (cekWaktu.outOfBounds && statusScan === 'Hadir') {
-                        window.tempScanText = rawText; activeScannerMode = activeScannerMode; window.tempSuratSesi = "all";
-                        const modal = document.getElementById('modal-luar-radius'); document.getElementById('teks-luar-radius').innerHTML = `Halo <b class="text-gray-800">${isGuru.nama}</b>,<br>${cekWaktu.errorMsg.replace(/\n/g, '<br>')}<br><br><span class="text-xs text-red-500 font-bold">Ngajengkeun Katerangan Sanes?</span>`;
-                        if(modal) modal.classList.replace('hidden', 'flex'); 
-                        return;
-                    }
                     return window.showAlert('Absen Ditolak', cekWaktu.errorMsg, 'error');
                 }
             }
@@ -997,7 +991,7 @@
                         const pos = await new Promise((res, rej) => { if (!navigator.geolocation) return rej({code:0}); navigator.geolocation.getCurrentPosition(res,rej,{enableHighAccuracy:true,timeout:15000}); });
                         const dist = window.getDistanceFromLatLonInM(parseFloat(locSet.lat)||0, parseFloat(locSet.lng)||0, pos.coords.latitude, pos.coords.longitude);
                         if(ldr) { ldr.classList.replace('flex','hidden'); ldr.querySelector('i').className="fa-solid fa-spinner fa-spin text-6xl text-blue-600 mb-4"; }
-                        if (dist > (parseInt(locSet.radius)||100)) return window.showLuarRadiusModal(rawText, dist, parseInt(locSet.radius)||100, namaOrang, activeScannerMode);
+                        if (dist > (parseInt(locSet.radius)||100)) return window.showAlert('Absen Ditolak', `Halo ${namaOrang},\nAnda berada ${Math.round(dist)} meter dari Madrasah (Batas: ${parseInt(locSet.radius)||100}m).\nAbsen HADIR ditolak oleh sistem.`, 'error');
                         else window.tempInfoJarak = `\n(Lokasi GPS Valid: ${Math.round(dist)}m dari Madrasah)`;
                     } catch (e) {
                         if(ldr) { ldr.classList.replace('flex','hidden'); ldr.querySelector('i').className="fa-solid fa-spinner fa-spin text-6xl text-blue-600 mb-4"; }
@@ -1025,7 +1019,7 @@
                 const g = window.appState.guru.find(x => String(x.nip)===idLokal||String(x.id)===idLokal);
                 if (g) {
                     const cw = passedCekWaktu || window.checkWaktuAbsenGuru(g, t, fs);
-                    if (!cw.allowed) { if(cw.outOfBounds&&fs==='Hadir') { window.showLuarRadiusModal(rawText,0,0,g.nama,activeScannerMode); document.getElementById('teks-luar-radius').innerHTML=`Halo <b class="text-gray-800">${g.nama}</b>,<br>${cw.errorMsg.replace(/\n/g,'<br>')}<br><span class="text-xs text-red-500 font-bold">Ngajengkeun Katerangan Sanes?</span>`; return; } if(!silent)return window.showAlert('Ditolak', cw.errorMsg, 'error'); return; }
+                    if (!cw.allowed) { if(!silent)return window.showAlert('Ditolak', cw.errorMsg, 'error'); return; }
                     if(!window.appState.absensi_guru)window.appState.absensi_guru=[]; let r=window.appState.absensi_guru.find(a=>a.tanggal===t); if(!r){r={tanggal:t,data:[]};window.appState.absensi_guru.push(r);}
                     const i=r.data.findIndex(d=>String(d.id_guru)===String(g.id)); let td=i>-1?r.data[i]:{id_guru:parseInt(g.id)}; if(i===-1)r.data.push(td);
                     if (window.tempSuratSesi === '1') { td['status_1']=fs; td['info_1']=cw.infoWaktu; } else if (window.tempSuratSesi === '2') { td['status_2']=fs; td['info_2']=cw.infoWaktu; } else { td['status_1']=fs; td['info_1']=cw.infoWaktu; if(cw.hasJam2){td['status_2']=fs;td['info_2']=cw.infoWaktu;} }
