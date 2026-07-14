@@ -74,7 +74,7 @@
 
     <!-- AREA CETAK STRUK IZIN/SAKIT (Tersembunyi) -->
     <div id="struk-wrapper" style="position: absolute; left: -9999px; top: -9999px;">
-        <div id="template-struk" style="width: 320px; padding: 20px; background: white; color: black; font-family: 'Airal regular', Airal, monospace; font-size: 10px; line-height: 1.5; box-sizing: border-box; border: 1px solid #ddd;">
+        <div id="template-struk" style="width: 320px; padding: 20px; background: white; color: black; font-family: 'Arial regular', Arial, monospace; font-size: 10px; line-height: 1.5; box-sizing: border-box; border: 1px solid #ddd;">
             <div style="text-align: center; margin-bottom: 10px;">
                 <b style="font-size: 12px;">YAYASAN PENDIDIKAN ARROHMAH</b><br>
                 SURAT KETERANGAN ABSENSI<br>
@@ -84,12 +84,14 @@
                 ASSALAMUALAIKUM WAR. WAB.:<br>
                 Saya yang bertandatangan di bawah ini:<br>
                 Nama   : <b id="struk-nama"></b><br>
-                NIP/ID : <span id="struk-nip"></span></b><br>
-                Hari ini Tgl: <span id="struk-tanggal"></span> tidak dapat hadir di jam Ke-<span id="struk-sesi"></span> dengan keterangan: <b id="struk-jenis" style="font-size: 9px;"></b> { <span id="struk-alasan"></span> }<br>
+                No.ID  : <span id="struk-nip"></span><br>
+                Hari   : <b id="struk-hari-nama"></b><br>Tanggal: <span id="struk-tanggal"></span><br>
+                <span id="struk-lama-izin-container">Lama Izin: <b id="struk-hari"></b> Hari<br></span>
+                <span id="struk-kehadiran-teks"></span> dengan keterangan <b id="struk-jenis" style="font-size: 8px;"></b> { <span id="struk-alasan"></span> }<br>
                 Demikian keterangan ini dibuat, atas perhatiannya saya ucapkan terima kasih.<br>
                 WASSALAMUALAIKUM WAR. WAB.<br><br>
-                Hormat kami<br>Jam: <span id="struk-jam"></span><br>
-                <b id="struk-nama-bawah"></b>
+                Hormat kami<br><br>
+                <b id="struk-nama-bawah"></b><br>Jam: <span id="struk-jam"></span><br>
             </div>
         </div>
     </div>
@@ -280,7 +282,7 @@
                     </div>
                 </div>
                 <button onclick="window.prosesSuratKeterangan()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-colors flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-receipt"></i> Buat Struk Pengajuan
+                    <i class="fa-solid fa-receipt"></i> Buat Surat
                 </button>
             </div>
         </div>
@@ -289,7 +291,7 @@
     <!-- MODAL HASIL STRUK -->
     <div id="modal-hasil-struk" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100005] hidden items-center justify-center p-4 transition-opacity">
         <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full text-center flex flex-col items-center">
-            <h3 class="text-lg font-bold text-gray-800 mb-1">Bukti Pengajuan</h3>
+            <h3 class="text-lg font-bold text-gray-800 mb-1">Bukti Surat</h3>
             <p class="text-xs text-green-600 font-bold mb-4"><i class="fa-solid fa-check-circle"></i> Absen Berhasil Tersimpan</p>
             
             <div class="border border-gray-200 p-2 bg-gray-50 mb-5 rounded-lg shadow-inner overflow-hidden w-full flex justify-center">
@@ -588,7 +590,7 @@
                     </div>
                     
                     <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4 border-t border-gray-200 pt-8">
-                        <div><h2 class="text-2xl font-bold text-gray-800">Profil Guru</h2><p class="text-gray-500 text-sm">Pilih nama guru untuk melihat portal & riwayat kehadiran.</p></div>
+                        <div><h2 class="text-2xl font-bold text-gray-800">Riwayat Absensi</h2><p class="text-gray-500 text-sm">Pilih nama guru untuk melihat portal & riwayat kehadiran.</p></div>
                         <div id="search-container-riwayat" class="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm w-full md:w-auto"><i class="fa-solid fa-search text-gray-400"></i><input type="text" id="search-riwayat-guru" placeholder="Cari nama guru..." class="outline-none text-sm bg-transparent w-full min-w-[200px]" onkeyup="window.renderGridRiwayat()"></div>
                     </div>
                     <div id="grid-riwayat-guru" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
@@ -1083,8 +1085,30 @@
             const g = window.appState.guru.find(x => String(x.nip)===idLokal || String(x.id)===idLokal); 
             if(!g) return;
             
-            // Logika Penyimpanan Absen Multi-Hari secara Langsung Tanpa Terhalang Validasi Jadwal
+            // Cek jika sudah lewat jam pelajaran untuk otomatis digeser ke absen besok
             const baseDate = new Date();
+            const currDay = ['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][baseDate.getDay()];
+            const jToday = (window.appState.jadwal_guru||[]).find(j => j.hari === currDay && String(j.id_guru) === String(g.id));
+            let isPast = false;
+            
+            if (jToday) {
+                let maxEnd = null;
+                const m1 = jToday.jam.match(/Jam 1:\s*\d{2}:\d{2}\s*-\s*(\d{2}:\d{2})/);
+                if (m1) { const [h,m] = m1[1].split(':').map(Number); const et = new Date(); et.setHours(h,m,0,0); if(!maxEnd || et>maxEnd) maxEnd=et; }
+                const m2 = jToday.jam.match(/Jam 2:\s*\d{2}:\d{2}\s*-\s*(\d{2}:\d{2})/);
+                if (m2) { const [h,m] = m2[1].split(':').map(Number); const et = new Date(); et.setHours(h,m,0,0); if(!maxEnd || et>maxEnd) maxEnd=et; }
+                
+                if (maxEnd && baseDate > maxEnd) isPast = true;
+            } else {
+                if (baseDate.getHours() >= 14) isPast = true; // Default jam 14:00 jika kosong
+            }
+            
+            if (isPast) {
+                baseDate.setDate(baseDate.getDate() + 1);
+                setTimeout(() => window.showAlert('Info', 'Karena jadwal mengajar hari ini telah usai, pengajuan otomatis dicatat mulai besok.', 'info'), 300);
+            }
+
+            // Logika Penyimpanan Absen Multi-Hari secara Langsung Tanpa Terhalang Validasi Jadwal
             for(let i=0; i<hr; i++) {
                 const targetD = new Date(baseDate); targetD.setDate(baseDate.getDate() + i);
                 const tgl = `${targetD.getFullYear()}-${String(targetD.getMonth()+1).padStart(2,'0')}-${String(targetD.getDate()).padStart(2,'0')}`;
@@ -1105,14 +1129,33 @@
             window.renderAbsenGuru();
             window.updateDashboardStats();
             
-            const sJam = window.tempSuratSesi === '1' ? "1" : window.tempSuratSesi === '2' ? "2" : "1 & 2";
-            document.getElementById('struk-tanggal').innerText = window.getToday().split(' ')[0]; 
+            const strTglMulai = `${baseDate.getFullYear()}-${String(baseDate.getMonth()+1).padStart(2,'0')}-${String(baseDate.getDate()).padStart(2,'0')}`;
+            const namaHariArr = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            
+            document.getElementById('struk-hari-nama').innerText = namaHariArr[baseDate.getDay()];
+            document.getElementById('struk-tanggal').innerText = strTglMulai; 
             document.getElementById('struk-jam').innerText = window.getToday().split(' ')[1]; 
-            document.getElementById('struk-sesi').innerText = sJam; 
+            
+            const teksKehadiran = document.getElementById('struk-kehadiran-teks');
+            if (window.tempSuratSesi === '1') teksKehadiran.innerText = 'tidak dapat hadir di jam Ke-1';
+            else if (window.tempSuratSesi === '2') teksKehadiran.innerText = 'tidak dapat hadir di jam Ke-2';
+            else teksKehadiran.innerText = 'tidak dapat hadir';
+            
             document.getElementById('struk-nama').innerText = g.nama; 
             document.getElementById('struk-nip').innerText = g.nip; 
-            document.getElementById('struk-jenis').innerText = ${st.toUpperCase()}`; 
-            document.getElementById('struk-alasan').innerText = hr > 1 ? `${al} (Selama ${hr} Hari)` : al;
+            document.getElementById('struk-hari').innerText = hr;
+            document.getElementById('struk-jenis').innerText =`${st.toUpperCase()}`; 
+            document.getElementById('struk-alasan').innerText = al;
+            
+            const containerLamaIzin = document.getElementById('struk-lama-izin-container');
+            if (containerLamaIzin) {
+                if (window.tempSuratSesi === '1' || window.tempSuratSesi === '2') {
+                    containerLamaIzin.style.display = 'none';
+                } else {
+                    containerLamaIzin.style.display = 'inline';
+                }
+            }
+            
             const namaBawah = document.getElementById('struk-nama-bawah'); if(namaBawah) namaBawah.innerText = g.nama;
             
             document.getElementById('struk-wrapper').style.left = '0px';
