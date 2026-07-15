@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sistem Informasi Madrasah</title>
+    <title>Sistem Madrasah ARROHMAH </title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -256,8 +256,6 @@
                 <button onclick="document.getElementById('modal-surat-keterangan').classList.replace('flex','hidden')" class="text-white/70 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-6">
-                <div class="mb-4" id="quick-reasons-container">
-                </div>
                 <div class="mb-4" id="container-sesi-surat">
                     <label class="block text-sm font-bold text-gray-700 mb-2">Pilih Sesi:</label>
                     <div class="flex gap-3">
@@ -338,18 +336,48 @@
                     </div>
                     <div class="p-4 bg-purple-50/50 rounded-xl border border-purple-100">
                         <label class="block text-sm font-bold mb-2 text-purple-800">Jam Ke-1 / Jam Rapat</label>
-                        <div class="flex items-center gap-2">
-                            <input type="time" id="jadwal-jam1-mulai" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-sm cursor-pointer shadow-sm">
-                            <span class="font-bold text-purple-400">s/d</span>
-                            <input type="time" id="jadwal-jam1-selesai" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-sm cursor-pointer shadow-sm">
+                        <div class="flex flex-col gap-2">
+                            <select id="jadwal-mapel-1" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-sm cursor-pointer shadow-sm">
+                                <option value="">-- Pilih Kelas (Opsional) --</option>
+                                <option value="Kelas 1 A">Kelas 1 A</option>
+                                <option value="Kelas 1 B">Kelas 1 B</option>
+                                <option value="Kelas 1 C">Kelas 1 C</option>
+                                <option value="Kelas 1 D">Kelas 1 D</option>
+                                <option value="Kelas 2">Kelas 2</option>
+                                <option value="Kelas 3">Kelas 3</option>
+                                <option value="Kelas 4">Kelas 4</option>
+                                <option value="Kelas 5">Kelas 5</option>
+                                <option value="Kelas 6">Kelas 6</option>
+                                <option value="Piket">Piket</option>
+                            </select>
+                            <div class="flex items-center gap-2">
+                                <input type="time" id="jadwal-jam1-mulai" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-sm cursor-pointer shadow-sm">
+                                <span class="font-bold text-purple-400">s/d</span>
+                                <input type="time" id="jadwal-jam1-selesai" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-sm cursor-pointer shadow-sm">
+                            </div>
                         </div>
                     </div>
                     <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
                         <label class="block text-sm font-bold mb-2 text-gray-700">Jam Ke-2 <span class="font-normal text-xs text-gray-500">(Opsional)</span></label>
-                        <div class="flex items-center gap-2">
-                            <input type="time" id="jadwal-jam2-mulai" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-sm cursor-pointer shadow-sm">
-                            <span class="font-bold text-gray-400">s/d</span>
-                            <input type="time" id="jadwal-jam2-selesai" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-sm cursor-pointer shadow-sm">
+                        <div class="flex flex-col gap-2">
+                            <select id="jadwal-mapel-2" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-sm cursor-pointer shadow-sm">
+                                <option value="">-- Pilih Kelas (Opsional) --</option>
+                                <option value="Kelas 1 A">Kelas 1 A</option>
+                                <option value="Kelas 1 B">Kelas 1 B</option>
+                                <option value="Kelas 1 C">Kelas 1 C</option>
+                                <option value="Kelas 1 D">Kelas 1 D</option>
+                                <option value="Kelas 2">Kelas 2</option>
+                                <option value="Kelas 3">Kelas 3</option>
+                                <option value="Kelas 4">Kelas 4</option>
+                                <option value="Kelas 5">Kelas 5</option>
+                                <option value="Kelas 6">Kelas 6</option>
+                                <option value="Piket">Piket</option>
+                            </select>
+                            <div class="flex items-center gap-2">
+                                <input type="time" id="jadwal-jam2-mulai" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-sm cursor-pointer shadow-sm">
+                                <span class="font-bold text-gray-400">s/d</span>
+                                <input type="time" id="jadwal-jam2-selesai" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-sm cursor-pointer shadow-sm">
+                            </div>
                         </div>
                     </div>
                     <div class="pt-2">
@@ -372,6 +400,7 @@
             
             <div class="flex bg-gray-50 border-b border-gray-200 overflow-x-auto hide-scrollbar">
                 <button id="tab-btn-lokasi" onclick="window.switchSettingTab('lokasi')" class="px-5 py-3 text-sm font-bold border-b-2 border-blue-600 text-blue-600 whitespace-nowrap"><i class="fa-solid fa-map-location-dot mr-1"></i> Lokasi GPS</button>
+                <button id="tab-btn-kalender" onclick="window.switchSettingTab('kalender')" class="px-5 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fa-solid fa-calendar-days mr-1"></i> Kal. Hijriyah</button>
                 <button id="tab-btn-login" onclick="window.switchSettingTab('login')" class="px-5 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fa-solid fa-shield-halved mr-1"></i> Akun Utama</button>
                 <button id="tab-btn-operator" onclick="window.switchSettingTab('operator')" class="px-5 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fa-solid fa-users-gear mr-1"></i> Operator</button>
             </div>
@@ -401,6 +430,71 @@
                                 </div>
                             </div>
                         </form>
+                    </div>
+                </div>
+
+                <!-- TAB KALENDER HIJRIYAH (BARU) -->
+                <div id="setting-tab-kalender" class="space-y-4" style="display: none;">
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+                        <h4 class="font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-calculator text-blue-500 mr-2"></i>Mode Perhitungan Kalender</h4>
+                        
+                        <div class="flex flex-col gap-4 mb-6">
+                            <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50">
+                                <input type="radio" name="kalender_mode" value="auto" class="w-5 h-5 accent-blue-600" onchange="window.toggleKalenderMode()">
+                                <div>
+                                    <div class="font-bold text-sm text-gray-800">Otomatis (Bawaan Sistem)</div>
+                                    <div class="text-[11px] text-gray-500">Berdasarkan perhitungan standar global dengan opsi penyesuaian (+/- hari).</div>
+                                </div>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50">
+                                <input type="radio" name="kalender_mode" value="manual" class="w-5 h-5 accent-blue-600" onchange="window.toggleKalenderMode()">
+                                <div>
+                                    <div class="font-bold text-sm text-gray-800">Manual (Sesuai KBM / Kemenag)</div>
+                                    <div class="text-[11px] text-gray-500">Tentukan sendiri tanggal 1 Muharram & ubah jumlah hari di setiap bulan.</div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Auto Settings -->
+                        <div id="kalender-auto-settings" class="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-2 hidden">
+                            <label class="block text-xs font-bold text-gray-700 mb-2"><i class="fa-solid fa-clock-rotate-left text-blue-500 mr-1"></i> Koreksi Hari (Otomatis)</label>
+                            <select id="setting-hijri-offset" class="w-full border border-gray-300 p-2.5 rounded-xl text-sm outline-none focus:ring-1 focus:ring-blue-500 max-w-sm">
+                                <option value="-2">Mundur 2 Hari (-2)</option>
+                                <option value="-1">Mundur 1 Hari (-1)</option>
+                                <option value="0">Normal (0 Hari)</option>
+                                <option value="1">Maju 1 Hari (+1)</option>
+                                <option value="2">Maju 2 Hari (+2)</option>
+                            </select>
+                            <button onclick="window.simpanKalenderAuto()" class="mt-4 bg-blue-600 text-white font-bold py-2.5 px-6 rounded-xl text-xs hover:bg-blue-700 shadow-sm transition-colors"><i class="fa-solid fa-save mr-1"></i> Simpan Mode Otomatis</button>
+                        </div>
+
+                        <!-- Manual Settings -->
+                        <div id="kalender-manual-settings" class="bg-purple-50 p-4 rounded-xl border border-purple-100 mb-2 hidden">
+                            <div class="flex flex-col sm:flex-row gap-4 mb-5">
+                                <div class="flex-1">
+                                    <label class="block text-xs font-bold text-gray-700 mb-1">Pilih Tahun Hijriyah</label>
+                                    <select id="manual-kal-tahun" class="w-full border border-gray-300 p-2.5 rounded-xl text-sm outline-none font-bold text-purple-700" onchange="window.loadManualKalenderTahun()">
+                                        <option value="1445">1445 H</option>
+                                        <option value="1446">1446 H</option>
+                                        <option value="1447">1447 H</option>
+                                        <option value="1448">1448 H</option>
+                                        <option value="1449">1449 H</option>
+                                    </select>
+                                </div>
+                                <div class="flex-1">
+                                    <label class="block text-xs font-bold text-gray-700 mb-1">Tanggal Masehi 1 Muharram <span class="text-red-500">*</span></label>
+                                    <input type="date" id="manual-kal-start" class="w-full border border-gray-300 p-2.5 rounded-xl text-sm outline-none font-bold text-purple-700" required>
+                                </div>
+                            </div>
+
+                            <label class="block text-xs font-bold text-gray-700 mb-3 border-t border-purple-200 pt-3">Tentukan Jumlah Hari per Bulan</label>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-5" id="manual-kal-grid">
+                                <!-- generated by JS -->
+                            </div>
+                            
+                            <button onclick="window.simpanKalenderManual()" class="bg-purple-600 text-white font-bold py-3 px-4 rounded-xl text-xs hover:bg-purple-700 shadow-md transition-colors w-full sm:w-auto"><i class="fa-solid fa-save mr-1"></i> Simpan Pengaturan Kalender Manual</button>
+                        </div>
+
                     </div>
                 </div>
 
@@ -552,6 +646,7 @@
                                 <button id="nav-btn-guru" onclick="window.switchTab('guru', this)" class="nav-btn w-full flex items-center gap-3 px-4 py-2 rounded-xl text-left text-sm font-medium text-gray-500 hover:bg-purple-50 transition-colors"><i class="fa-solid fa-user-tie w-5"></i> Profil Guru</button>
                                 <button id="nav-btn-absen-guru" onclick="window.switchTab('absen-guru', this)" class="nav-btn w-full flex items-center gap-3 px-4 py-2 rounded-xl text-left text-sm font-medium text-gray-500 hover:bg-purple-50 transition-colors"><i class="fa-solid fa-calendar-check w-5"></i> Absensi Guru</button>
                                 <button id="nav-btn-jadwal-guru" onclick="window.switchTab('jadwal-guru', this)" class="nav-btn w-full flex items-center gap-3 px-4 py-2 rounded-xl text-left text-sm font-medium text-gray-500 hover:bg-purple-50 transition-colors"><i class="fa-solid fa-calendar-days w-5"></i> Jadwal Guru</button>
+                                <button id="nav-btn-jadwal-kelas" onclick="window.switchTab('jadwal-kelas', this)" class="nav-btn w-full flex items-center gap-3 px-4 py-2 rounded-xl text-left text-sm font-medium text-gray-500 hover:bg-emerald-50 transition-colors"><i class="fa-solid fa-layer-group w-5"></i> Jadwal Kelas</button>
                                 <button id="nav-btn-rekap-absen-guru" onclick="window.switchTab('rekap-absen-guru', this)" class="nav-btn w-full flex items-center gap-3 px-4 py-2 rounded-xl text-left text-sm font-medium text-gray-500 hover:bg-purple-50 transition-colors"><i class="fa-solid fa-list-check w-5"></i> Rekap Absen</button>
                                 <button id="nav-btn-idcard" onclick="window.switchTab('idcard', this)" class="nav-btn w-full flex items-center gap-3 px-4 py-2 rounded-xl text-left text-sm font-medium text-gray-500 hover:bg-purple-50 transition-colors"><i class="fa-solid fa-id-badge w-5"></i> Cetak ID Card</button>
                             </div>
@@ -672,6 +767,17 @@
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-sm text-left border-collapse"><thead class="bg-purple-50 text-xs text-purple-900 font-bold uppercase border-b border-purple-100"><tr><th class="px-4 py-3.5 min-w-[150px] sticky left-0 bg-purple-50 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Nama Guru</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-purple-100">Ahad</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-purple-100">Senin</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-purple-100">Selasa</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-purple-100">Rabu</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-purple-100">Kamis</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-purple-100 text-red-600">Jumat</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-purple-100">Sabtu</th></tr></thead><tbody id="table-jadwal-guru" class="divide-y divide-gray-100 bg-white relative z-0"></tbody></table></div></div>
                 </div>
 
+                <!-- TAB JADWAL KELAS -->
+                <div id="tab-jadwal-kelas" class="tab-content max-w-7xl mx-auto scroll-mt-6">
+                    <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                        <div><h2 class="text-2xl font-bold text-gray-800">Jadwal Kelas</h2><p class="text-gray-500 text-sm">Jadwal mengajar berdasarkan kelas. (Jumat Ditiadakan)</p></div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="window.renderJadwalKelas()" class="bg-white text-gray-700 border border-gray-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-gray-50 transition-colors flex items-center gap-2"><i class="fa-solid fa-rotate-right"></i> Perbarui Tampilan</button>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-sm text-left border-collapse"><thead class="bg-emerald-50 text-xs text-emerald-900 font-bold uppercase border-b border-emerald-100"><tr><th class="px-4 py-3.5 min-w-[120px] sticky left-0 bg-emerald-50 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Kelas</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Ahad</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Senin</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Selasa</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Rabu</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Kamis</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Sabtu</th></tr></thead><tbody id="table-jadwal-kelas" class="divide-y divide-gray-100 bg-white relative z-0"></tbody></table></div></div>
+                </div>
+
                 <!-- TAB REKAP ABSENSI GURU -->
                 <div id="tab-rekap-absen-guru" class="tab-content max-w-6xl mx-auto scroll-mt-6">
                     <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
@@ -728,7 +834,7 @@
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxMDK-D9oj9FgYdc_dmFSnCsJxw2qxnWQRX5B6W5ty6dApyDi_0VeL1K_4HrWGB9C7i/exec'
 
         // GLOBAL STATE & UTILS
-        window.appState = window.appState || { guru: [], absensi_guru: [], jadwal_guru: [], agenda: [], pengaturan: { admin_user: 'admin', admin_pass: '12345', lokasi: { aktif: false, lat: -7.250445, lng: 112.768845, radius: 100 } } };
+        window.appState = window.appState || { guru: [], absensi_guru: [], jadwal_guru: [], agenda: [], pengaturan: { hijri_offset: -1, admin_user: 'admin', admin_pass: '12345', lokasi: { aktif: false, lat: -7.250445, lng: 112.768845, radius: 100 } } };
         let syncTimeout=null, activeScannerMode='', scannerState='stopped', html5QrCode=null, currentUser=null;
         
         window.formatRp = (num) => 'Rp ' + parseInt(num).toLocaleString('id-ID');
@@ -739,7 +845,54 @@
         window.getDistanceFromLatLonInM = (lat1, lon1, lat2, lon2) => { const R=6371e3, p1=lat1*Math.PI/180, p2=lat2*Math.PI/180, dp=(lat2-lat1)*Math.PI/180, dl=(lon2-lon1)*Math.PI/180, a=Math.sin(dp/2)*Math.sin(dp/2)+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)*Math.sin(dl/2); return R*(2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))); };
         
         // HIJRIYAH UTILS
-        window.getHijriComponents = (dateObj) => { try { const parts = new Intl.DateTimeFormat('en-US-u-ca-islamic', {day:'numeric', month:'numeric', year:'numeric'}).formatToParts(dateObj); let m=1, d=1, y=1446; parts.forEach(p => { if (p.type === 'month') m = parseInt(p.value); else if (p.type === 'day') d = parseInt(p.value); else if (p.type === 'year') y = parseInt(p.value.replace(/[^0-9]/g, '')); }); return { m, d, y }; } catch(e) { return { d: 1, m: 1, y: 1446 }; } };
+        window.getHijriComponents = (dateObj) => { 
+            const set = window.appState.pengaturan || {};
+            // LOGIKA KALENDER MANUAL (Bila diaktifkan)
+            if (set.kalender_manual_aktif && set.kalender_manual) {
+                const dLocal = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+                for (const year in set.kalender_manual) {
+                    const yData = set.kalender_manual[year];
+                    if (!yData.start_date || !yData.days || yData.days.length < 12) continue;
+                    
+                    const p = yData.start_date.split('-');
+                    const startDate = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2]));
+                    
+                    const diffTime = dLocal.getTime() - startDate.getTime();
+                    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)); // Gunakan pembulatan penuh (Hindari isu zona waktu)
+                    
+                    if (diffDays >= 0) {
+                        let totalDays = 0;
+                        for(let i=0; i<12; i++) totalDays += yData.days[i];
+                        
+                        if (diffDays < totalDays) {
+                            let daysLeft = diffDays;
+                            let m = 1;
+                            for(let i=0; i<12; i++) {
+                                if (daysLeft < yData.days[i]) { m = i + 1; break; }
+                                daysLeft -= yData.days[i];
+                                m = i + 2; 
+                            }
+                            if(m > 12) m = 12; // Safety net
+                            return { m: m, d: daysLeft + 1, y: parseInt(year) };
+                        }
+                    }
+                }
+            }
+            
+            // LOGIKA KALENDER OTOMATIS (Bawaan)
+            try { 
+                const offset = (set.hijri_offset !== undefined) ? parseInt(set.hijri_offset) : -1;
+                const adjDate = new Date(dateObj.getTime() + (offset * 24 * 60 * 60 * 1000));
+                const parts = new Intl.DateTimeFormat('en-US-u-ca-islamic', {day:'numeric', month:'numeric', year:'numeric'}).formatToParts(adjDate); 
+                let m=1, d=1, y=1446; 
+                parts.forEach(p => { 
+                    if (p.type === 'month') m = parseInt(p.value); 
+                    else if (p.type === 'day') d = parseInt(p.value); 
+                    else if (p.type === 'year') y = parseInt(p.value.replace(/[^0-9]/g, '')); 
+                }); 
+                return { m, d, y }; 
+            } catch(e) { return { d: 1, m: 1, y: 1446 }; } 
+        };
         window.getDatesInHijriMonth = (targetHYear, targetHMonth) => { let dates=[], estGYear=Math.floor((targetHYear*0.97)+622)-1, d=new Date(estGYear,0,1), limit=0; while(limit<2500) { try { const h=window.getHijriComponents(d); if(h.y===targetHYear&&h.m===targetHMonth){dates.push(new Date(d));} else if(dates.length>0) break; d.setDate(d.getDate()+1); limit++; } catch(e) {d.setDate(d.getDate()+1); limit++;} } return dates; };
         window.populateHijriDropdowns = (prefix) => { let t='',b='',y=''; for(let i=1;i<=30;i++)t+=`<option value="${i}">${i}</option>`; b=`<option value="1">Muharram</option><option value="2">Safar</option><option value="3">Rabi'ul Awal</option><option value="4">Rabi'ul Akhir</option><option value="5">Jumadil Awal</option><option value="6">Jumadil Akhir</option><option value="7">Rajab</option><option value="8">Sya'ban</option><option value="9">Ramadhan</option><option value="10">Syawal</option><option value="11">Dzulqa'dah</option><option value="12">Dzulhijjah</option>`; for(let i=1440;i<=1460;i++)y+=`<option value="${i}">${i}</option>`; const elT=document.getElementById(`hijri-tgl-${prefix}`),elB=document.getElementById(`hijri-bln-${prefix}`),elY=document.getElementById(`hijri-thn-${prefix}`); if(elT)elT.innerHTML=t; if(elB)elB.innerHTML=b; if(elY)elY.innerHTML=y; };
         window.syncMasehiDate = (type) => { const elT=document.getElementById(`hijri-tgl-${type}`),elB=document.getElementById(`hijri-bln-${type}`),elY=document.getElementById(`hijri-thn-${type}`); if(!elT||!elB||!elY)return; const dates=window.getDatesInHijriMonth(parseInt(elY.value),parseInt(elB.value)); if(dates.length>0) { let tD=dates[parseInt(elT.value)-1]||dates[dates.length-1]; const inp=document.getElementById(type==='agenda'?'agenda-tgl':`tgl-${type}`); if(inp) inp.value=`${tD.getFullYear()}-${String(tD.getMonth()+1).padStart(2,'0')}-${String(tD.getDate()).padStart(2,'0')}`; if(type==='absen-guru')window.renderAbsenGuru(); } };
@@ -795,6 +948,7 @@
             t('nav-btn-guru',!ig&&ak.guru); 
             t('nav-btn-absen-guru',!ig&&ak.guru); 
             t('nav-btn-jadwal-guru',!ig&&ak.guru); 
+            t('nav-btn-jadwal-kelas',!ig&&ak.guru); 
             t('nav-btn-rekap-absen-guru',!ig&&ak.guru); 
             t('nav-btn-idcard',!ig&&ak.guru); 
             t('nav-btn-kalender',true); 
@@ -829,7 +983,7 @@
             const eg=document.getElementById('table-guru'); if(eg&&st.guru) { const ad=isa||(window.currentUser&&window.currentUser.akses&&window.currentUser.akses.guru); eg.innerHTML=st.guru.map(g=>`<tr class="hover:bg-gray-50 border-b border-gray-100"><td class="px-6 py-4 font-medium text-gray-900 text-xs">${g.nip}</td><td class="px-6 py-4 flex items-center gap-3"><img src="${g.foto||"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>"}" class="w-10 h-10 rounded-full object-cover border border-purple-200"><div><span class="font-bold text-sm block">${g.nama}</span><span class="text-xs text-gray-500 font-normal">${g.jabatan||'-'} | ${g.hp||'-'}</span></div></td><td class="px-6 py-4 text-right"><button onclick="window.editGuru('${g.id}')" class="text-blue-500 bg-blue-50 p-2 rounded-lg hover:bg-blue-100"><i class="fa-solid fa-pen"></i></button>${ad?`<button onclick="window.hapusGuru('${g.id}')" class="text-red-500 bg-red-50 p-2 rounded-lg ml-1 hover:bg-red-100"><i class="fa-solid fa-trash"></i></button>`:''}</td></tr>`).join(''); }
             const sg=document.getElementById('select-guru-idcard'); if(sg){let o=`<option value="">-- Pilih Nama Guru --</option>`;if(st.guru)st.guru.forEach(g=>o+=`<option value="${g.id}">${g.nama} - ${g.jabatan}</option>`);sg.innerHTML=o;}
             const er=document.getElementById('filter-riwayat-guru'); if(er){const cv=er.value;let o=`<option value="">-- Pilih Guru --</option>`;if(st.guru)st.guru.forEach(g=>o+=`<option value="${g.id}">${g.nama}</option>`);er.innerHTML=o;if(window.currentUser&&window.currentUser.role==='guru'){er.value=window.currentUser.id_guru;er.disabled=true;}else{er.value=cv;er.disabled=false;}}
-            ['renderAbsenGuru','renderJadwalGuru','renderRekapAbsenGuru','renderGridRiwayat'].forEach(f=>{if(typeof window[f]==='function')window[f]();});
+            ['renderAbsenGuru','renderJadwalGuru','renderJadwalKelas','renderRekapAbsenGuru','renderGridRiwayat'].forEach(f=>{if(typeof window[f]==='function')window[f]();});
         };
 
         // GURU CRUD
@@ -842,10 +996,64 @@
         window.renderJadwalGuru = () => { const c=document.getElementById('table-jadwal-guru'),sg=document.getElementById('jadwal-guru-id'),fg=document.getElementById('filter-jadwal-guru'); if(!c||!sg)return; let o=`<option value="">-- Pilih Guru --</option><option value="SEMUA" class="font-bold text-blue-600 bg-blue-50">&#10024; Semua Guru (Jadwal Rapat / Bersama)</option>`,fo=`<option value="">Semua Guru</option>`; (window.appState.guru||[]).forEach(g=>{o+=`<option value="${g.id}">${g.nama}</option>`;fo+=`<option value="${g.id}">${g.nama}</option>`;}); sg.innerHTML=o; fg.innerHTML=fo; let gl=window.appState.guru||[]; if(fg.value)gl=gl.filter(g=>String(g.id)===String(fg.value)); const hl=['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu']; let h='',aj=false; gl.forEach(g=>{ const sc=(window.appState.jadwal_guru||[]).filter(j=>String(j.id_guru)===String(g.id)); if(sc.length===0&&!fg.value)return; aj=true; h+=`<tr class="border-b border-gray-100 hover:bg-purple-50/20"><td class="px-4 py-3 font-bold text-sm text-gray-800 sticky left-0 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] min-w-[150px] z-0">${g.nama}</td>`; hl.forEach(d=>{ const j=sc.find(x=>x.hari===d); if(j)h+=`<td class="px-2 py-2 align-top border-l border-gray-100 bg-purple-50/30"><div class="bg-white border border-purple-200 rounded-lg p-2 relative group shadow-sm w-full h-full min-h-[60px] flex flex-col justify-center overflow-hidden"><div class="text-[10px] text-gray-700 text-center leading-relaxed font-medium">${j.jam}</div><div class="absolute inset-0 bg-black/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-[1px]"><button onclick="window.editJadwalGuru('${j.id}')" class="text-white bg-blue-500 hover:bg-blue-600 w-7 h-7 rounded-full shadow flex items-center justify-center transition-transform hover:scale-110"><i class="fa-solid fa-pen text-[10px]"></i></button><button onclick="window.hapusJadwalGuru('${j.id}')" class="text-white bg-red-500 hover:bg-red-600 w-7 h-7 rounded-full shadow flex items-center justify-center transition-transform hover:scale-110"><i class="fa-solid fa-trash text-[10px]"></i></button></div></div></td>`; else h+=`<td class="px-2 py-2 align-top border-l border-gray-100"><div onclick="window.bukaModalJadwal('${g.id}','${d}')" class="h-full min-h-[60px] border-2 border-dashed border-gray-200 rounded-lg flex items-center justify-center text-gray-300 hover:bg-purple-50 hover:border-purple-400 hover:text-purple-600 cursor-pointer transition-colors w-full group/add"><i class="fa-solid fa-plus text-lg group-hover/add:scale-110 transition-transform"></i></div></td>`; }); h+=`</tr>`; }); c.innerHTML=aj?h:`<tr><td colspan="8" class="text-center py-8 text-gray-500 font-medium">Belum ada jadwal mengajar terdaftar.</td></tr>`; };
         window.bukaModalJadwal = (id='', hari='', ed=false) => { if(!ed){window.resetFormJadwal();document.getElementById('form-jadwal-title').innerHTML='<i class="fa-solid fa-calendar-plus mr-2"></i>Form Tambah Jadwal';document.getElementById('btn-submit-jadwal').innerHTML='<i class="fa-solid fa-save"></i> Simpan Jadwal';} if(id)document.getElementById('jadwal-guru-id').value=id; if(hari)document.getElementById('jadwal-hari').value=hari; document.getElementById('modal-jadwal-guru').classList.replace('hidden','flex'); };
         window.tutupModalJadwal = () => document.getElementById('modal-jadwal-guru').classList.replace('flex','hidden');
-        window.resetFormJadwal = () => { document.getElementById('jadwal-mode').value='add'; document.getElementById('jadwal-id').value=''; document.getElementById('jadwal-guru-id').value=''; document.getElementById('jadwal-hari').value=''; ['jam1-mulai','jam1-selesai','jam2-mulai','jam2-selesai'].forEach(id=>document.getElementById('jadwal-'+id).value=''); };
-        window.editJadwalGuru = (id) => { const j=window.appState.jadwal_guru.find(x=>String(x.id)===String(id)); if(!j)return; document.getElementById('jadwal-mode').value='edit'; document.getElementById('jadwal-id').value=j.id; document.getElementById('jadwal-guru-id').value=j.id_guru; document.getElementById('jadwal-hari').value=j.hari; let j1m='',j1s='',j2m='',j2s=''; const m1=j.jam.match(/Jam 1:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/); if(m1){j1m=m1[1];j1s=m1[2];} const m2=j.jam.match(/Jam 2:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/); if(m2){j2m=m2[1];j2s=m2[2];} document.getElementById('jadwal-jam1-mulai').value=j1m; document.getElementById('jadwal-jam1-selesai').value=j1s; document.getElementById('jadwal-jam2-mulai').value=j2m; document.getElementById('jadwal-jam2-selesai').value=j2s; document.getElementById('form-jadwal-title').innerHTML='<i class="fa-solid fa-pen mr-2"></i>Edit Jadwal Mengajar'; document.getElementById('btn-submit-jadwal').innerHTML='<i class="fa-solid fa-check"></i> Perbarui Jadwal'; window.bukaModalJadwal(null,null,true); };
-        window.simpanJadwalGuru = (e) => { e.preventDefault(); const m=document.getElementById('jadwal-mode').value, id=document.getElementById('jadwal-id').value, ig=document.getElementById('jadwal-guru-id').value, h=document.getElementById('jadwal-hari').value, j1m=document.getElementById('jadwal-jam1-mulai').value, j1s=document.getElementById('jadwal-jam1-selesai').value, j2m=document.getElementById('jadwal-jam2-mulai').value, j2s=document.getElementById('jadwal-jam2-selesai').value; if(!ig||!h)return window.showAlert('Gagal','Pilih Guru dan Hari','error'); let ja=[]; if(j1m&&j1s)ja.push(`Jam 1: ${j1m} - ${j1s}`); if(j2m&&j2s)ja.push(`Jam 2: ${j2m} - ${j2s}`); const js=ja.length>0?ja.join('<hr class="my-1 border-gray-300">'):'Tidak diatur'; if(!window.appState.jadwal_guru)window.appState.jadwal_guru=[]; if(m==='add'){const ex=window.appState.jadwal_guru.find(j=>String(j.id_guru)===String(ig)&&j.hari===h);if(ex&&ig!=='SEMUA')return window.showAlert('Gagal',`Jadwal hari ${h} sudah ada.`,'error');} if(ig==='SEMUA'){if(m==='edit')return window.showAlert('Gagal','Hanya untuk Tambah.','error'); window.showConfirm("Jadwal Bersama",`Terapkan untuk SEMUA GURU hari ${h}?`,()=>{let c=0;window.appState.guru.forEach(g=>{const ex=window.appState.jadwal_guru.find(j=>String(j.id_guru)===String(g.id)&&j.hari===h);if(!ex)window.appState.jadwal_guru.push({id:Date.now()+c++,id_guru:parseInt(g.id),hari:h,jam:js});});window.saveState();window.renderJadwalGuru();window.tutupModalJadwal();window.showAlert('Berhasil','Jadwal rapat/bersama ditambahkan.','success');});return;} if(m==='add')window.appState.jadwal_guru.push({id:Date.now(),id_guru:parseInt(ig),hari:h,jam:js}); else{const i=window.appState.jadwal_guru.findIndex(x=>String(x.id)===String(id));if(i>-1)window.appState.jadwal_guru[i]={id:parseInt(id),id_guru:parseInt(ig),hari:h,jam:js};} window.saveState();window.renderJadwalGuru();window.tutupModalJadwal();window.showAlert('Berhasil','Jadwal tersimpan','success'); };
-        window.hapusJadwalGuru = (id) => window.showConfirm("Hapus", "Yakin hapus jadwal ini?", ()=>{window.appState.jadwal_guru=window.appState.jadwal_guru.filter(j=>String(j.id)!==String(id));window.saveState();window.renderJadwalGuru();});
+        window.resetFormJadwal = () => { document.getElementById('jadwal-mode').value='add'; document.getElementById('jadwal-id').value=''; document.getElementById('jadwal-guru-id').value=''; document.getElementById('jadwal-hari').value=''; ['jam1-mulai','jam1-selesai','mapel-1','jam2-mulai','jam2-selesai','mapel-2'].forEach(id=>document.getElementById('jadwal-'+id).value=''); };
+        window.editJadwalGuru = (id) => { const j=window.appState.jadwal_guru.find(x=>String(x.id)===String(id)); if(!j)return; document.getElementById('jadwal-mode').value='edit'; document.getElementById('jadwal-id').value=j.id; document.getElementById('jadwal-guru-id').value=j.id_guru; document.getElementById('jadwal-hari').value=j.hari; let j1m='',j1s='',j2m='',j2s='',m1p='',m2p=''; const m1=j.jam.match(/Jam 1:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/); if(m1){j1m=m1[1];j1s=m1[2];} const m2=j.jam.match(/Jam 2:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/); if(m2){j2m=m2[1];j2s=m2[2];} const mm1=j.jam.match(/Jam 1:.*?<b class="(?:mapel|kelas)-text.*?>(.*?)<\/b>/); if(mm1)m1p=mm1[1]; const mm2=j.jam.match(/Jam 2:.*?<b class="(?:mapel|kelas)-text.*?>(.*?)<\/b>/); if(mm2)m2p=mm2[1]; document.getElementById('jadwal-jam1-mulai').value=j1m; document.getElementById('jadwal-jam1-selesai').value=j1s; document.getElementById('jadwal-mapel-1').value=m1p; document.getElementById('jadwal-jam2-mulai').value=j2m; document.getElementById('jadwal-jam2-selesai').value=j2s; document.getElementById('jadwal-mapel-2').value=m2p; document.getElementById('form-jadwal-title').innerHTML='<i class="fa-solid fa-pen mr-2"></i>Edit Jadwal Mengajar'; document.getElementById('btn-submit-jadwal').innerHTML='<i class="fa-solid fa-check"></i> Perbarui Jadwal'; window.bukaModalJadwal(null,null,true); };
+        window.simpanJadwalGuru = (e) => { e.preventDefault(); const m=document.getElementById('jadwal-mode').value, id=document.getElementById('jadwal-id').value, ig=document.getElementById('jadwal-guru-id').value, h=document.getElementById('jadwal-hari').value, j1m=document.getElementById('jadwal-jam1-mulai').value, j1s=document.getElementById('jadwal-jam1-selesai').value, mp1=document.getElementById('jadwal-mapel-1').value.trim(), j2m=document.getElementById('jadwal-jam2-mulai').value, j2s=document.getElementById('jadwal-jam2-selesai').value, mp2=document.getElementById('jadwal-mapel-2').value.trim(); if(!ig||!h)return window.showAlert('Gagal','Pilih Guru dan Hari','error'); let ja=[]; if(j1m&&j1s){ let t=`Jam 1: ${j1m} - ${j1s}`; if(mp1)t+=`<br><b class="kelas-text text-purple-700">${mp1}</b>`; ja.push(t); } if(j2m&&j2s){ let t=`Jam 2: ${j2m} - ${j2s}`; if(mp2)t+=`<br><b class="kelas-text text-purple-700">${mp2}</b>`; ja.push(t); } const js=ja.length>0?ja.join('<hr class="my-1 border-gray-300">'):'Tidak diatur'; if(!window.appState.jadwal_guru)window.appState.jadwal_guru=[]; if(m==='add'){const ex=window.appState.jadwal_guru.find(j=>String(j.id_guru)===String(ig)&&j.hari===h);if(ex&&ig!=='SEMUA')return window.showAlert('Gagal',`Jadwal hari ${h} sudah ada.`,'error');} if(ig==='SEMUA'){if(m==='edit')return window.showAlert('Gagal','Hanya untuk Tambah.','error'); window.showConfirm("Jadwal Bersama",`Terapkan untuk SEMUA GURU hari ${h}?`,()=>{let c=0;window.appState.guru.forEach(g=>{const ex=window.appState.jadwal_guru.find(j=>String(j.id_guru)===String(g.id)&&j.hari===h);if(!ex)window.appState.jadwal_guru.push({id:Date.now()+c++,id_guru:parseInt(g.id),hari:h,jam:js});});window.saveState();window.renderJadwalGuru();window.renderJadwalKelas();window.tutupModalJadwal();window.showAlert('Berhasil','Jadwal rapat/bersama ditambahkan.','success');});return;} if(m==='add')window.appState.jadwal_guru.push({id:Date.now(),id_guru:parseInt(ig),hari:h,jam:js}); else{const i=window.appState.jadwal_guru.findIndex(x=>String(x.id)===String(id));if(i>-1)window.appState.jadwal_guru[i]={id:parseInt(id),id_guru:parseInt(ig),hari:h,jam:js};} window.saveState();window.renderJadwalGuru();window.renderJadwalKelas();window.tutupModalJadwal();window.showAlert('Berhasil','Jadwal tersimpan','success'); };
+        window.hapusJadwalGuru = (id) => window.showConfirm("Hapus", "Yakin hapus jadwal ini?", ()=>{window.appState.jadwal_guru=window.appState.jadwal_guru.filter(j=>String(j.id)!==String(id));window.saveState();window.renderJadwalGuru();window.renderJadwalKelas();});
+
+        window.renderJadwalKelas = () => {
+            const c = document.getElementById('table-jadwal-kelas'); if (!c) return;
+            const jadwalDb = window.appState.jadwal_guru || [];
+            const guruDb = window.appState.guru || [];
+            let classData = {}; let uniqueClasses = new Set();
+            
+            jadwalDb.forEach(j => {
+                const guru = guruDb.find(g => String(g.id) === String(j.id_guru));
+                const namaGuru = guru ? guru.nama : 'Guru Unknown';
+                
+                const extractByJam = (str, jamTitle) => {
+                    const rx = new RegExp(jamTitle + ':[\\s\\S]*?(?:<hr|$)', 'i');
+                    const m = str.match(rx);
+                    if (m) {
+                        const t = document.createElement('div');
+                        t.innerHTML = m[0];
+                        const b = t.querySelector('b.kelas-text, b.mapel-text');
+                        return b ? b.textContent.trim() : null;
+                    }
+                    return null;
+                };
+
+                const k1 = extractByJam(j.jam || '', 'Jam 1');
+                const k2 = extractByJam(j.jam || '', 'Jam 2');
+                
+                const pk = (kelas, jamStr) => {
+                    uniqueClasses.add(kelas);
+                    if (!classData[kelas]) classData[kelas] = {};
+                    if (!classData[kelas][j.hari]) classData[kelas][j.hari] = {};
+                    if (!classData[kelas][j.hari][jamStr]) classData[kelas][j.hari][jamStr] = [];
+                    classData[kelas][j.hari][jamStr].push(namaGuru);
+                };
+                if (k1) pk(k1, 'Jam 1'); if (k2) pk(k2, 'Jam 2');
+            });
+
+            const days = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Sabtu'];
+            const sc = Array.from(uniqueClasses).sort((a,b) => a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'}));
+            if (sc.length === 0) { c.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-gray-500 font-medium">Belum ada data jadwal kelas terdaftar.</td></tr>`; return; }
+            
+            c.innerHTML = sc.map(cls => {
+                let h = `<tr class="border-b border-gray-100 hover:bg-emerald-50/20"><td class="px-4 py-3 font-bold text-sm text-gray-800 sticky left-0 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] min-w-[120px] z-0">${cls}</td>`;
+                days.forEach(d => {
+                    const dd = classData[cls]?.[d];
+                    if (dd) {
+                        h += `<td class="px-2 py-2 align-top border-l border-gray-100"><div class="flex flex-col gap-1.5 w-full h-full justify-center">`;
+                        if (dd['Jam 1']) h += `<div class="bg-white border border-emerald-200 rounded p-1.5 shadow-sm text-center"><span class="text-[10px] text-gray-500 block leading-none mb-1">Jam 1</span><span class="text-xs font-bold text-emerald-700 leading-tight">${dd['Jam 1'].join(', ')}</span></div>`;
+                        if (dd['Jam 2']) h += `<div class="bg-white border border-emerald-200 rounded p-1.5 shadow-sm text-center"><span class="text-[10px] text-gray-500 block leading-none mb-1">Jam 2</span><span class="text-xs font-bold text-emerald-700 leading-tight">${dd['Jam 2'].join(', ')}</span></div>`;
+                        h += `</div></td>`;
+                    } else { h += `<td class="px-2 py-2 align-top border-l border-gray-100 bg-gray-50/30"></td>`; }
+                });
+                return h + `</tr>`;
+            }).join('');
+        };
 
         // ABSEN GURU & REKAP
         window.checkWaktuAbsenGuru = (guru, tgl, statusScan) => {
@@ -1046,7 +1254,13 @@
         window.bukaFormSurat = (jenis) => {
             window.tutupLuarRadiusModal(); window.tempStatusSurat = jenis; document.getElementById('modal-surat-keterangan').classList.replace('hidden', 'flex');
             document.getElementById('title-surat-modal').innerText = `Formulir ${jenis}`; document.getElementById('header-surat-modal').className = `p-4 text-white flex justify-between items-center ${jenis==='Cuti'?'bg-indigo-600':jenis==='Izin'?'bg-blue-600':'bg-orange-600'}`;
-            document.getElementById('input-alasan-surat').value = ''; document.getElementById('input-hari-surat').value = '1';
+            document.getElementById('input-alasan-surat').value = ''; 
+            
+            const inputHari = document.getElementById('input-hari-surat');
+            inputHari.value = '1';
+            if (jenis === 'Izin') inputHari.max = '1';
+            else if (jenis === 'Sakit') inputHari.max = '3';
+            else inputHari.max = '14';
             
             const cs1 = document.getElementById('check-sesi-1'), cs2 = document.getElementById('check-sesi-2');
             if(cs1 && cs2) {
@@ -1054,15 +1268,13 @@
                 else if(window.tempSuratSesi === '2') { cs1.checked = false; cs2.checked = true; }
                 else { cs1.checked = true; cs2.checked = true; }
             }
-
-            const qc = document.getElementById('quick-reasons-container');
-            if(jenis === 'Izin') qc.innerHTML = `<p class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Pilih Alasan Cepat:</p><div class="flex flex-wrap gap-2"><button onclick="document.getElementById('input-alasan-surat').value='Acara Keluarga'" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs px-3 py-1.5 rounded-lg border border-gray-200">Acara Keluarga</button><button onclick="document.getElementById('input-alasan-surat').value='Kepentingan Mendadak'" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs px-3 py-1.5 rounded-lg border border-gray-200">Kepentingan Mendadak</button><button onclick="document.getElementById('input-alasan-surat').value='Urusan Dinas'" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs px-3 py-1.5 rounded-lg border border-gray-200">Urusan Dinas</button></div>`;
-            else if(jenis === 'Sakit') qc.innerHTML = `<p class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Pilih Alasan Cepat:</p><div class="flex flex-wrap gap-2"><button onclick="document.getElementById('input-alasan-surat').value='Demam / Pusing'" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs px-3 py-1.5 rounded-lg border border-gray-200">Demam / Pusing</button><button onclick="document.getElementById('input-alasan-surat').value='Kontrol Dokter'" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs px-3 py-1.5 rounded-lg border border-gray-200">Kontrol Dokter</button><button onclick="document.getElementById('input-alasan-surat').value='Rawat Inap'" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs px-3 py-1.5 rounded-lg border border-gray-200">Rawat Inap</button></div>`;
-            else qc.innerHTML = `<p class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Pilih Alasan Cepat:</p><div class="flex flex-wrap gap-2"><button onclick="document.getElementById('input-alasan-surat').value='Cuti Melahirkan'" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs px-3 py-1.5 rounded-lg border border-gray-200">Cuti Melahirkan</button><button onclick="document.getElementById('input-alasan-surat').value='Cuti Umroh/Haji'" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs px-3 py-1.5 rounded-lg border border-gray-200">Cuti Umroh/Haji</button></div>`;
         };
         window.prosesSuratKeterangan = () => {
             const al = document.getElementById('input-alasan-surat').value.trim(), hr = parseInt(document.getElementById('input-hari-surat').value) || 1, st = window.tempStatusSurat;
             
+            if (st === 'Izin' && hr > 1) return window.showAlert('Gagal', 'Pengajuan Izin maksimal hanya 1 hari.', 'error');
+            if (st === 'Sakit' && hr > 3) return window.showAlert('Gagal', 'Pengajuan Sakit maksimal hanya 3 hari.', 'error');
+
             const cs1 = document.getElementById('check-sesi-1'), cs2 = document.getElementById('check-sesi-2');
             if(cs1 && cs2) {
                 if(!cs1.checked && !cs2.checked) return window.showAlert('Gagal', 'Pilih minimal satu sesi untuk pengajuan.', 'error');
@@ -1214,10 +1426,90 @@
         window.hapusAgenda = (id) => window.showConfirm("Hapus Agenda", "Yakin hapus?", ()=>{window.appState.agenda=window.appState.agenda.filter(a=>a.id!==id);window.saveState();window.renderKalender();});
 
         // PENGATURAN & GPS MAPS
-        window.switchSettingTab = (t) => { ['lokasi','login','operator'].forEach(id=>{ const el=document.getElementById(`setting-tab-${id}`); if(el)el.style.display=t===id?'block':'none'; const btn=document.getElementById(`tab-btn-${id}`); if(btn){if(t===id)btn.classList.add('border-blue-600','text-blue-600');else btn.classList.remove('border-blue-600','text-blue-600');} }); if(t==='lokasi')setTimeout(()=>window.initMapSetting(),200); if(t==='operator')window.renderOperator(); };
+        window.switchSettingTab = (t) => { 
+            ['lokasi','kalender','login','operator'].forEach(id=>{ 
+                const el=document.getElementById(`setting-tab-${id}`); if(el)el.style.display=t===id?'block':'none'; 
+                const btn=document.getElementById(`tab-btn-${id}`); if(btn){if(t===id)btn.classList.add('border-blue-600','text-blue-600');else btn.classList.remove('border-blue-600','text-blue-600');} 
+            }); 
+            if(t==='lokasi')setTimeout(()=>window.initMapSetting(),200); 
+            if(t==='kalender')window.initKalenderSetting();
+            if(t==='operator')window.renderOperator(); 
+        };
+        
+        // PENGATURAN KALENDER
+        window.initKalenderSetting = () => {
+            const p = window.appState.pengaturan || {};
+            const isManual = p.kalender_manual_aktif === true;
+            document.querySelectorAll('input[name="kalender_mode"]').forEach(r => { if(r.value === (isManual ? 'manual' : 'auto')) r.checked = true; });
+            window.toggleKalenderMode();
+
+            // Auto Set
+            const offset = p.hijri_offset !== undefined ? parseInt(p.hijri_offset) : -1;
+            const elOffset = document.getElementById('setting-hijri-offset'); if(elOffset) elOffset.value = offset;
+
+            // Manual Set
+            if(!p.kalender_manual) p.kalender_manual = {};
+            window.loadManualKalenderTahun();
+        };
+
+        window.toggleKalenderMode = () => {
+            const mode = document.querySelector('input[name="kalender_mode"]:checked');
+            const isManual = mode && mode.value === 'manual';
+            document.getElementById('kalender-auto-settings').style.display = isManual ? 'none' : 'block';
+            document.getElementById('kalender-manual-settings').style.display = isManual ? 'block' : 'none';
+        };
+
+        window.loadManualKalenderTahun = () => {
+            const y = document.getElementById('manual-kal-tahun').value;
+            const p = window.appState.pengaturan.kalender_manual || {};
+            const data = p[y] || { start_date: '', days: [30,29,30,29,30,29,30,29,30,29,30,29] };
+            
+            document.getElementById('manual-kal-start').value = data.start_date;
+            
+            const names = ["Muharram", "Safar", "Rabi'ul Awal", "Rabi'ul Akhir", "Jumadil Awal", "Jumadil Akhir", "Rajab", "Sya'ban", "Ramadhan", "Syawal", "Dzulqa'dah", "Dzulhijjah"];
+            const grid = document.getElementById('manual-kal-grid');
+            grid.innerHTML = names.map((n, i) => `
+                <div class="bg-white border border-purple-200 p-2 rounded-lg shadow-sm">
+                    <div class="text-[10px] font-bold text-gray-500 mb-1 truncate">${i+1}. ${n}</div>
+                    <select id="man-bln-${i}" class="w-full text-xs p-1.5 border border-gray-300 rounded outline-none font-bold text-purple-700 bg-gray-50">
+                        <option value="29" ${data.days[i]===29?'selected':''}>29 Hari</option>
+                        <option value="30" ${data.days[i]===30?'selected':''}>30 Hari</option>
+                    </select>
+                </div>
+            `).join('');
+        };
+
+        window.simpanKalenderAuto = () => {
+            if(!window.appState.pengaturan) window.appState.pengaturan = {};
+            window.appState.pengaturan.kalender_manual_aktif = false;
+            window.appState.pengaturan.hijri_offset = parseInt(document.getElementById('setting-hijri-offset').value) || 0;
+            window.saveState(); window.initHijriFilter(); window.renderKalender(); window.updateDashboardStats();
+            window.showAlert('Berhasil', 'Mode Kalender Otomatis disimpan.', 'success');
+        };
+
+        window.simpanKalenderManual = () => {
+            const y = document.getElementById('manual-kal-tahun').value;
+            const st = document.getElementById('manual-kal-start').value;
+            if(!st) return window.showAlert('Gagal', 'Tanggal Masehi 1 Muharram wajib diisi.', 'error');
+            
+            const days = [];
+            for(let i=0; i<12; i++) days.push(parseInt(document.getElementById(`man-bln-${i}`).value));
+
+            if(!window.appState.pengaturan) window.appState.pengaturan = {};
+            if(!window.appState.pengaturan.kalender_manual) window.appState.pengaturan.kalender_manual = {};
+            
+            window.appState.pengaturan.kalender_manual_aktif = true;
+            window.appState.pengaturan.kalender_manual[y] = { start_date: st, days: days };
+            
+            window.saveState(); window.initHijriFilter(); window.renderKalender(); window.updateDashboardStats();
+            window.showAlert('Berhasil', `Mode Manual Tahun ${y} disimpan.`, 'success');
+        };
+
+        // LOKASI GPS (Dipisah dari Kalender)
         let settingMap=null, settingMarker=null, settingCircle=null;
         window.initMapSetting = () => {
-            if(!window.appState.pengaturan)window.appState.pengaturan={}; const loc=window.appState.pengaturan.lokasi||{}; const lat=parseFloat(loc.lat)||-7.250445, lng=parseFloat(loc.lng)||112.768845, rad=parseInt(loc.radius)||100, act=loc.aktif===true||String(loc.aktif)==='true';
+            if(!window.appState.pengaturan)window.appState.pengaturan={}; 
+            const loc=window.appState.pengaturan.lokasi||{}; const lat=parseFloat(loc.lat)||-7.250445, lng=parseFloat(loc.lng)||112.768845, rad=parseInt(loc.radius)||100, act=loc.aktif===true||String(loc.aktif)==='true';
             document.getElementById('setting-lokasi-aktif').checked=act; document.getElementById('setting-lokasi-lat').value=lat; document.getElementById('setting-lokasi-lng').value=lng; document.getElementById('setting-lokasi-radius').value=rad;
             const mc=document.getElementById('map-setting'); if(mc&&mc.innerHTML==='Memuat Peta...')mc.innerHTML='';
             if(!settingMap) {
@@ -1231,15 +1523,23 @@
         };
         window.updateMapCircle = () => { const r=parseInt(document.getElementById('setting-lokasi-radius').value)||100; if(settingCircle)settingCircle.setRadius(r); };
         window.getLocationBrowser = () => { if(navigator.geolocation){navigator.geolocation.getCurrentPosition(p=>{const lat=p.coords.latitude,lng=p.coords.longitude;document.getElementById('setting-lokasi-lat').value=lat;document.getElementById('setting-lokasi-lng').value=lng;if(settingMap){settingMap.setView([lat,lng],18);settingMarker.setLatLng([lat,lng]);settingCircle.setLatLng([lat,lng]);}},e=>window.showAlert('Gagal','Akses lokasi ditolak.','error'));} };
-        window.simpanPengaturanLokasi = (e) => { e.preventDefault(); if(!window.appState.pengaturan)window.appState.pengaturan={}; window.appState.pengaturan.lokasi={aktif:document.getElementById('setting-lokasi-aktif').checked,lat:document.getElementById('setting-lokasi-lat').value,lng:document.getElementById('setting-lokasi-lng').value,radius:document.getElementById('setting-lokasi-radius').value}; window.saveState(); window.showAlert('Berhasil','Lokasi GPS disimpan.','success'); };
+        window.simpanPengaturanLokasi = (e) => { 
+            e.preventDefault(); 
+            if(!window.appState.pengaturan)window.appState.pengaturan={}; 
+            window.appState.pengaturan.lokasi={aktif:document.getElementById('setting-lokasi-aktif').checked,lat:document.getElementById('setting-lokasi-lat').value,lng:document.getElementById('setting-lokasi-lng').value,radius:document.getElementById('setting-lokasi-radius').value}; 
+            window.saveState(); 
+            window.showAlert('Berhasil','Pengaturan Lokasi GPS disimpan.','success'); 
+        };
         
         window.simpanPengaturanLogin = (e) => { e.preventDefault(); const u=document.getElementById('setting-admin-user').value.trim(), p=document.getElementById('setting-admin-pass').value; if(p)window.appState.pengaturan.admin_pass=p; window.appState.pengaturan.admin_user=u; window.saveState(); window.showAlert('Berhasil','Akun Admin diperbarui.','success'); document.getElementById('setting-admin-pass').value=''; };
         
-        window.renderOperator = () => { const c=document.getElementById('list-operator'); if(!c)return; const ol=window.appState.pengaturan.operators||[]; c.innerHTML=ol.length===0?'<p class="text-xs text-gray-500 italic">Belum ada operator.</p>':ol.map(o=>`<div class="flex justify-between items-center p-3 bg-white border border-gray-200 rounded-lg shadow-sm mb-2"><div class="flex flex-col"><span class="font-bold text-sm text-gray-800">${o.user}</span><span class="text-[9px] text-gray-500">Akses: ${[o.akses.guru?'Guru':'',o.akses.pengaturan?'Pengaturan':''].filter(Boolean).join(', ')||'-'}</span></div><div class="flex gap-1"><button onclick="window.editOperator('${o.id}')" class="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><i class="fa-solid fa-pen text-xs"></i></button><button onclick="window.hapusOperator('${o.id}')" class="text-red-500 hover:bg-red-50 p-1.5 rounded"><i class="fa-solid fa-trash text-xs"></i></button></div></div>`).join(''); };
-        window.resetFormOperator = () => { document.getElementById('op-id').value=''; document.getElementById('op-user').value=''; document.getElementById('op-pass').value=''; ['guru','pengaturan'].forEach(k=>document.getElementById(`akses-${k}`).checked=false); document.getElementById('form-operator-title').innerText='Tambah Operator Baru'; };
-        window.editOperator = (id) => { const o=(window.appState.pengaturan.operators||[]).find(x=>x.id===id); if(!o)return; document.getElementById('op-id').value=o.id; document.getElementById('op-user').value=o.user; document.getElementById('op-pass').value=''; ['guru','pengaturan'].forEach(k=>document.getElementById(`akses-${k}`).checked=!!o.akses[k]); document.getElementById('form-operator-title').innerText='Edit Operator'; };
-        window.simpanOperator = (e) => { e.preventDefault(); const id=document.getElementById('op-id').value, u=document.getElementById('op-user').value.trim(), p=document.getElementById('op-pass').value, ak={guru:document.getElementById('akses-guru').checked,pengaturan:document.getElementById('akses-pengaturan').checked}; if(!window.appState.pengaturan.operators)window.appState.pengaturan.operators=[]; if(id){const i=window.appState.pengaturan.operators.findIndex(x=>x.id===id);if(i>-1){window.appState.pengaturan.operators[i].user=u;window.appState.pengaturan.operators[i].akses=ak;if(p)window.appState.pengaturan.operators[i].pass=p;}}else{window.appState.pengaturan.operators.push({id:Date.now().toString(),user:u,pass:p||'12345',akses:ak});} window.saveState(); window.renderOperator(); window.resetFormOperator(); window.showAlert('Berhasil','Operator tersimpan.','success'); };
-        window.hapusOperator = (id) => window.showConfirm("Hapus", "Hapus operator?", ()=>{window.appState.pengaturan.operators=window.appState.pengaturan.operators.filter(o=>o.id!==id);window.saveState();window.renderOperator();});
+        // OPERATOR
+        window.renderOperator = () => { const c=document.getElementById('list-operator'); if(!c)return; const ol=window.appState.pengaturan?.operators||[]; c.innerHTML=ol.length===0?'<div class="text-center py-4 text-xs text-gray-500">Belum ada operator tambahan.</div>':ol.map(o=>`<div class="flex justify-between items-center p-3 border-b border-gray-100 hover:bg-gray-50 rounded-lg"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-user-gear"></i></div><div><div class="font-bold text-sm text-gray-800">${o.user}</div><div class="text-[10px] text-gray-500">${o.akses?.guru?'Guru':''} ${o.akses?.pengaturan?', Pengaturan':''}</div></div></div><div><button onclick="window.editOperator('${o.id}')" class="text-blue-500 p-2 hover:bg-blue-50 rounded-lg"><i class="fa-solid fa-pen text-xs"></i></button><button onclick="window.hapusOperator('${o.id}')" class="text-red-500 p-2 hover:bg-red-50 rounded-lg ml-1"><i class="fa-solid fa-trash text-xs"></i></button></div></div>`).join(''); };
+        window.resetFormOperator = () => { document.getElementById('op-id').value=''; document.getElementById('op-user').value=''; document.getElementById('op-pass').value=''; document.getElementById('akses-guru').checked=false; document.getElementById('akses-pengaturan').checked=false; document.getElementById('form-operator-title').innerText='Tambah Operator Baru'; };
+        window.simpanOperator = (e) => { e.preventDefault(); const id=document.getElementById('op-id').value, u=document.getElementById('op-user').value.trim(), p=document.getElementById('op-pass').value, ag=document.getElementById('akses-guru').checked, ap=document.getElementById('akses-pengaturan').checked; if(!window.appState.pengaturan)window.appState.pengaturan={}; if(!window.appState.pengaturan.operators)window.appState.pengaturan.operators=[]; if(id){ const i=window.appState.pengaturan.operators.findIndex(o=>String(o.id)===String(id)); if(i>-1){window.appState.pengaturan.operators[i].user=u; if(p)window.appState.pengaturan.operators[i].pass=p; window.appState.pengaturan.operators[i].akses={guru:ag,pengaturan:ap};} }else{ window.appState.pengaturan.operators.push({id:Date.now(),user:u,pass:p||'12345',akses:{guru:ag,pengaturan:ap}}); } window.saveState(); window.renderOperator(); window.resetFormOperator(); window.showAlert('Berhasil','Operator disimpan.','success'); };
+        window.editOperator = (id) => { const o=(window.appState.pengaturan?.operators||[]).find(x=>String(x.id)===String(id)); if(!o)return; document.getElementById('op-id').value=o.id; document.getElementById('op-user').value=o.user; document.getElementById('op-pass').value=''; document.getElementById('akses-guru').checked=o.akses?.guru||false; document.getElementById('akses-pengaturan').checked=o.akses?.pengaturan||false; document.getElementById('form-operator-title').innerText='Edit Operator'; };
+        window.hapusOperator = (id) => window.showConfirm("Hapus", "Hapus operator ini?", ()=>{ window.appState.pengaturan.operators=window.appState.pengaturan.operators.filter(o=>String(o.id)!==String(id)); window.saveState(); window.renderOperator(); });
+
     </script>
 </body>
 </html>
