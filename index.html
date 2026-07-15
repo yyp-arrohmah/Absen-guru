@@ -857,6 +857,20 @@
         window.playHadirSound = () => { try { if('speechSynthesis' in window) { const u = new SpeechSynthesisUtterance("Hadir"); u.lang = 'id-ID'; window.speechSynthesis.speak(u); } } catch(e){} };
         window.getDistanceFromLatLonInM = (lat1, lon1, lat2, lon2) => { const R=6371e3, p1=lat1*Math.PI/180, p2=lat2*Math.PI/180, dp=(lat2-lat1)*Math.PI/180, dl=(lon2-lon1)*Math.PI/180, a=Math.sin(dp/2)*Math.sin(dp/2)+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)*Math.sin(dl/2); return R*(2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))); };
         
+        // Peningkatan Responsivitas Pembacaan GPS 
+        window.getLokalGPS = () => {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) return reject({code: 0, message: "Browser tidak mendukung GPS."});
+                
+                // Coba High Accuracy (Satelit) maksimal 8 detik, izinkan cache 5 detik
+                navigator.geolocation.getCurrentPosition(resolve, (err) => {
+                    console.warn("GPS High Accuracy lambat/gagal, beralih ke Low Accuracy...");
+                    // Fallback ke Low Accuracy (Wi-Fi/Jaringan) maksimal 7 detik
+                    navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: false, timeout: 7000, maximumAge: 15000 });
+                }, { enableHighAccuracy: true, timeout: 8000, maximumAge: 5000 });
+            });
+        };
+
         // HIJRIYAH UTILS
         window.getHijriComponents = (dateObj) => { 
             const set = window.appState.pengaturan || {};
@@ -1224,17 +1238,30 @@
                 }
             }
 
+            // Cegah simpan otomatis jika mode scan adalah Izin/Sakit/Cuti
+            if (statusScan !== 'Hadir') {
+                window.tempScanText = rawText;
+                window.tempSuratSesi = 'all'; 
+                window.bukaFormSurat(statusScan);
+                return; // Berhenti di sini, tunggu user klik tombol "Buat Surat"
+            }
+
             if (statusScan === 'Hadir') {
                 const locSet = window.appState.pengaturan && window.appState.pengaturan.lokasi;
                 if (locSet && (locSet.aktif === true || String(locSet.aktif) === 'true')) {
                     const ldr = document.getElementById('startup-loader');
                     if(ldr) { ldr.querySelector('i').className="fa-solid fa-location-crosshairs text-6xl text-red-500 mb-4 animate-pulse"; document.getElementById('loader-text').innerText="Memeriksa Lokasi Anda..."; ldr.classList.replace('hidden','flex'); }
                     try {
-                        const pos = await new Promise((res, rej) => { if (!navigator.geolocation) return rej({code:0}); navigator.geolocation.getCurrentPosition(res,rej,{enableHighAccuracy:true,timeout:15000}); });
+                        const pos = await window.getLokalGPS();
                         const dist = window.getDistanceFromLatLonInM(parseFloat(locSet.lat)||0, parseFloat(locSet.lng)||0, pos.coords.latitude, pos.coords.longitude);
                         if(ldr) { ldr.classList.replace('flex','hidden'); ldr.querySelector('i').className="fa-solid fa-spinner fa-spin text-6xl text-blue-600 mb-4"; }
-                        if (dist > (parseInt(locSet.radius)||100)) return window.showAlert('Absen Ditolak', `Halo ${namaOrang},\nAnda berada ${Math.round(dist)} meter dari Madrasah (Batas: ${parseInt(locSet.radius)||100}m).\nAbsen HADIR ditolak oleh sistem.`, 'error');
-                        else window.tempInfoJarak = `\n(Lokasi GPS Valid: ${Math.round(dist)}m dari Madrasah)`;
+                        if (dist > (parseInt(locSet.radius)||100)) {
+                            // Tampilkan modal luar radius (memungkinkan pengajuan surat)
+                            window.showLuarRadiusModal(rawText, dist, parseInt(locSet.radius)||100, namaOrang, activeScannerMode);
+                            return; 
+                        } else {
+                            window.tempInfoJarak = `\n(Lokasi GPS Valid: ${Math.round(dist)}m dari Madrasah)`;
+                        }
                     } catch (e) {
                         if(ldr) { ldr.classList.replace('flex','hidden'); ldr.querySelector('i').className="fa-solid fa-spinner fa-spin text-6xl text-blue-600 mb-4"; }
                         let msg='Gagal mendeteksi lokasi GPS Anda.'; if(e.code===1)msg='Akses lokasi ditolak browser.\nIzinkan (Allow) akses lokasi agar Anda bisa absen.'; else if(e.code===2)msg='Sinyal GPS lemah atau tidak tersedia. Pastikan GPS menyala.'; else if(e.code===3)msg='Pencarian lokasi Timeout. Coba lagi.';
@@ -1583,7 +1610,7 @@
             } else { settingMap.setView([lat,lng],18); settingMarker.setLatLng([lat,lng]); settingCircle.setLatLng([lat,lng]).setRadius(rad); setTimeout(()=>settingMap.invalidateSize(),100); }
         };
         window.updateMapCircle = () => { const r=parseInt(document.getElementById('setting-lokasi-radius').value)||100; if(settingCircle)settingCircle.setRadius(r); };
-        window.getLocationBrowser = () => { if(navigator.geolocation){navigator.geolocation.getCurrentPosition(p=>{const lat=p.coords.latitude,lng=p.coords.longitude;document.getElementById('setting-lokasi-lat').value=lat;document.getElementById('setting-lokasi-lng').value=lng;if(settingMap){settingMap.setView([lat,lng],18);settingMarker.setLatLng([lat,lng]);settingCircle.setLatLng([lat,lng]);}},e=>window.showAlert('Gagal','Akses lokasi ditolak.','error'));} };
+        window.getLocationBrowser = async () => { try { const p = await window.getLokalGPS(); const lat=p.coords.latitude,lng=p.coords.longitude; document.getElementById('setting-lokasi-lat').value=lat; document.getElementById('setting-lokasi-lng').value=lng; if(settingMap){settingMap.setView([lat,lng],18);settingMarker.setLatLng([lat,lng]);settingCircle.setLatLng([lat,lng]);} } catch(e) { window.showAlert('Gagal','Akses lokasi ditolak atau sinyal GPS tidak tersedia.','error'); } };
         
         window.simpanPengaturanLokasi = (e) => { 
             e.preventDefault(); 
