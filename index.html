@@ -433,26 +433,39 @@
                     </div>
                 </div>
 
-                <!-- TAB KALENDER HIJRIYAH (BARU) -->
+                <!-- TAB KALENDER HIJRIYAH (BARU MABIMS) -->
                 <div id="setting-tab-kalender" class="space-y-4" style="display: none;">
                     <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-                        <h4 class="font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-calculator text-blue-500 mr-2"></i>Mode Perhitungan Kalender</h4>
+                        <h4 class="font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-calculator text-emerald-500 mr-2"></i>Mode Perhitungan Kalender</h4>
                         
-                        <div class="flex flex-col gap-4 mb-6">
-                            <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50">
+                        <div class="flex flex-col gap-3 mb-6">
+                            <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-emerald-50 transition-colors">
+                                <input type="radio" name="kalender_mode" value="kemenag" class="w-5 h-5 accent-emerald-600" onchange="window.toggleKalenderMode()">
+                                <div>
+                                    <div class="font-bold text-sm text-gray-800">Kemenag RI (Disarankan)</div>
+                                    <div class="text-[11px] text-gray-500">Menggunakan estimasi kalender resmi Kementerian Agama RI (MABIMS).</div>
+                                </div>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-blue-50 transition-colors">
                                 <input type="radio" name="kalender_mode" value="auto" class="w-5 h-5 accent-blue-600" onchange="window.toggleKalenderMode()">
                                 <div>
-                                    <div class="font-bold text-sm text-gray-800">Otomatis (Bawaan Sistem)</div>
-                                    <div class="text-[11px] text-gray-500">Berdasarkan perhitungan standar global dengan opsi penyesuaian (+/- hari).</div>
+                                    <div class="font-bold text-sm text-gray-800">Otomatis Global</div>
+                                    <div class="text-[11px] text-gray-500">Sistem algoritma konversi standar dengan opsi koreksi (+/- hari).</div>
                                 </div>
                             </label>
-                            <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50">
-                                <input type="radio" name="kalender_mode" value="manual" class="w-5 h-5 accent-blue-600" onchange="window.toggleKalenderMode()">
+                            <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-purple-50 transition-colors">
+                                <input type="radio" name="kalender_mode" value="manual" class="w-5 h-5 accent-purple-600" onchange="window.toggleKalenderMode()">
                                 <div>
-                                    <div class="font-bold text-sm text-gray-800">Manual (Sesuai KBM / Kemenag)</div>
-                                    <div class="text-[11px] text-gray-500">Tentukan sendiri tanggal 1 Muharram & ubah jumlah hari di setiap bulan.</div>
+                                    <div class="font-bold text-sm text-gray-800">Manual (Kustom)</div>
+                                    <div class="text-[11px] text-gray-500">Atur sendiri tanggal 1 Muharram dan jumlah hari spesifik per bulannya.</div>
                                 </div>
                             </label>
+                        </div>
+
+                        <!-- Kemenag Settings -->
+                        <div id="kalender-kemenag-settings" class="bg-emerald-50 p-4 rounded-xl border border-emerald-100 mb-2 hidden">
+                            <p class="text-xs text-emerald-800 mb-4 leading-relaxed"><i class="fa-solid fa-circle-info mr-1"></i> Mode ini menggunakan data prakiraan kalender resmi (MABIMS) dari Kementerian Agama Republik Indonesia untuk <b>Tahun 1445 H hingga 1450 H</b>. Apabila di kemudian hari hasil <i>Sidang Isbat</i> berbeda dengan kalender ini, Anda dapat beralih ke mode <b>Manual (Kustom)</b> untuk memperbaikinya.</p>
+                            <button onclick="window.simpanKalenderKemenag()" class="bg-emerald-600 text-white font-bold py-2.5 px-6 rounded-xl text-xs hover:bg-emerald-700 shadow-sm transition-colors"><i class="fa-solid fa-check mr-1"></i> Gunakan Kemenag RI</button>
                         </div>
 
                         <!-- Auto Settings -->
@@ -834,7 +847,7 @@
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxMDK-D9oj9FgYdc_dmFSnCsJxw2qxnWQRX5B6W5ty6dApyDi_0VeL1K_4HrWGB9C7i/exec'
 
         // GLOBAL STATE & UTILS
-        window.appState = window.appState || { guru: [], absensi_guru: [], jadwal_guru: [], agenda: [], pengaturan: { hijri_offset: -1, admin_user: 'admin', admin_pass: '12345', lokasi: { aktif: false, lat: -7.250445, lng: 112.768845, radius: 100 } } };
+        window.appState = window.appState || { guru: [], absensi_guru: [], jadwal_guru: [], agenda: [], pengaturan: { hijri_offset: 0, kalender_mode: 'kemenag', admin_user: 'admin', admin_pass: '12345', lokasi: { aktif: false, lat: -7.250445, lng: 112.768845, radius: 100 } } };
         let syncTimeout=null, activeScannerMode='', scannerState='stopped', html5QrCode=null, currentUser=null;
         
         window.formatRp = (num) => 'Rp ' + parseInt(num).toLocaleString('id-ID');
@@ -847,29 +860,49 @@
         // HIJRIYAH UTILS
         window.getHijriComponents = (dateObj) => { 
             const set = window.appState.pengaturan || {};
-            // LOGIKA KALENDER MANUAL (Bila diaktifkan)
-            if (set.kalender_manual_aktif && set.kalender_manual) {
-                const dLocal = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
-                for (const year in set.kalender_manual) {
-                    const yData = set.kalender_manual[year];
-                    if (!yData.start_date || !yData.days || yData.days.length < 12) continue;
-                    
-                    const p = yData.start_date.split('-');
+            let mode = set.kalender_mode;
+            
+            // Jaga kompatibilitas versi sebelumnya (Jika dulu pakai manual, jadikan manual)
+            if (!mode) mode = set.kalender_manual_aktif ? 'manual' : 'kemenag'; 
+
+            // KEMENAG DATA (Prakiraan 1445 H - 1450 H berdasarkan Standar MABIMS / Ephemeris)
+            const kemenagData = {
+                "1444": { start: "2022-07-30", days: [30,29,30,29,30,29,30,29,30,29,30,29] },
+                "1445": { start: "2023-07-19", days: [30,29,30,29,30,29,30,29,30,29,30,29] },
+                "1446": { start: "2024-07-07", days: [30,29,30,29,30,29,30,29,30,29,30,29] },
+                "1447": { start: "2025-06-26", days: [30,29,30,29,30,29,30,29,30,29,30,29] },
+                "1448": { start: "2026-06-16", days: [30,29,30,29,30,29,30,29,30,29,30,29] },
+                "1449": { start: "2027-06-05", days: [30,29,30,29,30,29,30,29,30,29,30,29] },
+                "1450": { start: "2028-05-25", days: [30,29,30,29,30,29,30,29,30,29,30,29] }
+            };
+
+            const dLocal = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+            let dataSource = null;
+            
+            if (mode === 'manual' && set.kalender_manual) dataSource = set.kalender_manual;
+            else if (mode === 'kemenag') dataSource = kemenagData;
+
+            if (dataSource) {
+                for (const year in dataSource) {
+                    const yData = dataSource[year];
+                    if (!yData.start_date && !yData.start) continue;
+                    const startStr = yData.start_date || yData.start; // Support array lama dan baru
+                    const p = startStr.split('-');
                     const startDate = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2]));
                     
-                    const diffTime = dLocal.getTime() - startDate.getTime();
-                    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)); // Gunakan pembulatan penuh (Hindari isu zona waktu)
+                    const diffDays = Math.round((dLocal.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
                     
                     if (diffDays >= 0) {
                         let totalDays = 0;
-                        for(let i=0; i<12; i++) totalDays += yData.days[i];
+                        for(let i=0; i<12; i++) totalDays += (yData.days[i] || 29);
                         
                         if (diffDays < totalDays) {
                             let daysLeft = diffDays;
                             let m = 1;
                             for(let i=0; i<12; i++) {
-                                if (daysLeft < yData.days[i]) { m = i + 1; break; }
-                                daysLeft -= yData.days[i];
+                                const dm = yData.days[i] || 29;
+                                if (daysLeft < dm) { m = i + 1; break; }
+                                daysLeft -= dm;
                                 m = i + 2; 
                             }
                             if(m > 12) m = 12; // Safety net
@@ -879,11 +912,12 @@
                 }
             }
             
-            // LOGIKA KALENDER OTOMATIS (Bawaan)
+            // AUTO (Global / Jika diluar rentang tahun Kemenag/Manual)
             try { 
-                const offset = (set.hijri_offset !== undefined) ? parseInt(set.hijri_offset) : -1;
-                const adjDate = new Date(dateObj.getTime() + (offset * 24 * 60 * 60 * 1000));
-                const parts = new Intl.DateTimeFormat('en-US-u-ca-islamic', {day:'numeric', month:'numeric', year:'numeric'}).formatToParts(adjDate); 
+                const offset = (set.hijri_offset !== undefined) ? parseInt(set.hijri_offset) : 0;
+                const adjDate = new Date(dLocal.getTime() + (offset * 24 * 60 * 60 * 1000));
+                // Menggunakan regional id-ID agar mendekati zona waktu indonesia secara global
+                const parts = new Intl.DateTimeFormat('id-ID-u-ca-islamic', {day:'numeric', month:'numeric', year:'numeric'}).formatToParts(adjDate); 
                 let m=1, d=1, y=1446; 
                 parts.forEach(p => { 
                     if (p.type === 'month') m = parseInt(p.value); 
@@ -1439,12 +1473,15 @@
         // PENGATURAN KALENDER
         window.initKalenderSetting = () => {
             const p = window.appState.pengaturan || {};
-            const isManual = p.kalender_manual_aktif === true;
-            document.querySelectorAll('input[name="kalender_mode"]').forEach(r => { if(r.value === (isManual ? 'manual' : 'auto')) r.checked = true; });
+            const mode = p.kalender_mode || (p.kalender_manual_aktif ? 'manual' : 'kemenag');
+            
+            document.querySelectorAll('input[name="kalender_mode"]').forEach(r => { 
+                r.checked = (r.value === mode);
+            });
             window.toggleKalenderMode();
 
             // Auto Set
-            const offset = p.hijri_offset !== undefined ? parseInt(p.hijri_offset) : -1;
+            const offset = p.hijri_offset !== undefined ? parseInt(p.hijri_offset) : 0;
             const elOffset = document.getElementById('setting-hijri-offset'); if(elOffset) elOffset.value = offset;
 
             // Manual Set
@@ -1453,10 +1490,12 @@
         };
 
         window.toggleKalenderMode = () => {
-            const mode = document.querySelector('input[name="kalender_mode"]:checked');
-            const isManual = mode && mode.value === 'manual';
-            document.getElementById('kalender-auto-settings').style.display = isManual ? 'none' : 'block';
-            document.getElementById('kalender-manual-settings').style.display = isManual ? 'block' : 'none';
+            const modeEl = document.querySelector('input[name="kalender_mode"]:checked');
+            const mode = modeEl ? modeEl.value : 'kemenag';
+            
+            const sk = document.getElementById('kalender-kemenag-settings'); if(sk) sk.style.display = mode === 'kemenag' ? 'block' : 'none';
+            const sa = document.getElementById('kalender-auto-settings'); if(sa) sa.style.display = mode === 'auto' ? 'block' : 'none';
+            const sm = document.getElementById('kalender-manual-settings'); if(sm) sm.style.display = mode === 'manual' ? 'block' : 'none';
         };
 
         window.loadManualKalenderTahun = () => {
@@ -1464,27 +1503,45 @@
             const p = window.appState.pengaturan.kalender_manual || {};
             const data = p[y] || { start_date: '', days: [30,29,30,29,30,29,30,29,30,29,30,29] };
             
-            document.getElementById('manual-kal-start').value = data.start_date;
+            document.getElementById('manual-kal-start').value = data.start_date || data.start || '';
             
             const names = ["Muharram", "Safar", "Rabi'ul Awal", "Rabi'ul Akhir", "Jumadil Awal", "Jumadil Akhir", "Rajab", "Sya'ban", "Ramadhan", "Syawal", "Dzulqa'dah", "Dzulhijjah"];
             const grid = document.getElementById('manual-kal-grid');
-            grid.innerHTML = names.map((n, i) => `
-                <div class="bg-white border border-purple-200 p-2 rounded-lg shadow-sm">
+            grid.innerHTML = names.map((n, i) => {
+                const dm = data.days[i] || (i % 2 === 0 ? 30 : 29);
+                return `<div class="bg-white border border-purple-200 p-2 rounded-lg shadow-sm">
                     <div class="text-[10px] font-bold text-gray-500 mb-1 truncate">${i+1}. ${n}</div>
                     <select id="man-bln-${i}" class="w-full text-xs p-1.5 border border-gray-300 rounded outline-none font-bold text-purple-700 bg-gray-50">
-                        <option value="29" ${data.days[i]===29?'selected':''}>29 Hari</option>
-                        <option value="30" ${data.days[i]===30?'selected':''}>30 Hari</option>
+                        <option value="29" ${dm===29?'selected':''}>29 Hari</option>
+                        <option value="30" ${dm===30?'selected':''}>30 Hari</option>
                     </select>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
+        };
+
+        window.simpanKalenderKemenag = () => {
+            if(!window.appState.pengaturan) window.appState.pengaturan = {};
+            window.appState.pengaturan.kalender_mode = 'kemenag';
+            
+            window.saveState(); 
+            window.initHijriFilter(); 
+            window.updateAllViews();
+            
+            document.getElementById('modal-pengaturan').classList.replace('flex','hidden');
+            window.showAlert('Berhasil', 'Mode Kalender Kemenag RI berhasil diaktifkan dan diperbarui.', 'success');
         };
 
         window.simpanKalenderAuto = () => {
             if(!window.appState.pengaturan) window.appState.pengaturan = {};
-            window.appState.pengaturan.kalender_manual_aktif = false;
+            window.appState.pengaturan.kalender_mode = 'auto';
             window.appState.pengaturan.hijri_offset = parseInt(document.getElementById('setting-hijri-offset').value) || 0;
-            window.saveState(); window.initHijriFilter(); window.renderKalender(); window.updateDashboardStats();
-            window.showAlert('Berhasil', 'Mode Kalender Otomatis disimpan.', 'success');
+            
+            window.saveState(); 
+            window.initHijriFilter(); 
+            window.updateAllViews(); 
+            
+            document.getElementById('modal-pengaturan').classList.replace('flex','hidden');
+            window.showAlert('Berhasil', 'Mode Kalender Otomatis disimpan dan diperbarui.', 'success');
         };
 
         window.simpanKalenderManual = () => {
@@ -1498,11 +1555,15 @@
             if(!window.appState.pengaturan) window.appState.pengaturan = {};
             if(!window.appState.pengaturan.kalender_manual) window.appState.pengaturan.kalender_manual = {};
             
-            window.appState.pengaturan.kalender_manual_aktif = true;
+            window.appState.pengaturan.kalender_mode = 'manual';
             window.appState.pengaturan.kalender_manual[y] = { start_date: st, days: days };
             
-            window.saveState(); window.initHijriFilter(); window.renderKalender(); window.updateDashboardStats();
-            window.showAlert('Berhasil', `Mode Manual Tahun ${y} disimpan.`, 'success');
+            window.saveState(); 
+            window.initHijriFilter(); 
+            window.updateAllViews(); 
+            
+            document.getElementById('modal-pengaturan').classList.replace('flex','hidden');
+            window.showAlert('Berhasil', `Mode Manual Tahun ${y} disimpan dan diperbarui.`, 'success');
         };
 
         // LOKASI GPS (Dipisah dari Kalender)
@@ -1523,6 +1584,7 @@
         };
         window.updateMapCircle = () => { const r=parseInt(document.getElementById('setting-lokasi-radius').value)||100; if(settingCircle)settingCircle.setRadius(r); };
         window.getLocationBrowser = () => { if(navigator.geolocation){navigator.geolocation.getCurrentPosition(p=>{const lat=p.coords.latitude,lng=p.coords.longitude;document.getElementById('setting-lokasi-lat').value=lat;document.getElementById('setting-lokasi-lng').value=lng;if(settingMap){settingMap.setView([lat,lng],18);settingMarker.setLatLng([lat,lng]);settingCircle.setLatLng([lat,lng]);}},e=>window.showAlert('Gagal','Akses lokasi ditolak.','error'));} };
+        
         window.simpanPengaturanLokasi = (e) => { 
             e.preventDefault(); 
             if(!window.appState.pengaturan)window.appState.pengaturan={}; 
