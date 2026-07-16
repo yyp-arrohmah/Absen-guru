@@ -350,7 +350,8 @@
                                 <option value="Kelas 6">Kelas 6</option>
                                 <option value="Piket">Piket</option>
                             </select>
-                            <div class="flex items-center gap-2">
+                            <input type="text" id="jadwal-pelajaran-1" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-sm shadow-sm" placeholder="Mata Pelajaran (Opsional)">
+                            <div class="flex items-center gap-2 mt-1">
                                 <input type="time" id="jadwal-jam1-mulai" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-sm cursor-pointer shadow-sm">
                                 <span class="font-bold text-purple-400">s/d</span>
                                 <input type="time" id="jadwal-jam1-selesai" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-sm cursor-pointer shadow-sm">
@@ -373,7 +374,8 @@
                                 <option value="Kelas 6">Kelas 6</option>
                                 <option value="Piket">Piket</option>
                             </select>
-                            <div class="flex items-center gap-2">
+                            <input type="text" id="jadwal-pelajaran-2" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-sm shadow-sm" placeholder="Mata Pelajaran (Opsional)">
+                            <div class="flex items-center gap-2 mt-1">
                                 <input type="time" id="jadwal-jam2-mulai" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-sm cursor-pointer shadow-sm">
                                 <span class="font-bold text-gray-400">s/d</span>
                                 <input type="time" id="jadwal-jam2-selesai" class="w-full border border-gray-300 p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 text-sm cursor-pointer shadow-sm">
@@ -785,10 +787,19 @@
                     <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                         <div><h2 class="text-2xl font-bold text-gray-800">Jadwal Kelas</h2><p class="text-gray-500 text-sm">Jadwal mengajar berdasarkan kelas. (Jumat Ditiadakan)</p></div>
                         <div class="flex items-center gap-3">
-                            <button onclick="window.renderJadwalKelas()" class="bg-white text-gray-700 border border-gray-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-gray-50 transition-colors flex items-center gap-2"><i class="fa-solid fa-rotate-right"></i> Perbarui Tampilan</button>
+                            <button onclick="window.renderJadwalKelas()" class="bg-white text-gray-00 border border-gray-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-gray-50 transition-colors flex items-center gap-2"><i class="fa-solid fa-rotate-right"></i> Perbarui Tampilan</button>
+                            <!-- Tombol Cetak PDF Jadwal Kelas -->
+                            <button onclick="window.cetakJadwalKelasPDF()" class="bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-red-700 transition-colors flex items-center gap-2"><i class="fa-solid fa-file-pdf"></i> Cetak PDF A4</button>
                         </div>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-sm text-left border-collapse"><thead class="bg-emerald-50 text-xs text-emerald-900 font-bold uppercase border-b border-emerald-100"><tr><th class="px-4 py-3.5 min-w-[120px] sticky left-0 bg-emerald-50 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Kelas</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Ahad</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Senin</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Selasa</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Rabu</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Kamis</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Sabtu</th></tr></thead><tbody id="table-jadwal-kelas" class="divide-y divide-gray-100 bg-white relative z-0"></tbody></table></div></div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden" id="cetak-area-jadwal-kelas">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left border-collapse">
+                                <thead class="bg-emerald-50 text-xs text-emerald-900 font-bold uppercase border-b border-emerald-100"><tr><th class="px-4 py-3.5 min-w-[120px] sticky left-0 bg-emerald-50 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Kelas</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Ahad</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Senin</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Selasa</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Rabu</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Kamis</th><th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Sabtu</th></tr></thead>
+                                <tbody id="table-jadwal-kelas" class="divide-y divide-gray-100 bg-white relative z-0"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- TAB REKAP ABSENSI GURU -->
@@ -1044,9 +1055,65 @@
         window.renderJadwalGuru = () => { const c=document.getElementById('table-jadwal-guru'),sg=document.getElementById('jadwal-guru-id'),fg=document.getElementById('filter-jadwal-guru'); if(!c||!sg)return; let o=`<option value="">-- Pilih Guru --</option><option value="SEMUA" class="font-bold text-blue-600 bg-blue-50">&#10024; Semua Guru (Jadwal Rapat / Bersama)</option>`,fo=`<option value="">Semua Guru</option>`; (window.appState.guru||[]).forEach(g=>{o+=`<option value="${g.id}">${g.nama}</option>`;fo+=`<option value="${g.id}">${g.nama}</option>`;}); sg.innerHTML=o; fg.innerHTML=fo; let gl=window.appState.guru||[]; if(fg.value)gl=gl.filter(g=>String(g.id)===String(fg.value)); const hl=['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu']; let h='',aj=false; gl.forEach(g=>{ const sc=(window.appState.jadwal_guru||[]).filter(j=>String(j.id_guru)===String(g.id)); if(sc.length===0&&!fg.value)return; aj=true; h+=`<tr class="border-b border-gray-100 hover:bg-purple-50/20"><td class="px-4 py-3 font-bold text-sm text-gray-800 sticky left-0 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] min-w-[150px] z-0">${g.nama}</td>`; hl.forEach(d=>{ const j=sc.find(x=>x.hari===d); if(j)h+=`<td class="px-2 py-2 align-top border-l border-gray-100 bg-purple-50/30"><div class="bg-white border border-purple-200 rounded-lg p-2 relative group shadow-sm w-full h-full min-h-[60px] flex flex-col justify-center overflow-hidden"><div class="text-[10px] text-gray-700 text-center leading-relaxed font-medium">${j.jam}</div><div class="absolute inset-0 bg-black/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-[1px]"><button onclick="window.editJadwalGuru('${j.id}')" class="text-white bg-blue-500 hover:bg-blue-600 w-7 h-7 rounded-full shadow flex items-center justify-center transition-transform hover:scale-110"><i class="fa-solid fa-pen text-[10px]"></i></button><button onclick="window.hapusJadwalGuru('${j.id}')" class="text-white bg-red-500 hover:bg-red-600 w-7 h-7 rounded-full shadow flex items-center justify-center transition-transform hover:scale-110"><i class="fa-solid fa-trash text-[10px]"></i></button></div></div></td>`; else h+=`<td class="px-2 py-2 align-top border-l border-gray-100"><div onclick="window.bukaModalJadwal('${g.id}','${d}')" class="h-full min-h-[60px] border-2 border-dashed border-gray-200 rounded-lg flex items-center justify-center text-gray-300 hover:bg-purple-50 hover:border-purple-400 hover:text-purple-600 cursor-pointer transition-colors w-full group/add"><i class="fa-solid fa-plus text-lg group-hover/add:scale-110 transition-transform"></i></div></td>`; }); h+=`</tr>`; }); c.innerHTML=aj?h:`<tr><td colspan="8" class="text-center py-8 text-gray-500 font-medium">Belum ada jadwal mengajar terdaftar.</td></tr>`; };
         window.bukaModalJadwal = (id='', hari='', ed=false) => { if(!ed){window.resetFormJadwal();document.getElementById('form-jadwal-title').innerHTML='<i class="fa-solid fa-calendar-plus mr-2"></i>Form Tambah Jadwal';document.getElementById('btn-submit-jadwal').innerHTML='<i class="fa-solid fa-save"></i> Simpan Jadwal';} if(id)document.getElementById('jadwal-guru-id').value=id; if(hari)document.getElementById('jadwal-hari').value=hari; document.getElementById('modal-jadwal-guru').classList.replace('hidden','flex'); };
         window.tutupModalJadwal = () => document.getElementById('modal-jadwal-guru').classList.replace('flex','hidden');
-        window.resetFormJadwal = () => { document.getElementById('jadwal-mode').value='add'; document.getElementById('jadwal-id').value=''; document.getElementById('jadwal-guru-id').value=''; document.getElementById('jadwal-hari').value=''; ['jam1-mulai','jam1-selesai','mapel-1','jam2-mulai','jam2-selesai','mapel-2'].forEach(id=>document.getElementById('jadwal-'+id).value=''); };
-        window.editJadwalGuru = (id) => { const j=window.appState.jadwal_guru.find(x=>String(x.id)===String(id)); if(!j)return; document.getElementById('jadwal-mode').value='edit'; document.getElementById('jadwal-id').value=j.id; document.getElementById('jadwal-guru-id').value=j.id_guru; document.getElementById('jadwal-hari').value=j.hari; let j1m='',j1s='',j2m='',j2s='',m1p='',m2p=''; const m1=j.jam.match(/Jam 1:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/); if(m1){j1m=m1[1];j1s=m1[2];} const m2=j.jam.match(/Jam 2:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/); if(m2){j2m=m2[1];j2s=m2[2];} const mm1=j.jam.match(/Jam 1:.*?<b class="(?:mapel|kelas)-text.*?>(.*?)<\/b>/); if(mm1)m1p=mm1[1]; const mm2=j.jam.match(/Jam 2:.*?<b class="(?:mapel|kelas)-text.*?>(.*?)<\/b>/); if(mm2)m2p=mm2[1]; document.getElementById('jadwal-jam1-mulai').value=j1m; document.getElementById('jadwal-jam1-selesai').value=j1s; document.getElementById('jadwal-mapel-1').value=m1p; document.getElementById('jadwal-jam2-mulai').value=j2m; document.getElementById('jadwal-jam2-selesai').value=j2s; document.getElementById('jadwal-mapel-2').value=m2p; document.getElementById('form-jadwal-title').innerHTML='<i class="fa-solid fa-pen mr-2"></i>Edit Jadwal Mengajar'; document.getElementById('btn-submit-jadwal').innerHTML='<i class="fa-solid fa-check"></i> Perbarui Jadwal'; window.bukaModalJadwal(null,null,true); };
-        window.simpanJadwalGuru = (e) => { e.preventDefault(); const m=document.getElementById('jadwal-mode').value, id=document.getElementById('jadwal-id').value, ig=document.getElementById('jadwal-guru-id').value, h=document.getElementById('jadwal-hari').value, j1m=document.getElementById('jadwal-jam1-mulai').value, j1s=document.getElementById('jadwal-jam1-selesai').value, mp1=document.getElementById('jadwal-mapel-1').value.trim(), j2m=document.getElementById('jadwal-jam2-mulai').value, j2s=document.getElementById('jadwal-jam2-selesai').value, mp2=document.getElementById('jadwal-mapel-2').value.trim(); if(!ig||!h)return window.showAlert('Gagal','Pilih Guru dan Hari','error'); let ja=[]; if(j1m&&j1s){ let t=`Jam 1: ${j1m} - ${j1s}`; if(mp1)t+=`<br><b class="kelas-text text-purple-700">${mp1}</b>`; ja.push(t); } if(j2m&&j2s){ let t=`Jam 2: ${j2m} - ${j2s}`; if(mp2)t+=`<br><b class="kelas-text text-purple-700">${mp2}</b>`; ja.push(t); } const js=ja.length>0?ja.join('<hr class="my-1 border-gray-300">'):'Tidak diatur'; if(!window.appState.jadwal_guru)window.appState.jadwal_guru=[]; if(m==='add'){const ex=window.appState.jadwal_guru.find(j=>String(j.id_guru)===String(ig)&&j.hari===h);if(ex&&ig!=='SEMUA')return window.showAlert('Gagal',`Jadwal hari ${h} sudah ada.`,'error');} if(ig==='SEMUA'){if(m==='edit')return window.showAlert('Gagal','Hanya untuk Tambah.','error'); window.showConfirm("Jadwal Bersama",`Terapkan untuk SEMUA GURU hari ${h}?`,()=>{let c=0;window.appState.guru.forEach(g=>{const ex=window.appState.jadwal_guru.find(j=>String(j.id_guru)===String(g.id)&&j.hari===h);if(!ex)window.appState.jadwal_guru.push({id:Date.now()+c++,id_guru:parseInt(g.id),hari:h,jam:js});});window.saveState();window.renderJadwalGuru();window.renderJadwalKelas();window.tutupModalJadwal();window.showAlert('Berhasil','Jadwal rapat/bersama ditambahkan.','success');});return;} if(m==='add')window.appState.jadwal_guru.push({id:Date.now(),id_guru:parseInt(ig),hari:h,jam:js}); else{const i=window.appState.jadwal_guru.findIndex(x=>String(x.id)===String(id));if(i>-1)window.appState.jadwal_guru[i]={id:parseInt(id),id_guru:parseInt(ig),hari:h,jam:js};} window.saveState();window.renderJadwalGuru();window.renderJadwalKelas();window.tutupModalJadwal();window.showAlert('Berhasil','Jadwal tersimpan','success'); };
+        window.resetFormJadwal = () => { document.getElementById('jadwal-mode').value='add'; document.getElementById('jadwal-id').value=''; document.getElementById('jadwal-guru-id').value=''; document.getElementById('jadwal-hari').value=''; ['jam1-mulai','jam1-selesai','mapel-1','pelajaran-1','jam2-mulai','jam2-selesai','mapel-2','pelajaran-2'].forEach(id=>document.getElementById('jadwal-'+id).value=''); };
+        window.editJadwalGuru = (id) => { 
+            const j=window.appState.jadwal_guru.find(x=>String(x.id)===String(id)); if(!j)return; 
+            document.getElementById('jadwal-mode').value='edit'; document.getElementById('jadwal-id').value=j.id; document.getElementById('jadwal-guru-id').value=j.id_guru; document.getElementById('jadwal-hari').value=j.hari; 
+            
+            let j1m='',j1s='',j2m='',j2s='',m1p='',m2p='', pl1='', pl2=''; 
+            
+            const m1=j.jam.match(/Jam 1:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/); if(m1){j1m=m1[1];j1s=m1[2];} 
+            const m2=j.jam.match(/Jam 2:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/); if(m2){j2m=m2[1];j2s=m2[2];} 
+            
+            const mm1=j.jam.match(/Jam 1:.*?<b class="(?:mapel|kelas)-text.*?>(.*?)<\/b>/); if(mm1)m1p=mm1[1]; 
+            const mm2=j.jam.match(/Jam 2:.*?<b class="(?:mapel|kelas)-text.*?>(.*?)<\/b>/); if(mm2)m2p=mm2[1]; 
+
+            const mpl1=j.jam.match(/Jam 1:.*?<span class="pelajaran-text.*?>\((.*?)\)<\/span>/); if(mpl1) pl1=mpl1[1];
+            const mpl2=j.jam.match(/Jam 2:.*?<span class="pelajaran-text.*?>\((.*?)\)<\/span>/); if(mpl2) pl2=mpl2[1];
+            
+            document.getElementById('jadwal-jam1-mulai').value=j1m; document.getElementById('jadwal-jam1-selesai').value=j1s; document.getElementById('jadwal-mapel-1').value=m1p; document.getElementById('jadwal-pelajaran-1').value=pl1;
+            document.getElementById('jadwal-jam2-mulai').value=j2m; document.getElementById('jadwal-jam2-selesai').value=j2s; document.getElementById('jadwal-mapel-2').value=m2p; document.getElementById('jadwal-pelajaran-2').value=pl2;
+            
+            document.getElementById('form-jadwal-title').innerHTML='<i class="fa-solid fa-pen mr-2"></i>Edit Jadwal Mengajar'; document.getElementById('btn-submit-jadwal').innerHTML='<i class="fa-solid fa-check"></i> Perbarui Jadwal'; window.bukaModalJadwal(null,null,true); 
+        };
+        window.simpanJadwalGuru = (e) => { 
+            e.preventDefault(); 
+            const m=document.getElementById('jadwal-mode').value, id=document.getElementById('jadwal-id').value, ig=document.getElementById('jadwal-guru-id').value, h=document.getElementById('jadwal-hari').value;
+            const j1m=document.getElementById('jadwal-jam1-mulai').value, j1s=document.getElementById('jadwal-jam1-selesai').value, mp1=document.getElementById('jadwal-mapel-1').value.trim(), pl1=document.getElementById('jadwal-pelajaran-1').value.trim();
+            const j2m=document.getElementById('jadwal-jam2-mulai').value, j2s=document.getElementById('jadwal-jam2-selesai').value, mp2=document.getElementById('jadwal-mapel-2').value.trim(), pl2=document.getElementById('jadwal-pelajaran-2').value.trim();
+            
+            if(!ig||!h)return window.showAlert('Gagal','Pilih Guru dan Hari','error'); 
+            
+            let ja=[]; 
+            if(j1m&&j1s){ 
+                let t=`Jam 1: ${j1m} - ${j1s}`; 
+                if(mp1) t+=`<br><b class="kelas-text text-purple-700">${mp1}</b>`; 
+                if(pl1) t+=` <span class="pelajaran-text text-gray-500 text-[10px] block leading-none">(${pl1})</span>`;
+                ja.push(t); 
+            } 
+            if(j2m&&j2s){ 
+                let t=`Jam 2: ${j2m} - ${j2s}`; 
+                if(mp2) t+=`<br><b class="kelas-text text-purple-700">${mp2}</b>`; 
+                if(pl2) t+=` <span class="pelajaran-text text-gray-500 text-[10px] block leading-none">(${pl2})</span>`;
+                ja.push(t); 
+            } 
+            
+            const js=ja.length>0?ja.join('<hr class="my-1.5 border-purple-200 border-dashed">'):'Tidak diatur'; 
+            
+            if(!window.appState.jadwal_guru)window.appState.jadwal_guru=[]; 
+            if(m==='add'){const ex=window.appState.jadwal_guru.find(j=>String(j.id_guru)===String(ig)&&j.hari===h);if(ex&&ig!=='SEMUA')return window.showAlert('Gagal',`Jadwal hari ${h} sudah ada.`,'error');} 
+            
+            if(ig==='SEMUA'){
+                if(m==='edit')return window.showAlert('Gagal','Hanya untuk Tambah.','error'); 
+                window.showConfirm("Jadwal Bersama",`Terapkan untuk SEMUA GURU hari ${h}?`,()=>{let c=0;window.appState.guru.forEach(g=>{const ex=window.appState.jadwal_guru.find(j=>String(j.id_guru)===String(g.id)&&j.hari===h);if(!ex)window.appState.jadwal_guru.push({id:Date.now()+c++,id_guru:parseInt(g.id),hari:h,jam:js});});window.saveState();window.renderJadwalGuru();window.renderJadwalKelas();window.tutupModalJadwal();window.showAlert('Berhasil','Jadwal rapat/bersama ditambahkan.','success');});
+                return;
+            } 
+            
+            if(m==='add')window.appState.jadwal_guru.push({id:Date.now(),id_guru:parseInt(ig),hari:h,jam:js}); 
+            else{const i=window.appState.jadwal_guru.findIndex(x=>String(x.id)===String(id));if(i>-1)window.appState.jadwal_guru[i]={id:parseInt(id),id_guru:parseInt(ig),hari:h,jam:js};} 
+            
+            window.saveState();window.renderJadwalGuru();window.renderJadwalKelas();window.tutupModalJadwal();window.showAlert('Berhasil','Jadwal tersimpan','success'); 
+        };
         window.hapusJadwalGuru = (id) => window.showConfirm("Hapus", "Yakin hapus jadwal ini?", ()=>{window.appState.jadwal_guru=window.appState.jadwal_guru.filter(j=>String(j.id)!==String(id));window.saveState();window.renderJadwalGuru();window.renderJadwalKelas();});
 
         window.renderJadwalKelas = () => {
@@ -1066,22 +1133,33 @@
                         const t = document.createElement('div');
                         t.innerHTML = m[0];
                         const b = t.querySelector('b.kelas-text, b.mapel-text');
-                        return b ? b.textContent.trim() : null;
+                        const p = t.querySelector('span.pelajaran-text');
+                        return {
+                            kelas: b ? b.textContent.trim() : null,
+                            pelajaran: p ? p.textContent.trim().replace(/^\(|\)$/g, '') : null
+                        };
                     }
-                    return null;
+                    return { kelas: null, pelajaran: null };
                 };
 
-                const k1 = extractByJam(j.jam || '', 'Jam 1');
-                const k2 = extractByJam(j.jam || '', 'Jam 2');
+                const ext1 = extractByJam(j.jam || '', 'Jam 1');
+                const ext2 = extractByJam(j.jam || '', 'Jam 2');
                 
-                const pk = (kelas, jamStr) => {
-                    uniqueClasses.add(kelas);
-                    if (!classData[kelas]) classData[kelas] = {};
-                    if (!classData[kelas][j.hari]) classData[kelas][j.hari] = {};
-                    if (!classData[kelas][j.hari][jamStr]) classData[kelas][j.hari][jamStr] = [];
-                    classData[kelas][j.hari][jamStr].push(namaGuru);
+                const pk = (ext, jamStr) => {
+                    if (!ext.kelas) return;
+                    uniqueClasses.add(ext.kelas);
+                    if (!classData[ext.kelas]) classData[ext.kelas] = {};
+                    if (!classData[ext.kelas][j.hari]) classData[ext.kelas][j.hari] = {};
+                    if (!classData[ext.kelas][j.hari][jamStr]) classData[ext.kelas][j.hari][jamStr] = [];
+                    
+                    let entryText = namaGuru;
+                    if (ext.pelajaran) {
+                        entryText += `<br><span class="text-[9px] text-gray-500 font-normal border border-gray-200 rounded px-1 mt-0.5 inline-block bg-gray-50 max-w-full truncate">${ext.pelajaran}</span>`;
+                    }
+                    
+                    classData[ext.kelas][j.hari][jamStr].push(entryText);
                 };
-                if (k1) pk(k1, 'Jam 1'); if (k2) pk(k2, 'Jam 2');
+                pk(ext1, 'Jam 1'); pk(ext2, 'Jam 2');
             });
 
             const days = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Sabtu'];
@@ -1094,13 +1172,79 @@
                     const dd = classData[cls]?.[d];
                     if (dd) {
                         h += `<td class="px-2 py-2 align-top border-l border-gray-100"><div class="flex flex-col gap-1.5 w-full h-full justify-center">`;
-                        if (dd['Jam 1']) h += `<div class="bg-white border border-emerald-200 rounded p-1.5 shadow-sm text-center"><span class="text-[10px] text-gray-500 block leading-none mb-1">Jam 1</span><span class="text-xs font-bold text-emerald-700 leading-tight">${dd['Jam 1'].join(', ')}</span></div>`;
-                        if (dd['Jam 2']) h += `<div class="bg-white border border-emerald-200 rounded p-1.5 shadow-sm text-center"><span class="text-[10px] text-gray-500 block leading-none mb-1">Jam 2</span><span class="text-xs font-bold text-emerald-700 leading-tight">${dd['Jam 2'].join(', ')}</span></div>`;
+                        if (dd['Jam 1']) h += `<div class="bg-white border border-emerald-200 rounded p-1.5 shadow-sm text-center"><span class="text-[10px] text-gray-500 block leading-none mb-1">Jam 1</span><span class="text-xs font-bold text-emerald-700 leading-tight">${dd['Jam 1'].join('<br>')}</span></div>`;
+                        if (dd['Jam 2']) h += `<div class="bg-white border border-emerald-200 rounded p-1.5 shadow-sm text-center"><span class="text-[10px] text-gray-500 block leading-none mb-1">Jam 2</span><span class="text-xs font-bold text-emerald-700 leading-tight">${dd['Jam 2'].join('<br>')}</span></div>`;
                         h += `</div></td>`;
                     } else { h += `<td class="px-2 py-2 align-top border-l border-gray-100 bg-gray-50/30"></td>`; }
                 });
                 return h + `</tr>`;
             }).join('');
+        };
+
+        // CETAK JADWAL KELAS PDF A4 (POTRET)
+        window.cetakJadwalKelasPDF = () => {
+            const targetContainer = document.getElementById('cetak-area-jadwal-kelas');
+            if (!targetContainer) return;
+
+            window.showAlert('Memproses', 'Menyiapkan dokumen PDF Jadwal Kelas...', 'info');
+            
+            // Simpan status gaya css asli
+            const scrollContainer = targetContainer.querySelector('.overflow-x-auto');
+            const originalOverflow = scrollContainer ? scrollContainer.style.overflowX : '';
+            const originalMinWidth = targetContainer.style.minWidth;
+            
+            // Atur gaya agar html2canvas merender secara utuh (tidak terpotong scroll)
+            if (scrollContainer) scrollContainer.style.overflowX = 'visible';
+            targetContainer.style.minWidth = '1000px'; 
+            
+            // Tambahkan judul sementara pada HTML untuk ditangkap html2canvas
+            const titleDiv = document.createElement('div');
+            titleDiv.innerHTML = '<h2 style="text-align: center; margin: 20px 0; font-size: 24px; font-weight: bold; color: #1f2937;">JADWAL KELAS MADRASAH</h2>';
+            targetContainer.insertBefore(titleDiv, targetContainer.firstChild);
+
+            html2canvas(targetContainer, { scale: 2, backgroundColor: '#ffffff', useCORS: true }).then(canvas => {
+                // Kembalikan gaya css asli setelah selesai dirender
+                if (scrollContainer) scrollContainer.style.overflowX = originalOverflow;
+                targetContainer.style.minWidth = originalMinWidth;
+                targetContainer.removeChild(titleDiv); // Hapus judul sementara
+
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                // Buat PDF A4 Posisi Tegak (Portrait)
+                const pdf = new jsPDF('p', 'mm', 'a4'); 
+                
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                
+                const imgProps = pdf.getImageProperties(imgData);
+                const marginX = 10; // Margin Kiri & Kanan (mm)
+                const marginY = 15; // Margin Atas & Bawah (mm)
+                
+                const maxW = pdfWidth - (marginX * 2);
+                const maxH = pdfHeight - (marginY * 2);
+                
+                let imgW = maxW;
+                let imgH = (imgProps.height * imgW) / imgProps.width;
+                
+                // Jika tinggi gambar melebih tinggi kertas, sesuaikan skalanya berdasarkan tinggi
+                if (imgH > maxH) {
+                    imgH = maxH;
+                    imgW = (imgProps.width * imgH) / imgProps.height;
+                }
+                
+                // Posisikan gambar di tengah (secara horizontal)
+                const posX = marginX + (maxW - imgW) / 2;
+                
+                pdf.addImage(imgData, 'PNG', posX, marginY, imgW, imgH);
+                pdf.save('Jadwal_Kelas_Madrasah.pdf');
+                
+                window.showAlert('Selesai', 'Jadwal Kelas berhasil diunduh sebagai PDF.', 'success');
+            }).catch(err => {
+                if (scrollContainer) scrollContainer.style.overflowX = originalOverflow;
+                targetContainer.style.minWidth = originalMinWidth;
+                if(titleDiv.parentNode) targetContainer.removeChild(titleDiv);
+                window.showAlert('Gagal', 'Terjadi kesalahan saat mencetak PDF.', 'error');
+            });
         };
 
         // ABSEN GURU & REKAP
