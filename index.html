@@ -12,6 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -624,7 +625,10 @@
                 <div id="tab-rekap-absen-guru" class="tab-content max-w-6xl mx-auto scroll-mt-6">
                     <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                         <div><h2 class="text-2xl font-bold text-gray-800">Rekap Absensi Guru</h2><p class="text-gray-500 text-sm">Laporan bulanan akumulasi kehadiran guru (Bulan Hijriyah).</p></div>
-                        <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm"><label class="text-sm font-bold text-gray-700 whitespace-nowrap"><i class="fa-solid fa-calendar-days mr-1 text-purple-600"></i> Bulan Hijriyah:</label><select id="filter-bulan-hijri" class="outline-none text-sm font-medium bg-transparent cursor-pointer text-gray-700 w-full" onchange="window.renderRekapAbsenGuru()"><option value="1">Muharram</option><option value="2">Safar</option><option value="3">Rabi'ul Awal</option><option value="4">Rabi'ul Akhir</option><option value="5">Jumadil Awal</option><option value="6">Jumadil Akhir</option><option value="7">Rajab</option><option value="8">Sya'ban</option><option value="9">Ramadhan</option><option value="10">Syawal</option><option value="11">Dzulqa'dah</option><option value="12">Dzulhijjah</option></select><select id="filter-tahun-hijri" class="outline-none text-sm font-medium bg-transparent cursor-pointer text-gray-700 w-full" onchange="window.renderRekapAbsenGuru()"><option value="1445">1445 H</option><option value="1446">1446 H</option><option value="1447">1447 H</option><option value="1448">1448 H</option><option value="1449">1449 H</option><option value="1450">1450 H</option></select></div>
+                        <div class="flex flex-col sm:flex-row items-center gap-3">
+                            <button onclick="window.cetakRekapExcel()" class="w-full sm:w-auto bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold shadow-sm hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2"><i class="fa-solid fa-file-excel"></i> Cetak Excel</button>
+                            <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm w-full sm:w-auto"><label class="text-sm font-bold text-gray-700 whitespace-nowrap"><i class="fa-solid fa-calendar-days mr-1 text-purple-600"></i> Bulan Hijriyah:</label><select id="filter-bulan-hijri" class="outline-none text-sm font-medium bg-transparent cursor-pointer text-gray-700 w-full" onchange="window.renderRekapAbsenGuru()"><option value="1">Muharram</option><option value="2">Safar</option><option value="3">Rabi'ul Awal</option><option value="4">Rabi'ul Akhir</option><option value="5">Jumadil Awal</option><option value="6">Jumadil Akhir</option><option value="7">Rajab</option><option value="8">Sya'ban</option><option value="9">Ramadhan</option><option value="10">Syawal</option><option value="11">Dzulqa'dah</option><option value="12">Dzulhijjah</option></select><select id="filter-tahun-hijri" class="outline-none text-sm font-medium bg-transparent cursor-pointer text-gray-700 w-full" onchange="window.renderRekapAbsenGuru()"><option value="1445">1445 H</option><option value="1446">1446 H</option><option value="1447">1447 H</option><option value="1448">1448 H</option><option value="1449">1449 H</option><option value="1450">1450 H</option></select></div>
+                        </div>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                         <div class="overflow-x-auto pb-4"><table class="w-full text-sm text-left"><thead class="bg-purple-50 text-xs text-purple-900 font-bold uppercase border-b border-purple-100"><tr><th class="px-4 py-3.5 w-16 text-center">No</th><th class="px-4 py-3.5">Nama Guru</th><th class="px-4 py-3.5 text-center">Target</th><th class="px-4 py-3.5 text-center">Izin</th><th class="px-4 py-3.5 text-center">Sakit</th><th class="px-4 py-3.5 text-center">Cuti</th><th class="px-4 py-3.5 text-center">Alpa</th><th class="px-4 py-3.5 text-center">Hadir</th></tr></thead><tbody id="table-rekap-absen-guru" class="divide-y divide-gray-100 bg-white"></tbody></table></div>
@@ -968,24 +972,43 @@
         window.checkWaktuAbsenGuru = (guru, tgl, statusScan) => {
             const p=tgl.split('-'), d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2])), nh=['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][d.getDay()];
             const ah=(window.appState.agenda||[]).filter(a=>a.tgl===tgl), ar=ah.find(a=>a.tipe==='Rapat'||a.ket.toLowerCase().includes('rapat'));
-            if(ar) return {allowed:true,infoWaktu:`Hadir (${ar.ket})`,jamKe:1,hasJam2:false,hasJam3:false};
+            if(ar) return {allowed:true,infoWaktu:`Hadir (${ar.ket})`,targetJam:1,hasJam2:false,hasJam3:false};
             const jh=(window.appState.jadwal_guru||[]).filter(j=>j.hari===nh&&String(j.id_guru)===String(guru.id));
             if(jh.length===0) return {allowed:false,errorMsg:`Guru: ${guru.nama}\nTidak ada jadwal mengajar pada hari ini.`};
             let iw='Tepat Waktu', hj2=false, hj3=false, ts=window.getTodayInputFormat();
-            if(tgl===ts) {
-                const ct=new Date(); let fs=null,le=null,fss='',les='';
-                jh.forEach(j=>{
-                    const m1=j.jam.match(/Jam 1:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/); if(m1){const[h,m]=m1[1].split(':').map(Number),st=new Date();st.setHours(h,m,0,0);if(!fs||st<fs){fs=st;fss=m1[1];}const[eh,em]=m1[2].split(':').map(Number),et=new Date();et.setHours(eh,em,0,0);if(!le||et>le){le=et;les=m1[2];}}
-                    const m2=j.jam.match(/Jam 2:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/); if(m2){hj2=true;const[h,m]=m2[1].split(':').map(Number),st=new Date();st.setHours(h,m,0,0);if(!fs||st<fs){fs=st;fss=m2[1];}const[eh,em]=m2[2].split(':').map(Number),et=new Date();et.setHours(eh,em,0,0);if(!le||et>le){le=et;les=m2[2];}}
-                    const m3=j.jam.match(/Jam 3:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/); if(m3){hj3=true;const[h,m]=m3[1].split(':').map(Number),st=new Date();st.setHours(h,m,0,0);if(!fs||st<fs){fs=st;fss=m3[1];}const[eh,em]=m3[2].split(':').map(Number),et=new Date();et.setHours(eh,em,0,0);if(!le||et>le){le=et;les=m3[2];}}
-                });
-                if(fs&&le&&statusScan==='Hadir') {
-                    const ws=new Date(fs.getTime()-30*60000);
-                    if(ct<ws) return {allowed:false,outOfBounds:true,jamKe:1,errorMsg:`Jadwal dimulai pukul ${fss}.\nBaru boleh absen Hadir 30 menit sebelumnya.`};
-                    if(ct>le) return {allowed:false,outOfBounds:false,errorMsg:`Batas waktu absen HADIR habis.\nJadwal Anda telah berakhir pada pukul ${les}.`};
+            let activeJam = null;
+            let scheduleList = [];
+            jh.forEach(j=>{
+                const m1=j.jam.match(/Jam 1:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/); if(m1){scheduleList.push({jamKe: 1, start: m1[1], end: m1[2]});}
+                const m2=j.jam.match(/Jam 2:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/); if(m2){hj2=true; scheduleList.push({jamKe: 2, start: m2[1], end: m2[2]});}
+                const m3=j.jam.match(/Jam 3:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/); if(m3){hj3=true; scheduleList.push({jamKe: 3, start: m3[1], end: m3[2]});}
+            });
+            if(tgl===ts && statusScan==='Hadir') {
+                const ct=new Date();
+                for(let i=0; i<scheduleList.length; i++) {
+                    const s = scheduleList[i];
+                    const [sh,sm] = s.start.split(':').map(Number);
+                    const st = new Date(); st.setHours(sh,sm,0,0);
+                    const ws = new Date(st.getTime() - 30*60000);
+                    const [eh,em] = s.end.split(':').map(Number);
+                    const et = new Date(); et.setHours(eh,em,0,0);
+                    if(ct >= ws && ct <= et) {
+                        activeJam = s.jamKe;
+                        if (ct > st) {
+                            const diffMins = Math.floor((ct - st) / 60000);
+                            iw = `Terlambat ${diffMins} mnt`;
+                        } else {
+                            iw = `Tepat Waktu`;
+                        }
+                        break;
+                    }
                 }
+                if (!activeJam) {
+                    return {allowed:false, errorMsg:`Bukan waktu absen untuk Anda.\nSilakan absen pada 30 menit sebelum hingga akhir SETIAP sesi/jam masuk Anda.`};
+                }
+                return {allowed:true, infoWaktu:iw, targetJam:activeJam, hasJam2:hj2, hasJam3:hj3};
             }
-            return {allowed:true,infoWaktu:iw,jamKe:1,hasJam2:hj2,hasJam3:hj3};
+            return {allowed:true, infoWaktu:iw, targetJam:null, hasJam2:hj2, hasJam3:hj3};
         };
 
         window.renderAbsenGuru = () => {
@@ -1125,10 +1148,13 @@
                     if (!cw.allowed) { if(!silent)return window.showAlert('Ditolak', cw.errorMsg, 'error'); return; }
                     if(!window.appState.absensi_guru)window.appState.absensi_guru=[]; let r=window.appState.absensi_guru.find(a=>a.tanggal===t); if(!r){r={tanggal:t,data:[]};window.appState.absensi_guru.push(r);}
                     const i=r.data.findIndex(d=>String(d.id_guru)===String(g.id)); let td=i>-1?r.data[i]:{id_guru:parseInt(g.id)}; if(i===-1)r.data.push(td);
+                    
                     if (window.tempSuratSesi === '1' || window.tempSuratSesi === '2' || window.tempSuratSesi === '3') { td[`status_${window.tempSuratSesi}`]=fs; td[`info_${window.tempSuratSesi}`]=cw.infoWaktu; } 
+                    else if (cw.targetJam) { td[`status_${cw.targetJam}`]=fs; td[`info_${cw.targetJam}`]=cw.infoWaktu; }
                     else { td['status_1']=fs; td['info_1']=cw.infoWaktu; if(cw.hasJam2){td['status_2']=fs;td['info_2']=cw.infoWaktu;} if(cw.hasJam3){td['status_3']=fs;td['info_3']=cw.infoWaktu;} }
+                    
                     window.saveState(); window.renderAbsenGuru(); window.updateDashboardStats(); if(fs==='Hadir')window.playHadirSound(); else window.playBeep();
-                    if(!silent)return window.showAlert('Absen Berhasil', `Guru: ${g.nama}\nTercatat ${fs.toUpperCase()}.${cw.infoWaktu&&cw.infoWaktu.includes('Terlambat')?'\nCatatan: '+cw.infoWaktu:''}${infoJarak}`, 'success'); return cw;
+                    if(!silent)return window.showAlert('Absen Berhasil', `Guru: ${g.nama}\nTercatat ${fs.toUpperCase()}${cw.targetJam ? ' (Sesi Ke-' + cw.targetJam + ')' : ''}.${cw.infoWaktu&&cw.infoWaktu.includes('Terlambat')?'\nCatatan: '+cw.infoWaktu:''}${infoJarak}`, 'success'); return cw;
                 }
                 if(!silent)return window.showAlert('Gagal', `Barcode tidak terdaftar.`, 'error');
             }
@@ -1277,6 +1303,35 @@
             if(!window.appState.pengaturan) window.appState.pengaturan = {};
             window.appState.pengaturan.kalender_mode = 'manual';
             window.saveState(); window.showAlert('Berhasil', 'Mode Kalender Manual aktif.', 'success'); window.initKalenderState();
+        };
+
+        window.cetakRekapExcel = () => {
+            try {
+                const sm = document.getElementById('filter-bulan-hijri');
+                const sy = document.getElementById('filter-tahun-hijri');
+                if(!sm || !sy) return;
+                
+                const bulan = sm.options[sm.selectedIndex].text;
+                const tahun = sy.options[sy.selectedIndex].text;
+                
+                const table = document.querySelector('#tab-rekap-absen-guru table');
+                if(!table || table.rows.length <= 1) return window.showAlert('Gagal', 'Tidak ada data untuk dicetak.', 'error');
+                
+                window.showAlert('Memproses', 'Menyiapkan file Excel...', 'info');
+                
+                // Clone tabel sementara untuk membuang tombol ikon di dalam sel
+                const tempTable = table.cloneNode(true);
+                const buttons = tempTable.querySelectorAll('button');
+                buttons.forEach(btn => btn.remove());
+                
+                const wb = XLSX.utils.table_to_book(tempTable, {sheet: "Rekap Absen"});
+                XLSX.writeFile(wb, `Rekap_Absensi_${bulan}_${tahun}.xlsx`);
+                
+                setTimeout(() => window.showAlert('Selesai', 'File Excel berhasil diunduh.', 'success'), 500);
+            } catch (error) {
+                window.showAlert('Gagal', 'Terjadi kesalahan saat membuat Excel.', 'error');
+                console.error(error);
+            }
         };
     </script>
 </body>
