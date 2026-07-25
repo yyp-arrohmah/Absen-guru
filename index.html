@@ -631,7 +631,24 @@
                         </div>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div class="overflow-x-auto pb-4"><table class="w-full text-sm text-left"><thead class="bg-purple-50 text-xs text-purple-900 font-bold uppercase border-b border-purple-100"><tr><th class="px-4 py-3.5 w-16 text-center">No</th><th class="px-4 py-3.5">Nama Guru</th><th class="px-4 py-3.5 text-center">Target</th><th class="px-4 py-3.5 text-center">Izin</th><th class="px-4 py-3.5 text-center">Sakit</th><th class="px-4 py-3.5 text-center">Cuti</th><th class="px-4 py-3.5 text-center">Alpa</th><th class="px-4 py-3.5 text-center">Hadir</th></tr></thead><tbody id="table-rekap-absen-guru" class="divide-y divide-gray-100 bg-white"></tbody></table></div>
+                        <div class="overflow-x-auto pb-4">
+                            <table class="w-full text-sm text-left">
+                                <thead class="bg-purple-50 text-xs text-purple-900 font-bold uppercase border-b border-purple-100">
+                                    <tr>
+                                        <th class="px-4 py-3.5 w-16 text-center">No</th>
+                                        <th class="px-4 py-3.5">Nama Guru</th>
+                                        <th class="px-4 py-3.5 text-center">Target</th>
+                                        <th class="px-4 py-3.5 text-center">Izin</th>
+                                        <th class="px-4 py-3.5 text-center">Sakit</th>
+                                        <th class="px-4 py-3.5 text-center">Cuti</th>
+                                        <th class="px-4 py-3.5 text-center">Alpa</th>
+                                        <th class="px-4 py-3.5 text-center text-yellow-700">Telat</th>
+                                        <th class="px-4 py-3.5 text-center">Hadir</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-rekap-absen-guru" class="divide-y divide-gray-100 bg-white"></tbody>
+                            </table>
+                        </div>
                         <div class="p-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-2"><button onclick="window.hapusRekapAbsenGuruBulanIni()" class="w-full sm:w-auto bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-4 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 shadow-sm transition-colors"><i class="fa-solid fa-trash-can"></i> Hapus Data Bulan Ini</button></div>
                     </div>
                 </div>
@@ -1042,7 +1059,8 @@
         
         window.renderRekapAbsenGuru = () => {
             const c=document.getElementById('table-rekap-absen-guru'), sm=document.getElementById('filter-bulan-hijri'), sy=document.getElementById('filter-tahun-hijri'); if(!c||!sm||!sy)return;
-            const rd=window.appState.guru.map(g=>({id:g.id,nama:g.nama,target:0,hadir:0,izin:0,sakit:0,cuti:0,alpa:0})), dt=window.getDatesInHijriMonth(parseInt(sy.value),parseInt(sm.value)), t=new Date(); t.setHours(0,0,0,0);
+            // Tambahkan inisialisasi telat = 0
+            const rd=window.appState.guru.map(g=>({id:g.id,nama:g.nama,target:0,hadir:0,izin:0,sakit:0,cuti:0,alpa:0,telat:0})), dt=window.getDatesInHijriMonth(parseInt(sy.value),parseInt(sm.value)), t=new Date(); t.setHours(0,0,0,0);
             dt.forEach(d=>{
                 const nh=['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][d.getDay()], ds=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`, da=((window.appState.absensi_guru||[]).find(a=>a.tanggal===ds)||{data:[]}).data, ip=d<=t;
                 rd.forEach(gr=>{
@@ -1053,9 +1071,27 @@
                         if(ip){
                             const ex=da.find(x=>String(x.id_guru)===String(gr.id));
                             if(ex){
-                                if(h1){const s1=ex.status_1; if(s1==='Hadir')gr.hadir++; else if(s1==='Izin')gr.izin++; else if(s1==='Sakit')gr.sakit++; else if(s1==='Cuti')gr.cuti++; else gr.alpa++;}
-                                if(h2){const s2=ex.status_2; if(s2==='Hadir')gr.hadir++; else if(s2==='Izin')gr.izin++; else if(s2==='Sakit')gr.sakit++; else if(s2==='Cuti')gr.cuti++; else gr.alpa++;}
-                                if(h3){const s3=ex.status_3; if(s3==='Hadir')gr.hadir++; else if(s3==='Izin')gr.izin++; else if(s3==='Sakit')gr.sakit++; else if(s3==='Cuti')gr.cuti++; else gr.alpa++;}
+                                if(h1){
+                                    const s1=ex.status_1; 
+                                    if(s1==='Hadir') {
+                                        gr.hadir++;
+                                        if(ex.info_1 && ex.info_1.includes('Terlambat')) gr.telat++;
+                                    } else if(s1==='Izin') gr.izin++; else if(s1==='Sakit') gr.sakit++; else if(s1==='Cuti') gr.cuti++; else gr.alpa++;
+                                }
+                                if(h2){
+                                    const s2=ex.status_2; 
+                                    if(s2==='Hadir') {
+                                        gr.hadir++;
+                                        if(ex.info_2 && ex.info_2.includes('Terlambat')) gr.telat++;
+                                    } else if(s2==='Izin') gr.izin++; else if(s2==='Sakit') gr.sakit++; else if(s2==='Cuti') gr.cuti++; else gr.alpa++;
+                                }
+                                if(h3){
+                                    const s3=ex.status_3; 
+                                    if(s3==='Hadir') {
+                                        gr.hadir++;
+                                        if(ex.info_3 && ex.info_3.includes('Terlambat')) gr.telat++;
+                                    } else if(s3==='Izin') gr.izin++; else if(s3==='Sakit') gr.sakit++; else if(s3==='Cuti') gr.cuti++; else gr.alpa++;
+                                }
                             }else{
                                 if(h1)gr.alpa++; if(h2)gr.alpa++; if(h3)gr.alpa++;
                             }
@@ -1063,7 +1099,8 @@
                     }
                 });
             });
-            c.innerHTML=rd.length===0?'<tr><td colspan="8" class="text-center py-8">Belum ada data guru.</td></tr>':rd.map((g,i)=>`<tr class="border-b border-gray-100 hover:bg-purple-50/30"><td class="px-4 py-3 text-center">${i+1}</td><td class="px-4 py-3"><div class="flex justify-between items-center"><span class="font-bold">${g.nama}</span><button onclick="window.bukaModalRiwayat('${g.id}')" class="text-[10px] bg-purple-100 text-purple-700 px-2 py-1 rounded hover:bg-purple-200 transition-colors shadow-sm" title="Lihat Riwayat"><i class="fa-solid fa-clock-rotate-left"></i></button></div></td><td class="px-4 py-3 text-center text-purple-700 font-bold bg-purple-50/30">${g.target}</td><td class="px-4 py-3 text-center text-blue-700 font-bold">${g.izin}</td><td class="px-4 py-3 text-center text-orange-700 font-bold">${g.sakit}</td><td class="px-4 py-3 text-center text-indigo-700 font-bold">${g.cuti}</td><td class="px-4 py-3 text-center text-red-700 font-bold">${g.alpa}</td><td class="px-4 py-3 text-center text-green-700 font-bold">${g.hadir}</td></tr>`).join('');
+            // Update struktur tabel HTML untuk memasukkan kolom telat
+            c.innerHTML=rd.length===0?'<tr><td colspan="9" class="text-center py-8">Belum ada data guru.</td></tr>':rd.map((g,i)=>`<tr class="border-b border-gray-100 hover:bg-purple-50/30"><td class="px-4 py-3 text-center">${i+1}</td><td class="px-4 py-3"><div class="flex justify-between items-center"><span class="font-bold">${g.nama}</span><button onclick="window.bukaModalRiwayat('${g.id}')" class="text-[10px] bg-purple-100 text-purple-700 px-2 py-1 rounded hover:bg-purple-200 transition-colors shadow-sm" title="Lihat Riwayat"><i class="fa-solid fa-clock-rotate-left"></i></button></div></td><td class="px-4 py-3 text-center text-purple-700 font-bold bg-purple-50/30">${g.target}</td><td class="px-4 py-3 text-center text-blue-700 font-bold">${g.izin}</td><td class="px-4 py-3 text-center text-orange-700 font-bold">${g.sakit}</td><td class="px-4 py-3 text-center text-indigo-700 font-bold">${g.cuti}</td><td class="px-4 py-3 text-center text-red-700 font-bold">${g.alpa}</td><td class="px-4 py-3 text-center text-yellow-700 font-bold">${g.telat}</td><td class="px-4 py-3 text-center text-green-700 font-bold">${g.hadir}</td></tr>`).join('');
         };
         window.hapusRekapAbsenGuruBulanIni = () => { const sm=document.getElementById('filter-bulan-hijri'), sy=document.getElementById('filter-tahun-hijri'); if(!sm||!sy)return; window.showConfirm('Hapus Rekap',`Reset absen bulan terpilih?`,()=>{ const dt=window.getDatesInHijriMonth(parseInt(sy.value),parseInt(sm.value)).map(d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`); window.appState.absensi_guru=window.appState.absensi_guru.filter(a=>!dt.includes(a.tanggal)); window.saveState(); window.renderRekapAbsenGuru(); }); };
 
