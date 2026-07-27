@@ -773,19 +773,82 @@
         window.toggleSubmenu = (sId, iId) => { const s=document.getElementById(sId),i=document.getElementById(iId); if(s.classList.contains('hidden')){s.classList.replace('hidden','flex');i.classList.add('rotate-180');}else{s.classList.replace('flex','hidden');i.classList.remove('rotate-180');} };
         window.bukaModalPengaturan = (tab) => { window.switchSettingTab(tab||'lokasi'); document.getElementById('modal-pengaturan').classList.replace('hidden','flex'); };
 
-         const initCloudDatabase = async () => {
-            const ldr = document.getElementById('startup-loader'); const loc = localStorage.getItem('CloudMadrasahData');
-            if(loc) { try { const p=JSON.parse(loc); window.appState={...window.appState,...p}; if(p.pengaturan)window.appState.pengaturan={...window.appState.pengaturan,...p.pengaturan}; } catch(e){} }
-            if (SCRIPT_URL && SCRIPT_URL.includes('script.google.com')) {
-                try { const r = await fetch(SCRIPT_URL, {method:'POST',body:JSON.stringify({action:'GET_ALL'})}); const res=await r.json(); if(res.success&&res.data) {window.appState={...window.appState,...res.data}; if(res.data.pengaturan)window.appState.pengaturan={...window.appState.pengaturan,...res.data.pengaturan}; try { localStorage.setItem('CloudMadrasahData',JSON.stringify(window.appState)); } catch(err){} } } catch(e){}
+        const initCloudDatabase = async () => {
+            const ldr = document.getElementById('startup-loader'); 
+            const loc = localStorage.getItem('CloudMadrasahData');
+            
+            // 1. Muat data lokal secara instan agar UI langsung responsif tanpa menunggu jaringan
+            if(loc) { 
+                try { 
+                    const p = JSON.parse(loc); 
+                    window.appState = {...window.appState, ...p}; 
+                    if(p.pengaturan) window.appState.pengaturan = {...window.appState.pengaturan, ...p.pengaturan}; 
+                } catch(e){} 
             }
+            
+            // 2. Ambil sync terbaru dari Cloud di latar belakang secara asinkron
+            if (SCRIPT_URL && SCRIPT_URL.includes('script.google.com')) {
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'GET_ALL' })
+                })
+                .then(r => r.json())
+                .then(res => { 
+                    if(res.success && res.data) {
+                        window.appState = {...window.appState, ...res.data}; 
+                        if(res.data.pengaturan) window.appState.pengaturan = {...window.appState.pengaturan, ...res.data.pengaturan}; 
+                        try { localStorage.setItem('CloudMadrasahData', JSON.stringify(window.appState)); } catch(err){} 
+                        window.updateAllViews();
+                    } 
+                })
+                .catch(e => console.warn("Sync cloud latar belakang gagal/lambat, menggunakan data lokal."));
+            }
+            
+            // 3. Fungsi simpan yang dipercepat
             window.saveState = async () => {
-                try { localStorage.setItem('CloudMadrasahData', JSON.stringify(window.appState)); } catch(e) { if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') { setTimeout(() => window.showAlert('Penyimpanan Penuh', 'Penyimpanan lokal peramban Anda penuh. Mohon hapus beberapa data atau perkecil ukuran foto.', 'error'), 500); } }
-                const sb=document.getElementById('cloud-sync-status'); if(sb){sb.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Menyimpan ke Cloud...';sb.classList.remove('opacity-0');}
+                // Simpan ke memori lokal HP/Laptop secara instan (0 milidetik)
+                try { 
+                    localStorage.setItem('CloudMadrasahData', JSON.stringify(window.appState)); 
+                } catch(e) { 
+                    if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') { 
+                        setTimeout(() => window.showAlert('Penyimpanan Penuh', 'Penyimpanan lokal peramban Anda penuh. Mohon perkecil ukuran foto guru.', 'error'), 500); 
+                    } 
+                }
+                
+                const sb = document.getElementById('cloud-sync-status'); 
+                if(sb){
+                    sb.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Menyimpan ke Cloud...';
+                    sb.classList.remove('opacity-0');
+                }
+                
                 if(syncTimeout) clearTimeout(syncTimeout);
-                syncTimeout = setTimeout(async()=>{ try { if(SCRIPT_URL&&SCRIPT_URL.includes('script.google.com')){ const r=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action:'SYNC_ALL',payload:window.appState})}); const json=await r.json(); if(json.success&&sb)sb.innerHTML='<i class="fa-solid fa-check mr-2 text-green-400"></i>Tersimpan di Google Drive!'; else throw new Error(); } else if(sb) sb.innerHTML='<i class="fa-solid fa-check mr-2 text-green-400"></i>Tersimpan Lokal!'; } catch(e) { if(sb)sb.innerHTML='<i class="fa-solid fa-triangle-exclamation mr-2 text-yellow-400"></i>Disimpan Lokal (Cloud Gagal)'; } if(sb)setTimeout(()=>sb.classList.add('opacity-0'),2500); },800);
+                
+                // Jeda dipercepat dari 800ms menjadi 100ms
+                syncTimeout = setTimeout(async () => { 
+                    try { 
+                        if(SCRIPT_URL && SCRIPT_URL.includes('script.google.com')){ 
+                            const r = await fetch(SCRIPT_URL, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                                body: JSON.stringify({ action: 'SYNC_ALL', payload: window.appState })
+                            }); 
+                            const json = await r.json(); 
+                            if(json.success && sb) {
+                                sb.innerHTML = '<i class="fa-solid fa-check mr-2 text-green-400"></i>Tersimpan di Google Drive!'; 
+                            } else throw new Error(); 
+                        } else if(sb) {
+                            sb.innerHTML = '<i class="fa-solid fa-check mr-2 text-green-400"></i>Tersimpan Lokal!'; 
+                        }
+                    } catch(e) { 
+                        if(sb) sb.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-2 text-yellow-400"></i>Disimpan Lokal (Cloud Gagal)'; 
+                    } 
+                    if(sb) setTimeout(() => sb.classList.add('opacity-0'), 1500); 
+                }, 00); // 100ms agar pengiriman ke Drive langsung berjalan cepat
             };
-            if(ldr) ldr.classList.replace('flex','hidden'); window.updateAllViews();
+            
+            if(ldr) ldr.classList.replace('flex', 'hidden'); 
+            window.updateAllViews();
         };
         window.onload = () => { initCloudDatabase(); window.initHijriFilter(); };
 
@@ -1183,11 +1246,26 @@
                 if (g) {
                     const cw = passedCekWaktu || window.checkWaktuAbsenGuru(g, t, fs);
                     if (!cw.allowed) { if(!silent)return window.showAlert('Ditolak', cw.errorMsg, 'error'); return; }
-                    if(!window.appState.absensi_guru)window.appState.absensi_guru=[]; let r=window.appState.absensi_guru.find(a=>a.tanggal===t); if(!r){r={tanggal:t,data:[]};window.appState.absensi_guru.push(r);}
-                    const i=r.data.findIndex(d=>String(d.id_guru)===String(g.id)); let td=i>-1?r.data[i]:{id_guru:parseInt(g.id)}; if(i===-1)r.data.push(td);
                     
-                    if (window.tempSuratSesi === '1' || window.tempSuratSesi === '2' || window.tempSuratSesi === '3') { td[`status_${window.tempSuratSesi}`]=fs; td[`info_${window.tempSuratSesi}`]=cw.infoWaktu; } 
-                    else if (cw.targetJam) { td[`status_${cw.targetJam}`]=fs; td[`info_${cw.targetJam}`]=cw.infoWaktu; }
+                    if(!window.appState.absensi_guru)window.appState.absensi_guru=[]; 
+                    let r=window.appState.absensi_guru.find(a=>a.tanggal===t); if(!r){r={tanggal:t,data:[]};window.appState.absensi_guru.push(r);}
+                    const i=r.data.findIndex(d=>String(d.id_guru)===String(g.id)); let td=i>-1?r.data[i]:null;
+                    
+                    // 1. Tentukan sesi mana yang sedang di-absen saat ini
+                    let sesiAktif = null;
+                    if (window.tempSuratSesi === '1' || window.tempSuratSesi === '2' || window.tempSuratSesi === '3') sesiAktif = window.tempSuratSesi;
+                    else if (cw.targetJam) sesiAktif = cw.targetJam;
+
+                    // 2. CEK DUPLIKAT: Tolak jika status untuk sesi tersebut sudah ada
+                    if (td && sesiAktif && td[`status_${sesiAktif}`]) {
+                        if(!silent) return window.showAlert('Sudah Tercatat', `Guru: ${g.nama}\nSudah absen dengan status ${td[`status_${sesiAktif}`].toUpperCase()} untuk Sesi Ke-${sesiAktif} hari ini.`, 'info');
+                        return;
+                    }
+                    
+                    // 3. Lanjutkan simpan jika belum pernah absen di jam tersebut
+                    if(!td){ td={id_guru:parseInt(g.id)}; r.data.push(td); }
+                    
+                    if (sesiAktif) { td[`status_${sesiAktif}`]=fs; td[`info_${sesiAktif}`]=cw.infoWaktu; } 
                     else { td['status_1']=fs; td['info_1']=cw.infoWaktu; if(cw.hasJam2){td['status_2']=fs;td['info_2']=cw.infoWaktu;} if(cw.hasJam3){td['status_3']=fs;td['info_3']=cw.infoWaktu;} }
                     
                     window.saveState(); window.renderAbsenGuru(); window.updateDashboardStats(); if(fs==='Hadir')window.playHadirSound(); else window.playBeep();
