@@ -774,18 +774,81 @@
         window.bukaModalPengaturan = (tab) => { window.switchSettingTab(tab||'lokasi'); document.getElementById('modal-pengaturan').classList.replace('hidden','flex'); };
 
         const initCloudDatabase = async () => {
-            const ldr = document.getElementById('startup-loader'); const loc = localStorage.getItem('CloudMadrasahData');
-            if(loc) { try { const p=JSON.parse(loc); window.appState={...window.appState,...p}; if(p.pengaturan)window.appState.pengaturan={...window.appState.pengaturan,...p.pengaturan}; } catch(e){} }
-            if (SCRIPT_URL && SCRIPT_URL.includes('script.google.com')) {
-                try { const r = await fetch(SCRIPT_URL, {method:'POST',body:JSON.stringify({action:'GET_ALL'})}); const res=await r.json(); if(res.success&&res.data) {window.appState={...window.appState,...res.data}; if(res.data.pengaturan)window.appState.pengaturan={...window.appState.pengaturan,...res.data.pengaturan}; try { localStorage.setItem('CloudMadrasahData',JSON.stringify(window.appState)); } catch(err){} } } catch(e){}
+            const ldr = document.getElementById('startup-loader'); 
+            const loc = localStorage.getItem('CloudMadrasahData');
+            
+            // 1. Muat data lokal secara instan agar UI langsung responsif tanpa menunggu jaringan
+            if(loc) { 
+                try { 
+                    const p = JSON.parse(loc); 
+                    window.appState = {...window.appState, ...p}; 
+                    if(p.pengaturan) window.appState.pengaturan = {...window.appState.pengaturan, ...p.pengaturan}; 
+                } catch(e){} 
             }
+            
+            // 2. Ambil sync terbaru dari Cloud di latar belakang secara asinkron
+            if (SCRIPT_URL && SCRIPT_URL.includes('script.google.com')) {
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'GET_ALL' })
+                })
+                .then(r => r.json())
+                .then(res => { 
+                    if(res.success && res.data) {
+                        window.appState = {...window.appState, ...res.data}; 
+                        if(res.data.pengaturan) window.appState.pengaturan = {...window.appState.pengaturan, ...res.data.pengaturan}; 
+                        try { localStorage.setItem('CloudMadrasahData', JSON.stringify(window.appState)); } catch(err){} 
+                        window.updateAllViews();
+                    } 
+                })
+                .catch(e => console.warn("Sync cloud latar belakang gagal/lambat, menggunakan data lokal."));
+            }
+            
+            // 3. Fungsi simpan yang dipercepat
             window.saveState = async () => {
-                try { localStorage.setItem('CloudMadrasahData', JSON.stringify(window.appState)); } catch(e) { if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') { setTimeout(() => window.showAlert('Penyimpanan Penuh', 'Penyimpanan lokal peramban Anda penuh. Mohon hapus beberapa data atau perkecil ukuran foto.', 'error'), 500); } }
-                const sb=document.getElementById('cloud-sync-status'); if(sb){sb.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Menyimpan ke Cloud...';sb.classList.remove('opacity-0');}
+                // Simpan ke memori lokal HP/Laptop secara instan (0 milidetik)
+                try { 
+                    localStorage.setItem('CloudMadrasahData', JSON.stringify(window.appState)); 
+                } catch(e) { 
+                    if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') { 
+                        setTimeout(() => window.showAlert('Penyimpanan Penuh', 'Penyimpanan lokal peramban Anda penuh. Mohon perkecil ukuran foto guru.', 'error'), 500); 
+                    } 
+                }
+                
+                const sb = document.getElementById('cloud-sync-status'); 
+                if(sb){
+                    sb.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Menyimpan ke Cloud...';
+                    sb.classList.remove('opacity-0');
+                }
+                
                 if(syncTimeout) clearTimeout(syncTimeout);
-                syncTimeout = setTimeout(async()=>{ try { if(SCRIPT_URL&&SCRIPT_URL.includes('script.google.com')){ const r=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action:'SYNC_ALL',payload:window.appState})}); const json=await r.json(); if(json.success&&sb)sb.innerHTML='<i class="fa-solid fa-check mr-2 text-green-400"></i>Tersimpan di Google Drive!'; else throw new Error(); } else if(sb) sb.innerHTML='<i class="fa-solid fa-check mr-2 text-green-400"></i>Tersimpan Lokal!'; } catch(e) { if(sb)sb.innerHTML='<i class="fa-solid fa-triangle-exclamation mr-2 text-yellow-400"></i>Disimpan Lokal (Cloud Gagal)'; } if(sb)setTimeout(()=>sb.classList.add('opacity-0'),2500); },800);
+                
+                // Jeda dipercepat dari 800ms menjadi 100ms
+                syncTimeout = setTimeout(async () => { 
+                    try { 
+                        if(SCRIPT_URL && SCRIPT_URL.includes('script.google.com')){ 
+                            const r = await fetch(SCRIPT_URL, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                                body: JSON.stringify({ action: 'SYNC_ALL', payload: window.appState })
+                            }); 
+                            const json = await r.json(); 
+                            if(json.success && sb) {
+                                sb.innerHTML = '<i class="fa-solid fa-check mr-2 text-green-400"></i>Tersimpan di Google Drive!'; 
+                            } else throw new Error(); 
+                        } else if(sb) {
+                            sb.innerHTML = '<i class="fa-solid fa-check mr-2 text-green-400"></i>Tersimpan Lokal!'; 
+                        }
+                    } catch(e) { 
+                        if(sb) sb.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-2 text-yellow-400"></i>Disimpan Lokal (Cloud Gagal)'; 
+                    } 
+                    if(sb) setTimeout(() => sb.classList.add('opacity-0'), 1500); 
+                }, 100); // 100ms agar pengiriman ke Drive langsung berjalan cepat
             };
-            if(ldr) ldr.classList.replace('flex','hidden'); window.updateAllViews();
+            
+            if(ldr) ldr.classList.replace('flex', 'hidden'); 
+            window.updateAllViews();
         };
         window.onload = () => { initCloudDatabase(); window.initHijriFilter(); };
 
