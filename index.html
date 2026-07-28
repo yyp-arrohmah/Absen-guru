@@ -690,7 +690,7 @@
     <!-- ===== SCRIPT GOOGLE DRIVE API & LOGIKA ===== -->
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxMDK-D9oj9FgYdc_dmFSnCsJxw2qxnWQRX5B6W5ty6dApyDi_0VeL1K_4HrWGB9C7i/exec';
-        window.appState = window.appState || { guru: [], absensi_guru: [], jadwal_guru: [], agenda: [], pengaturan: { hijri_offset: 0, kalender_mode: 'kemenag', admin_user: 'admin', admin_pass: '54321', lokasi: { aktif: false, lat: -7.250445, lng: 112.768845, radius: 100 } } };
+        window.appState = window.appState || { guru: [], absensi_guru: [], jadwal_guru: [], agenda: [], pengaturan: { hijri_offset: 0, kalender_mode: 'kemenag', admin_user: 'admin', admin_pass: '12345', lokasi: { aktif: false, lat: -7.250445, lng: 112.768845, radius: 100 } } };
         let syncTimeout=null, activeScannerMode='', scannerState='stopped', html5QrCode=null, currentUser=null;
         
         window.formatRp = (num) => 'Rp ' + parseInt(num).toLocaleString('id-ID');
@@ -1065,28 +1065,28 @@
             });
             if(tgl===ts && statusScan==='Hadir') {
                 const ct=new Date();
+                let validSessions = [];
                 for(let i=0; i<scheduleList.length; i++) {
                     const s = scheduleList[i];
                     const [sh,sm] = s.start.split(':').map(Number);
                     const st = new Date(); st.setHours(sh,sm,0,0);
-                    const ws = new Date(st.getTime() - 30*60000);
+                    const ws = new Date(st.getTime() - 30*60000); // 30 menit sebelum mulai
                     const [eh,em] = s.end.split(':').map(Number);
                     const et = new Date(); et.setHours(eh,em,0,0);
+                    
                     if(ct >= ws && ct <= et) {
-                        activeJam = s.jamKe;
+                        let curIw = `Tepat Waktu`;
                         if (ct > st) {
                             const diffMins = Math.floor((ct - st) / 60000);
-                            iw = `Terlambat ${diffMins} mnt`;
-                        } else {
-                            iw = `Tepat Waktu`;
+                            curIw = `Terlambat ${diffMins} mnt`;
                         }
-                        break;
+                        validSessions.push({ jamKe: s.jamKe, iw: curIw });
                     }
                 }
-                if (!activeJam) {
+                if (validSessions.length === 0) {
                     return {allowed:false, errorMsg:`Bukan waktu absen untuk Anda.\nSilakan absen pada 30 menit sebelum hingga akhir SETIAP sesi/jam masuk Anda.`};
                 }
-                return {allowed:true, infoWaktu:iw, targetJam:activeJam, hasJam2:hj2, hasJam3:hj3};
+                return {allowed:true, infoWaktu:validSessions[0].iw, targetJam:validSessions[0].jamKe, validSessions:validSessions, hasJam2:hj2, hasJam3:hj3};
             }
             return {allowed:true, infoWaktu:iw, targetJam:null, hasJam2:hj2, hasJam3:hj3};
         };
@@ -1253,8 +1253,21 @@
                     
                     // 1. Tentukan sesi mana yang sedang di-absen saat ini
                     let sesiAktif = null;
-                    if (window.tempSuratSesi === '1' || window.tempSuratSesi === '2' || window.tempSuratSesi === '3') sesiAktif = window.tempSuratSesi;
-                    else if (cw.targetJam) sesiAktif = cw.targetJam;
+                    let finalInfoWaktu = cw.infoWaktu;
+
+                    if (cw.validSessions && cw.validSessions.length > 0) {
+                        // Cari sesi pertama yang BELUM diabsen jika ada jam tumpang tindih (misal Jam 1 dan Jam 2)
+                        const unrecorded = cw.validSessions.find(s => !td || !td[`status_${s.jamKe}`]);
+                        if (unrecorded) {
+                            sesiAktif = unrecorded.jamKe;
+                            finalInfoWaktu = unrecorded.iw;
+                        } else {
+                            // Jika semua sesi di rentang waktu sekarang sudah diabsen, trigger pesan duplikat ke sesi pertama
+                            sesiAktif = cw.validSessions[0].jamKe;
+                        }
+                    } else if (cw.targetJam) {
+                        sesiAktif = cw.targetJam;
+                    }
 
                     // 2. CEK DUPLIKAT: Tolak jika status untuk sesi tersebut sudah ada
                     if (td && sesiAktif && td[`status_${sesiAktif}`]) {
@@ -1265,11 +1278,11 @@
                     // 3. Lanjutkan simpan jika belum pernah absen di jam tersebut
                     if(!td){ td={id_guru:parseInt(g.id)}; r.data.push(td); }
                     
-                    if (sesiAktif) { td[`status_${sesiAktif}`]=fs; td[`info_${sesiAktif}`]=cw.infoWaktu; } 
-                    else { td['status_1']=fs; td['info_1']=cw.infoWaktu; if(cw.hasJam2){td['status_2']=fs;td['info_2']=cw.infoWaktu;} if(cw.hasJam3){td['status_3']=fs;td['info_3']=cw.infoWaktu;} }
+                    if (sesiAktif) { td[`status_${sesiAktif}`]=fs; td[`info_${sesiAktif}`]=finalInfoWaktu; } 
+                    else { td['status_1']=fs; td['info_1']=finalInfoWaktu; if(cw.hasJam2){td['status_2']=fs;td['info_2']=finalInfoWaktu;} if(cw.hasJam3){td['status_3']=fs;td['info_3']=finalInfoWaktu;} }
                     
                     window.saveState(); window.renderAbsenGuru(); window.updateDashboardStats(); if(fs==='Hadir')window.playHadirSound(); else window.playBeep();
-                    if(!silent)return window.showAlert('Absen Berhasil', `Guru: ${g.nama}\nTercatat ${fs.toUpperCase()}${cw.targetJam ? ' (Sesi Ke-' + cw.targetJam + ')' : ''}.${cw.infoWaktu&&cw.infoWaktu.includes('Terlambat')?'\nCatatan: '+cw.infoWaktu:''}${infoJarak}`, 'success'); return cw;
+                    if(!silent)return window.showAlert('Absen Berhasil', `Guru: ${g.nama}\nTercatat ${fs.toUpperCase()}${sesiAktif ? ' (Sesi Ke-' + sesiAktif + ')' : ''}.${finalInfoWaktu&&finalInfoWaktu.includes('Terlambat')?'\nCatatan: '+finalInfoWaktu:''}${infoJarak}`, 'success'); return cw;
                 }
                 if(!silent)return window.showAlert('Gagal', `Barcode tidak terdaftar.`, 'error');
             }
