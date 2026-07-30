@@ -340,12 +340,33 @@
         <div class="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-4xl w-full flex flex-col max-h-[95vh]">
             <div class="bg-gray-800 p-4 text-white flex justify-between items-center"><h3 class="font-bold flex items-center"><i class="fa-solid fa-gear mr-2"></i> Pengaturan Sistem</h3><button onclick="document.getElementById('modal-pengaturan').classList.replace('flex','hidden')" class="text-white/70 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button></div>
             <div class="flex bg-gray-50 border-b border-gray-200 overflow-x-auto hide-scrollbar">
+                <button id="tab-btn-tampilan" onclick="window.switchSettingTab('tampilan')" class="px-5 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fa-solid fa-desktop mr-1"></i> Tampilan</button>
                 <button id="tab-btn-lokasi" onclick="window.switchSettingTab('lokasi')" class="px-5 py-3 text-sm font-bold border-b-2 border-blue-600 text-blue-600 whitespace-nowrap"><i class="fa-solid fa-map-location-dot mr-1"></i> Lokasi GPS</button>
                 <button id="tab-btn-kalender" onclick="window.switchSettingTab('kalender')" class="px-5 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fa-solid fa-calendar-days mr-1"></i> Kal. Hijriyah</button>
                 <button id="tab-btn-login" onclick="window.switchSettingTab('login')" class="px-5 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fa-solid fa-shield-halved mr-1"></i> Akun Utama</button>
                 <button id="tab-btn-operator" onclick="window.switchSettingTab('operator')" class="px-5 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fa-solid fa-users-gear mr-1"></i> Operator</button>
             </div>
             <div class="p-4 lg:p-6 overflow-y-auto bg-gray-50 flex-1">
+                
+                <div id="setting-tab-tampilan" class="space-y-4" style="display: none;">
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm max-w-md mx-auto text-center">
+                        <h4 class="font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-image text-purple-500 mr-2"></i>Pengaturan Logo Sistem</h4>
+                        <div class="flex flex-col items-center gap-4">
+                            <div id="preview-logo-setting" class="w-32 h-32 bg-gray-50 rounded-2xl flex items-center justify-center border-2 border-dashed border-gray-300 overflow-hidden shadow-inner p-2">
+                                <img id="img-logo-setting" src="" class="max-w-full max-h-full object-contain hidden drop-shadow-md">
+                                <i id="icon-logo-setting" class="fa-solid fa-graduation-cap text-4xl text-gray-300"></i>
+                            </div>
+                            <input type="file" id="input-logo-setting" accept="image/*" class="hidden" onchange="window.handleLogoUpload(event)">
+                            <div class="flex gap-2 w-full">
+                                 <button type="button" onclick="document.getElementById('input-logo-setting').click()" class="flex-1 bg-purple-50 text-purple-700 font-bold py-2.5 rounded-xl text-sm border border-purple-200 hover:bg-purple-100 transition-colors flex items-center justify-center gap-2"><i class="fa-solid fa-upload"></i> Pilih Gambar</button>
+                                 <button type="button" onclick="window.hapusLogoSetting()" class="bg-red-50 text-red-600 font-bold py-2.5 px-4 rounded-xl text-sm border border-red-200 hover:bg-red-100 transition-colors" title="Hapus Logo"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                            <p class="text-[10px] text-gray-400 leading-tight">Disarankan format PNG transparan. Gambar akan otomatis dikompresi agar tidak memberatkan server.</p>
+                            <button type="button" onclick="window.simpanLogoSistem()" class="w-full bg-purple-600 text-white font-bold py-3 rounded-xl text-sm hover:bg-purple-700 shadow-md mt-2 transition-colors flex items-center justify-center gap-2"><i class="fa-solid fa-save"></i> Terapkan Logo</button>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="setting-tab-lokasi" class="space-y-4" style="display: block;">
                     <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
                         <form onsubmit="window.simpanPengaturanLokasi(event)">
@@ -436,7 +457,12 @@
     <div id="login-screen" class="fixed inset-0 bg-gradient-to-br from-blue-50 to-gray-200 z-[8000] flex flex-col items-center justify-center p-4 transition-opacity duration-300">
         <div class="bg-white rounded-3xl shadow-2xl overflow-hidden w-full max-w-[320px] flex flex-col">
             <div class="bg-blue-600 p-5 pb-4 text-center relative overflow-hidden">
-                <div class="absolute -top-6 -right-6 w-20 h-20 bg-blue-500 rounded-full opacity-40"></div><div class="relative z-10 w-12 h-12 bg-white rounded-2xl mx-auto flex items-center justify-center text-blue-600 text-2xl mb-2"><i class="fa-solid fa-graduation-cap"></i></div><h2 class="relative z-10 text-lg font-bold text-white tracking-wide">Sistem Madrasah</h2>
+                <div class="absolute -top-6 -right-6 w-20 h-20 bg-blue-500 rounded-full opacity-40"></div>
+                <div id="login-logo-wrapper" class="relative z-10 w-16 h-16 bg-white rounded-2xl mx-auto flex items-center justify-center text-blue-600 text-3xl mb-2 shadow-lg p-1">
+                    <img id="login-logo-img" src="" class="max-w-full max-h-full object-contain hidden drop-shadow-sm">
+                    <i id="login-logo-icon" class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <h2 class="relative z-10 text-lg font-bold text-white tracking-wide">Sistem Madrasah</h2>
             </div>
             <div class="p-5 bg-white">
                 <form onsubmit="window.prosesLogin(event)">
@@ -456,7 +482,16 @@
     <div id="main-app" class="hidden flex h-screen overflow-hidden">
         <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden" onclick="window.toggleSidebar()"></div>
         <aside id="sidebar" class="bg-white w-64 h-full border-r border-gray-200 flex flex-col fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
-            <div class="p-6 border-b border-gray-100 flex justify-between items-center"><div class="flex items-center gap-3"><div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold"><i class="fa-solid fa-graduation-cap"></i></div><span class="font-bold text-lg text-gray-800">Sistem<span class="text-blue-600">Madrasah</span></span></div><button class="lg:hidden text-gray-500 text-xl" onclick="window.toggleSidebar()"><i class="fa-solid fa-xmark"></i></button></div>
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div id="sidebar-logo-wrapper" class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold p-1 shadow-sm">
+                        <img id="sidebar-logo-img" src="" class="w-full h-full object-contain hidden drop-shadow-sm">
+                        <i id="sidebar-logo-icon" class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <span class="font-bold text-lg text-gray-800 leading-tight">Sistem<br><span class="text-blue-600 text-sm">Madrasah</span></span>
+                </div>
+                <button class="lg:hidden text-gray-500 text-xl" onclick="window.toggleSidebar()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
             <div class="flex-1 overflow-y-auto p-4 space-y-2">
                 <button id="nav-btn-dashboard" onclick="window.switchTab('dashboard', this)" class="nav-btn active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-bold bg-blue-50 text-blue-700 transition-colors shadow-sm"><i class="fa-solid fa-chart-pie w-5"></i> Beranda</button>
                 <button id="nav-btn-riwayat-saya" onclick="window.switchTab('dashboard', this)" class="hidden nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-bold bg-purple-50 text-purple-700 transition-colors shadow-sm"><i class="fa-solid fa-clock-rotate-left w-5"></i> Riwayat Saya</button>
@@ -875,7 +910,7 @@
             if(st.absensi_guru){const r=st.absensi_guru.find(a=>a.tanggal===ts);if(r)gh=r.data.filter(d=>d.status_1==='Hadir'||d.status_2==='Hadir'||d.status_3==='Hadir').length;} document.getElementById('dash-guru-hadir').innerText=gh;
         };
         window.updateAllViews = () => {
-            const st=window.appState, isa=window.currentUser&&window.currentUser.role==='admin'; window.updateDashboardStats();
+            const st=window.appState, isa=window.currentUser&&window.currentUser.role==='admin'; window.updateDashboardStats(); window.applyLogoToUI();
             const eg=document.getElementById('table-guru'); if(eg&&st.guru) { const ad=isa||(window.currentUser&&window.currentUser.akses&&window.currentUser.akses.guru); eg.innerHTML=st.guru.map(g=>`<tr class="hover:bg-gray-50 border-b border-gray-100"><td class="px-6 py-4 font-medium text-gray-900 text-xs">${g.nip}</td><td class="px-6 py-4 flex items-center gap-3"><img src="${g.foto||'https://ui-avatars.com/api/?name=Guru&background=cbd5e1'}" class="w-10 h-10 rounded-full object-cover border border-purple-200"><div><span class="font-bold text-sm block">${g.nama}</span><span class="text-xs text-gray-500 font-normal">${g.jabatan||'-'} | ${g.hp||'-'}</span></div></td><td class="px-6 py-4 text-right"><button onclick="window.editGuru('${g.id}')" class="text-blue-500 bg-blue-50 p-2 rounded-lg hover:bg-blue-100"><i class="fa-solid fa-pen"></i></button>${ad?`<button onclick="window.hapusGuru('${g.id}')" class="text-red-500 bg-red-50 p-2 rounded-lg ml-1 hover:bg-red-100"><i class="fa-solid fa-trash"></i></button>`:''}</td></tr>`).join(''); }
             const sg=document.getElementById('select-guru-idcard'); if(sg){let o=`<option value="">-- Pilih Nama Guru --</option>`;if(st.guru)st.guru.forEach(g=>o+=`<option value="${g.id}">${g.nama} - ${g.jabatan}</option>`);sg.innerHTML=o;}
             const er=document.getElementById('filter-riwayat-guru'); if(er){const cv=er.value;let o=`<option value="">-- Pilih Guru --</option>`;if(st.guru)st.guru.forEach(g=>o+=`<option value="${g.id}">${g.nama}</option>`);er.innerHTML=o;if(window.currentUser&&window.currentUser.role==='guru'){er.value=window.currentUser.id_guru;er.disabled=true;}else{er.value=cv;er.disabled=false;}}
@@ -1395,43 +1430,56 @@
         window.getLocationBrowser = async () => { try { const pos = await window.getLokalGPS(); const lat = pos.coords.latitude, lng = pos.coords.longitude; document.getElementById('setting-lokasi-lat').value = lat; document.getElementById('setting-lokasi-lng').value = lng; if(settingMarker) settingMarker.setLatLng([lat, lng]); if(settingCircle) settingCircle.setLatLng([lat, lng]); if(settingMap) settingMap.setView([lat, lng], 17); window.showAlert('Berhasil', 'Lokasi diperbarui dari GPS perangkat.', 'success'); } catch(e) { window.showAlert('Gagal', 'Tidak bisa mendapatkan lokasi GPS.', 'error'); } };
         window.simpanPengaturanLokasi = (e) => { e.preventDefault(); const lat = document.getElementById('setting-lokasi-lat').value, lng = document.getElementById('setting-lokasi-lng').value, radius = document.getElementById('setting-lokasi-radius').value, aktif = document.getElementById('setting-lokasi-aktif').checked; if(!window.appState.pengaturan) window.appState.pengaturan = {}; window.appState.pengaturan.lokasi = { lat: parseFloat(lat), lng: parseFloat(lng), radius: parseInt(radius), aktif }; window.saveState(); window.showAlert('Berhasil', 'Pengaturan lokasi GPS berhasil disimpan.', 'success'); };
         
-        window.switchSettingTab = (tab) => { ['lokasi', 'kalender', 'login', 'operator'].forEach(t => { const btn = document.getElementById('tab-btn-' + t), content = document.getElementById('setting-tab-' + t); if(btn && content) { if(t === tab) { btn.classList.add('border-blue-600', 'text-blue-600'); btn.classList.remove('border-transparent', 'text-gray-500'); content.style.display = 'block'; if (t === 'lokasi') setTimeout(window.initMap, 200); if (t === 'kalender') window.loadSettingKalender(); if (t === 'operator') window.renderListOperator(); if (t === 'login') { document.getElementById('setting-admin-user').value = window.appState.pengaturan.admin_user || 'admin'; document.getElementById('setting-admin-pass').value = ''; } } else { btn.classList.remove('border-blue-600', 'text-blue-600'); btn.classList.add('border-transparent', 'text-gray-500'); content.style.display = 'none'; } } }); };
-        window.simpanPengaturanLogin = (e) => { e.preventDefault(); const u = document.getElementById('setting-admin-user').value.trim(), p = document.getElementById('setting-admin-pass').value; if(!u) return; if(!window.appState.pengaturan) window.appState.pengaturan = {}; window.appState.pengaturan.admin_user = u; if(p) window.appState.pengaturan.admin_pass = p; window.saveState(); window.showAlert('Berhasil', 'Akun Admin berhasil diperbarui.', 'success'); };
-        window.resetFormOperator = () => { document.getElementById('op-id').value = ''; document.getElementById('op-user').value = ''; document.getElementById('op-pass').value = ''; document.getElementById('akses-guru').checked = false; document.getElementById('akses-pengaturan').checked = false; document.getElementById('form-operator-title').innerText = 'Tambah Operator Baru'; };
-        window.simpanOperator = (e) => { e.preventDefault(); const id = document.getElementById('op-id').value, user = document.getElementById('op-user').value.trim(), pass = document.getElementById('op-pass').value, ak_guru = document.getElementById('akses-guru').checked, ak_pengaturan = document.getElementById('akses-pengaturan').checked; if(!window.appState.pengaturan.operators) window.appState.pengaturan.operators = []; let ops = window.appState.pengaturan.operators; if(id) { const idx = ops.findIndex(o => String(o.id) === String(id)); if(idx > -1) { ops[idx].user = user; if(pass) ops[idx].pass = pass; ops[idx].akses = { guru: ak_guru, pengaturan: ak_pengaturan }; } } else { if(!pass) return window.showAlert('Gagal', 'Password wajib diisi untuk operator baru.', 'error'); ops.push({ id: Date.now(), user, pass, akses: { guru: ak_guru, pengaturan: ak_pengaturan } }); } window.saveState(); window.renderListOperator(); window.resetFormOperator(); window.showAlert('Berhasil', 'Operator tersimpan.', 'success'); };
-        window.editOperator = (id) => { const ops = window.appState.pengaturan.operators || []; const op = ops.find(o => String(o.id) === String(id)); if(!op) return; document.getElementById('op-id').value = op.id; document.getElementById('op-user').value = op.user; document.getElementById('op-pass').value = ''; document.getElementById('akses-guru').checked = op.akses?.guru || false; document.getElementById('akses-pengaturan').checked = op.akses?.pengaturan || false; document.getElementById('form-operator-title').innerText = 'Edit Operator'; };
-        window.hapusOperator = (id) => { window.showConfirm('Hapus', 'Hapus operator ini?', () => { let ops = window.appState.pengaturan.operators || []; window.appState.pengaturan.operators = ops.filter(o => String(o.id) !== String(id)); window.saveState(); window.renderListOperator(); }); };
-        window.renderListOperator = () => { const list = document.getElementById('list-operator'); if(!list) return; const ops = window.appState.pengaturan.operators || []; if(ops.length === 0) { list.innerHTML = '<div class="text-center p-4 text-sm text-gray-500">Belum ada operator.</div>'; return; } list.innerHTML = ops.map(op => `<div class="flex justify-between items-center p-3 border-b border-gray-100 hover:bg-gray-50"><div><div class="font-bold text-sm text-gray-800">${op.user}</div><div class="text-[10px] text-gray-500">Akses: ${op.akses?.guru ? 'Guru ' : ''}${op.akses?.pengaturan ? 'Pengaturan' : ''}</div></div><div class="flex gap-2"><button onclick="window.editOperator('${op.id}')" class="w-8 h-8 rounded bg-blue-50 text-blue-600 hover:bg-blue-100"><i class="fa-solid fa-pen text-xs"></i></button><button onclick="window.hapusOperator('${op.id}')" class="w-8 h-8 rounded bg-red-50 text-red-600 hover:bg-red-100"><i class="fa-solid fa-trash text-xs"></i></button></div></div>`).join(''); };
-        window.loadSettingKalender = () => { const p = window.appState.pengaturan || {}; let mode = p.kalender_mode || (p.kalender_manual_aktif ? 'manual' : 'kemenag'); const rb = document.querySelector(`input[name="kalender_mode"][value="${mode}"]`); if(rb) rb.checked = true; window.toggleKalenderMode(); document.getElementById('setting-hijri-offset').value = p.hijri_offset || 0; };
-        
-        window.toggleKalenderMode = () => {
-            const mode = document.querySelector('input[name="kalender_mode"]:checked')?.value || 'kemenag';
-            ['kemenag', 'auto', 'manual'].forEach(m => {
-                const el = document.getElementById(`kalender-${m}-settings`);
-                if(el) el.classList[m === mode ? 'remove' : 'add']('hidden');
-            });
+        window.tempLogoBase64 = '';
+        window.handleLogoUpload = (e) => {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    // Kompresi Logo ke max 250px agar hemat penyimpanan Drive
+                    const canvas = document.createElement('canvas'); const MAX_SIZE = 250; let width = img.width, height = img.height;
+                    if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
+                    canvas.width = width; canvas.height = height; const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height); const resizedDataUrl = canvas.toDataURL('image/png');
+                    
+                    window.tempLogoBase64 = resizedDataUrl;
+                    document.getElementById('img-logo-setting').src = resizedDataUrl;
+                    document.getElementById('img-logo-setting').classList.remove('hidden');
+                    document.getElementById('icon-logo-setting').classList.add('hidden');
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
         };
-        
-        window.simpanKalenderKemenag = () => {
-            if(!window.appState.pengaturan) window.appState.pengaturan = {};
-            window.appState.pengaturan.kalender_mode = 'kemenag';
-            window.saveState(); window.showAlert('Berhasil', 'Mode Kalender Kemenag aktif.', 'success'); window.initKalenderState();
+        window.hapusLogoSetting = () => { window.tempLogoBase64 = ''; document.getElementById('img-logo-setting').src = ''; document.getElementById('img-logo-setting').classList.add('hidden'); document.getElementById('icon-logo-setting').classList.remove('hidden'); document.getElementById('input-logo-setting').value = ''; };
+        window.simpanLogoSistem = () => { if(!window.appState.pengaturan) window.appState.pengaturan = {}; window.appState.pengaturan.logo = window.tempLogoBase64; window.saveState(); window.applyLogoToUI(); window.showAlert('Berhasil', 'Logo berhasil diperbarui dan diterapkan.', 'success'); };
+        window.applyLogoToUI = () => {
+            const logo = window.appState.pengaturan?.logo;
+            const apl = (imgId, iconId) => {
+                 const imgEl = document.getElementById(imgId), iconEl = document.getElementById(iconId);
+                 if(!imgEl || !iconEl) return;
+                 const parent = imgEl.parentElement;
+                 if(logo) { 
+                     imgEl.src = logo; imgEl.classList.remove('hidden'); iconEl.classList.add('hidden'); 
+                     // Hapus frame (background, shadow, padding) agar logo nempel transparan
+                     parent.classList.remove('bg-white', 'bg-blue-600', 'shadow-lg', 'shadow-sm', 'p-1', 'rounded-2xl', 'rounded-lg');
+                     // Perbesar ukuran wadah sedikit untuk logo tanpa frame
+                     if(imgId === 'login-logo-img') { parent.classList.replace('w-16', 'w-24'); parent.classList.replace('h-16', 'h-24'); }
+                     if(imgId === 'sidebar-logo-img') { parent.classList.replace('w-9', 'w-10'); parent.classList.replace('h-9', 'h-10'); }
+                 } 
+                 else { 
+                     imgEl.src = ''; imgEl.classList.add('hidden'); iconEl.classList.remove('hidden'); 
+                     // Kembalikan frame jika gambar kosong dan sistem hanya memakai icon topi toga
+                     if(imgId === 'login-logo-img') { parent.classList.add('bg-white', 'shadow-lg', 'p-1', 'rounded-2xl'); parent.classList.replace('w-24', 'w-16'); parent.classList.replace('h-24', 'h-16'); }
+                     if(imgId === 'sidebar-logo-img') { parent.classList.add('bg-blue-600', 'shadow-sm', 'p-1', 'rounded-lg'); parent.classList.replace('w-10', 'w-9'); parent.classList.replace('h-10', 'h-9'); }
+                 }
+            };
+            apl('login-logo-img', 'login-logo-icon'); apl('sidebar-logo-img', 'sidebar-logo-icon');
+            if(logo) { const sl = document.getElementById('img-logo-setting'), si = document.getElementById('icon-logo-setting'); if(sl) { sl.src = logo; sl.classList.remove('hidden'); } if(si) { si.classList.add('hidden'); } window.tempLogoBase64 = logo; }
         };
-        
-        window.simpanKalenderAuto = () => {
-            if(!window.appState.pengaturan) window.appState.pengaturan = {};
-            window.appState.pengaturan.kalender_mode = 'auto';
-            window.appState.pengaturan.hijri_offset = document.getElementById('setting-hijri-offset').value;
-            window.saveState(); window.showAlert('Berhasil', 'Mode Kalender Otomatis aktif.', 'success'); window.initKalenderState();
-        };
-        
-        window.loadManualKalenderTahun = () => { };
-        
-        window.simpanKalenderManual = () => {
-            if(!window.appState.pengaturan) window.appState.pengaturan = {};
-            window.appState.pengaturan.kalender_mode = 'manual';
-            window.saveState(); window.showAlert('Berhasil', 'Mode Kalender Manual aktif.', 'success'); window.initKalenderState();
-        };
+
+        window.switchSettingTab = (tab) => { ['tampilan', 'lokasi', 'kalender', 'login', 'operator'].forEach(t => { const btn = document.getElementById('tab-btn-' + t), content = document.getElementById('setting-tab-' + t); if(btn && content) { if(t === tab) { btn.classList.add('border-blue-600', 'text-blue-600'); btn.classList.remove('border-transparent', 'text-gray-500'); content.style.display = 'block'; if (t === 'lokasi') setTimeout(window.initMap, 200); if (t === 'kalender') window.loadSettingKalender(); if (t === 'operator') window.renderListOperator(); if (t === 'login') { document.getElementById('setting-admin-user').value = window.appState.pengaturan.admin_user || 'admin'; document.getElementById('setting-admin-pass').value = ''; } } else { btn.classList.remove('border-blue-600', 'text-blue-600'); btn.classList.add('border-transparent', 'text-gray-500'); content.style.display = 'none'; } } }); };
 
         window.cetakRekapExcel = () => {
             try {
