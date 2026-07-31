@@ -88,11 +88,14 @@
     </div>
 
     <!-- MODAL RIWAYAT ABSENSI GURU -->
-    <div id="modal-riwayat-guru" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100005] hidden items-center justify-center p-4 transition-opacity">
-        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-5xl w-full flex flex-col max-h-[95vh] relative">
+    <div id="modal-riwayat-guru" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100005] hidden items-center justify-center p-0 sm:p-4 transition-opacity">
+        <div class="bg-white rounded-none sm:rounded-3xl shadow-2xl overflow-hidden max-w-5xl w-full h-full sm:h-auto sm:max-h-[95vh] flex flex-col relative">
             <div class="bg-purple-600 p-4 text-white flex justify-between items-center shrink-0">
                 <h3 class="font-bold flex items-center text-sm"><i class="fa-solid fa-chalkboard-user mr-2"></i>Portal & Riwayat Guru</h3>
-                <button onclick="document.getElementById('modal-riwayat-guru').classList.replace('flex', 'hidden')" class="text-white/70 hover:text-white bg-purple-700 w-8 h-8 flex justify-center items-center rounded-full transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                <div class="flex items-center gap-2">
+                    <button id="btn-logout-portal" onclick="window.prosesLogout()" class="hidden bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors shadow-sm"><i class="fa-solid fa-arrow-right-from-bracket sm:mr-1"></i> <span class="hidden sm:inline">Keluar</span></button>
+                    <button id="btn-close-portal" onclick="document.getElementById('modal-riwayat-guru').classList.replace('flex', 'hidden')" class="text-white/70 hover:text-white bg-purple-700 w-8 h-8 flex justify-center items-center rounded-full transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                </div>
             </div>
             <div class="p-4 lg:p-6 overflow-y-auto flex-1 bg-gray-50">
                 <div id="profil-riwayat-guru-container" class="mb-4 bg-white rounded-2xl shadow-sm border border-purple-100 p-4 lg:p-6 flex-col sm:flex-row items-center sm:items-start gap-4 lg:gap-6 relative overflow-hidden flex">
@@ -454,24 +457,35 @@
     </div>
 
     <!-- Login -->
-    <div id="login-screen" class="fixed inset-0 bg-gradient-to-br from-blue-50 to-gray-200 z-[8000] flex flex-col items-center justify-center p-4 transition-opacity duration-300">
-        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden w-full max-w-[320px] flex flex-col">
-            <div class="bg-blue-600 p-5 pb-4 text-center relative overflow-hidden">
-                <div class="absolute -top-6 -right-6 w-20 h-20 bg-blue-500 rounded-full opacity-40"></div>
-                <div id="login-logo-wrapper" class="relative z-10 w-16 h-16 bg-white rounded-2xl mx-auto flex items-center justify-center text-blue-600 text-3xl mb-2 shadow-lg p-1">
+    <div id="login-screen" class="fixed inset-0 bg-slate-50 z-[8000] flex flex-col items-center justify-center p-4 transition-opacity duration-300">
+        <div class="bg-white rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(148,163,184,0.3)] overflow-hidden w-full max-w-[320px] flex flex-col border border-slate-100">
+            <div class="bg-white p-6 pb-2 text-center relative overflow-hidden">
+                <div id="login-logo-wrapper" class="relative z-10 w-16 h-16 bg-slate-50 rounded-2xl mx-auto flex items-center justify-center text-slate-600 text-3xl mb-3 shadow-sm border border-slate-100 p-1">
                     <img id="login-logo-img" src="" class="max-w-full max-h-full object-contain hidden drop-shadow-sm">
                     <i id="login-logo-icon" class="fa-solid fa-graduation-cap"></i>
                 </div>
-                <h2 class="relative z-10 text-lg font-bold text-white tracking-wide">Sistem Madrasah</h2>
+                <h2 class="relative z-10 text-xl font-bold text-slate-800 tracking-wide">Sistem Madrasah</h2>
             </div>
-            <div class="p-5 bg-white">
+            <div class="p-6 bg-white pt-2">
                 <form onsubmit="window.prosesLogin(event)">
-                    <div id="login-error" class="hidden mb-3 bg-red-50 text-red-600 p-2.5 rounded-xl text-xs font-bold border border-red-100 text-center flex items-center justify-center gap-1.5"><i class="fa-solid fa-circle-exclamation"></i> Username / Password salah!</div>
-                    <div id="login-fields" class="space-y-3.5">
-                        <p class="text-[10px] text-gray-500 text-center mb-2 leading-tight">Username di isi No ID Guru, Password 1234.</p>
-                        <div><label class="block text-[11px] font-bold text-gray-700 mb-1">Username </label><div class="relative group"><div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><i class="fa-solid fa-user text-xs"></i></div><input type="text" id="login-user" class="w-full border-2 border-gray-200 rounded-xl pl-8 p-2.5 focus:border-blue-500 focus:ring-0 outline-none text-xs" required placeholder="Masukkan username / NIP..."></div></div>
-                        <div><label class="block text-[11px] font-bold text-gray-700 mb-1">Password</label><div class="relative group"><div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><i class="fa-solid fa-lock text-xs"></i></div><input type="password" id="login-pass" class="w-full border-2 border-gray-200 rounded-xl pl-8 p-2.5 focus:border-blue-500 focus:ring-0 outline-none text-xs" required placeholder="••••••••"></div></div>
-                        <button type="submit" class="w-full bg-blue-600 text-white font-bold rounded-xl px-4 py-2.5 hover:bg-blue-700 shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 mt-2 text-sm"><i class="fa-solid fa-right-to-bracket"></i> Masuk</button>
+                    <div id="login-error" class="hidden mb-4 bg-red-50 text-red-600 p-3 rounded-xl text-xs font-bold border border-red-100 text-center flex items-center justify-center gap-1.5"><i class="fa-solid fa-circle-exclamation"></i> Username / Password salah!</div>
+                    <div id="login-fields" class="space-y-4">
+                        <p class="text-[10px] text-slate-400 text-center mb-4 leading-relaxed font-medium">Username di isi No ID Guru, Password 1234.</p>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1.5">Username</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><i class="fa-solid fa-user text-xs"></i></div>
+                                <input type="text" id="login-user" class="w-full border-2 border-slate-100 bg-slate-50 rounded-xl pl-9 p-3 focus:border-slate-400 focus:bg-white focus:ring-0 outline-none text-xs text-slate-700 transition-all placeholder:text-slate-300" required placeholder="Masukkan username / NIP...">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1.5">Password</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><i class="fa-solid fa-lock text-xs"></i></div>
+                                <input type="password" id="login-pass" class="w-full border-2 border-slate-100 bg-slate-50 rounded-xl pl-9 p-3 focus:border-slate-400 focus:bg-white focus:ring-0 outline-none text-xs text-slate-700 transition-all placeholder:text-slate-300" required placeholder="••••••••">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-slate-800 text-white font-bold rounded-xl px-4 py-3 hover:bg-slate-900 shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2 mt-4 text-sm transition-all"><i class="fa-solid fa-right-to-bracket"></i> Masuk Sistem</button>
                     </div>
                 </form>
             </div>
@@ -549,7 +563,7 @@
                 <div id="tab-guru" class="tab-content max-w-6xl mx-auto scroll-mt-6">
                     <div class="mb-8 flex flex-col md:flex-row md:justify-between md:items-center gap-4"><div><h2 class="text-2xl font-bold text-gray-800">Data Guru</h2></div></div>
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="lg:col-span-1"><div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6"><h3 class="font-bold mb-4"><i class="fa-solid fa-user-plus text-purple-500 mr-2"></i>Tambah Guru</h3><form onsubmit="window.simpanGuru(event)" class="space-y-4"><input type="hidden" id="guru-mode" value="add"><input type="hidden" id="guru-id" value=""><div><label class="block text-sm font-medium mb-1">NIP/ID Khusus</label><input type="text" id="guru-nip" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500" required></div><div><label class="block text-sm font-medium mb-1">Nama Lengkap</label><input type="text" id="guru-nama" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500" required></div><div><label class="block text-sm font-medium mb-1">Jabatan</label><input type="text" id="guru-jabatan" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500"></div><div><label class="block text-sm font-medium mb-1">No. HP</label><input type="text" id="guru-hp" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500"></div>
+                        <div class="lg:col-span-1"><div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6"><h3 class="font-bold mb-4"><i class="fa-solid fa-user-plus text-purple-500 mr-2"></i>Tambah Guru</h3><form onsubmit="window.simpanGuru(event)" class="space-y-4"><input type="hidden" id="guru-mode" value="add"><input type="hidden" id="guru-id" value=""><div><label class="block text-sm font-medium mb-1">NIP/ID Khusus</label><input type="text" id="guru-nip" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500" required></div><div><label class="block text-sm font-medium mb-1">Nama Lengkap</label><input type="text" id="guru-nama" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500" required></div><div><label class="block text-sm font-medium mb-1">Jabatan</label><select id="guru-jabatan" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer bg-white"><option value="">-- Pilih Jabatan --</option><option value="Kepala Sekolah">Kepala Sekolah</option><option value="Tata Usaha">Tata Usaha</option><option value="Bendahara">Bendahara</option><option value="Wali Kelas Shifir">Wali Kelas Shifir</option><option value="Wali Kelas 1A">Wali Kelas 1A</option><option value="Wali Kelas 1B">Wali Kelas 1B</option><option value="Wali Kelas 1C">Wali Kelas 1C</option><option value="Wali Kelas 1D">Wali Kelas 1D</option><option value="Wali Kelas 2">Wali Kelas 2</option><option value="Wali Kelas 3">Wali Kelas 3</option><option value="Wali Kelas 4">Wali Kelas 4</option><option value="Wali Kelas 5">Wali Kelas 5</option><option value="Wali Kelas 6">Wali Kelas 6</option><option value="Guru / Staf Biasa">Guru / Staf Biasa</option></select></div><div><label class="block text-sm font-medium mb-1">No. HP</label><input type="text" id="guru-hp" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500"></div>
                         <div class="mt-4"><label class="block text-sm font-medium mb-2">Foto Profil (Opsional)</label><div class="flex items-center gap-4"><div id="preview-foto-container" class="hidden w-16 h-16 rounded-full overflow-hidden border-2 border-purple-200 cursor-pointer hover:opacity-80 transition-opacity" onclick="window.reopenCropper('guru')"><img id="preview-foto-img" src="" class="w-full h-full object-cover" alt="Preview Foto"></div><button type="button" onclick="window.openCropper({target:{files:[]}}, 'guru'); document.getElementById('global-cropper-input').click();" class="bg-purple-50 text-purple-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-purple-100 border border-purple-200 flex items-center gap-2 shadow-sm transition-colors"><i class="fa-solid fa-camera"></i> Pilih Foto Baru</button><button type="button" id="btn-hapus-foto-guru" onclick="window.hapusFotoForm('guru')" class="hidden bg-red-50 text-red-600 px-3 py-2 rounded-lg text-sm font-bold hover:bg-red-100 border border-red-200 transition-colors shadow-sm"><i class="fa-solid fa-trash"></i></button></div></div>
                         <button type="submit" id="btn-submit-guru" class="w-full bg-purple-600 text-white rounded-lg p-2.5 font-bold hover:bg-purple-700 mt-2 shadow-md">Simpan Data Guru</button><button type="button" id="btn-cancel-guru" onclick="window.resetFormGuru()" class="w-full bg-gray-100 text-gray-700 rounded-lg p-2.5 font-bold hover:bg-gray-200 mt-2 hidden">Batal</button></form></div></div>
                         <div class="lg:col-span-2"><div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"><table class="w-full text-sm text-left"><thead class="bg-purple-50 text-xs text-purple-900 font-bold uppercase border-b border-purple-100"><tr><th class="px-6 py-3">NIP</th><th class="px-6 py-3">Profil Guru</th><th class="px-6 py-3 text-right">Aksi</th></tr></thead><tbody id="table-guru" class="divide-y divide-gray-100 bg-white"></tbody></table></div></div>
@@ -891,17 +905,19 @@
             e.preventDefault(); const u=document.getElementById('login-user').value.trim(), p=document.getElementById('login-pass').value, err=document.getElementById('login-error'), s=window.appState.pengaturan||{};
             if(u===(s.admin_user||'admin')&&p===(s.admin_pass||'12345')) { window.currentUser={role:'admin',user:'Admin Utama',akses:{guru:true,pengaturan:true}}; return window.masukSistem(); }
             const op=(s.operators||[]).find(x=>x.user===u&&x.pass===p); if(op) { window.currentUser={role:'operator',user:op.user,akses:op.akses||{}}; return window.masukSistem(); }
-            const g=(window.appState.guru||[]).find(x=>String(x.nip)===u||String(x.id)===u); if(g) { window.currentUser={role:'guru',user:g.nama,id_guru:g.id,akses:{}}; return window.masukSistem(); }
+            const g=(window.appState.guru||[]).find(x=>String(x.nip)===u||String(x.id)===u); if(g) { window.currentUser={role:'guru',user:g.nama,id_guru:g.id,akses:{},jabatan:g.jabatan||'Guru'}; return window.masukSistem(); }
             err.classList.remove('hidden');
         };
         window.masukSistem = () => {
-            document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').classList.remove('hidden'); const pn=document.getElementById('current-username'); if(pn)pn.innerText=window.currentUser.user;
+            document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').classList.remove('hidden'); 
+            const pn=document.getElementById('current-username'); 
+            if(pn){ if(window.currentUser.role==='guru') pn.innerHTML=`${window.currentUser.user} <span class="text-purple-600 font-extrabold ml-1 border-l-2 border-gray-300 pl-1.5">${window.currentUser.jabatan}</span>`; else pn.innerText=window.currentUser.user; }
             const ig=window.currentUser.role==='guru', ak=window.currentUser.akses||{}; const t=(id,s)=>{const el=document.getElementById(id);if(el)s?el.classList.remove('hidden'):el.classList.add('hidden');};
             t('menu-group-sekretaris',!ig&&ak.guru); t('menu-group-khidmah',!ig&&ak.guru); t('nav-btn-guru',!ig&&ak.guru); t('nav-btn-absen-guru',!ig&&ak.guru); t('nav-btn-jadwal-guru',!ig&&ak.guru); t('nav-btn-jadwal-kelas',!ig&&ak.guru); t('nav-btn-rekap-absen-guru',!ig&&ak.guru); t('nav-btn-idcard',!ig&&ak.guru); t('nav-btn-kalender',true); t('nav-btn-pengaturan',!ig&&ak.pengaturan); t('nav-btn-dashboard',!ig); t('nav-btn-riwayat-saya',ig);
-            if(ig) { window.switchTab('dashboard',document.getElementById('nav-btn-riwayat-saya')); const ds = document.getElementById('dash-stats-container'); if(ds) ds.classList.add('hidden'); const dt = document.getElementById('dash-title-container'); if(dt) dt.classList.add('hidden'); const fe = document.getElementById('filter-riwayat-guru'); if(fe){fe.value=window.currentUser.id_guru;fe.disabled=true;} window.renderGridRiwayat(); setTimeout(()=>window.bukaModalRiwayat(window.currentUser.id_guru),300); } 
+            if(ig) { window.switchTab('dashboard',document.getElementById('nav-btn-riwayat-saya')); const ds = document.getElementById('dash-stats-container'); if(ds) ds.classList.add('hidden'); const dt = document.getElementById('dash-title-container'); if(dt) dt.classList.add('hidden'); const fe = document.getElementById('filter-riwayat-guru'); if(fe){fe.value=window.currentUser.id_guru;fe.disabled=true;} window.renderGridRiwayat(); setTimeout(()=>window.bukaModalRiwayat(window.currentUser.id_guru),50); } 
             else { const ds = document.getElementById('dash-stats-container'); if(ds) ds.classList.remove('hidden'); const dt = document.getElementById('dash-title-container'); if(dt) dt.classList.remove('hidden'); window.switchTab('dashboard',document.getElementById('nav-btn-dashboard')); }
         };
-        window.prosesLogout = () => window.showConfirm("Keluar", "Keluar dari sistem?", () => { window.currentUser=null; document.getElementById('login-pass').value=''; document.getElementById('main-app').classList.add('hidden'); document.getElementById('login-screen').classList.remove('hidden'); });
+        window.prosesLogout = () => window.showConfirm("Keluar", "Keluar dari sistem?", () => { window.currentUser=null; document.getElementById('login-pass').value=''; document.getElementById('main-app').classList.add('hidden'); document.getElementById('modal-riwayat-guru').classList.remove('flex'); document.getElementById('modal-riwayat-guru').classList.add('hidden'); document.getElementById('login-screen').classList.remove('hidden'); });
 
         window.updateDashboardStats = () => {
             const st=window.appState; document.getElementById('dash-guru').innerText=st.guru?st.guru.length:0;
@@ -1204,6 +1220,16 @@
 
         window.bukaModalRiwayat = (guruId) => {
             window.currentRiwayatGuruId = guruId; const g = (window.appState.guru||[]).find(x=>String(x.id)===String(guruId)); if(!g)return;
+            
+            // Logika Sembunyikan Tombol Close untuk Guru
+            const isGuruLogin = window.currentUser && window.currentUser.role === 'guru';
+            const btnLogout = document.getElementById('btn-logout-portal');
+            const btnClose = document.getElementById('btn-close-portal');
+            if (btnLogout && btnClose) {
+                if (isGuruLogin) { btnLogout.classList.remove('hidden'); btnClose.classList.add('hidden'); } 
+                else { btnLogout.classList.add('hidden'); btnClose.classList.remove('hidden'); }
+            }
+
             window.switchSubTabRiwayat('harian');
             document.getElementById('profil-riwayat-foto').src = g.foto||'https://ui-avatars.com/api/?name=Foto&background=cbd5e1&color=fff';
             document.getElementById('profil-riwayat-nama').innerText = g.nama||'-'; document.getElementById('profil-riwayat-jabatan').innerText = g.jabatan||'Guru'; document.getElementById('profil-riwayat-nip').innerText = g.nip||'-'; document.getElementById('profil-riwayat-hp').innerText = g.hp||'-';
@@ -1463,7 +1489,7 @@
                  if(logo) { 
                      imgEl.src = logo; imgEl.classList.remove('hidden'); iconEl.classList.add('hidden'); 
                      // Hapus frame (background, shadow, padding) agar logo nempel transparan
-                     parent.classList.remove('bg-white', 'bg-blue-600', 'shadow-lg', 'shadow-sm', 'p-1', 'rounded-2xl', 'rounded-lg');
+                     parent.classList.remove('bg-white', 'bg-blue-600', 'bg-slate-50', 'shadow-lg', 'shadow-sm', 'p-1', 'rounded-2xl', 'rounded-lg', 'border', 'border-slate-100');
                      // Perbesar ukuran wadah sedikit untuk logo tanpa frame
                      if(imgId === 'login-logo-img') { parent.classList.replace('w-16', 'w-24'); parent.classList.replace('h-16', 'h-24'); }
                      if(imgId === 'sidebar-logo-img') { parent.classList.replace('w-9', 'w-10'); parent.classList.replace('h-9', 'h-10'); }
@@ -1471,7 +1497,7 @@
                  else { 
                      imgEl.src = ''; imgEl.classList.add('hidden'); iconEl.classList.remove('hidden'); 
                      // Kembalikan frame jika gambar kosong dan sistem hanya memakai icon topi toga
-                     if(imgId === 'login-logo-img') { parent.classList.add('bg-white', 'shadow-lg', 'p-1', 'rounded-2xl'); parent.classList.replace('w-24', 'w-16'); parent.classList.replace('h-24', 'h-16'); }
+                     if(imgId === 'login-logo-img') { parent.classList.add('bg-slate-50', 'shadow-sm', 'border', 'border-slate-100', 'p-1', 'rounded-2xl'); parent.classList.replace('w-24', 'w-16'); parent.classList.replace('h-24', 'h-16'); }
                      if(imgId === 'sidebar-logo-img') { parent.classList.add('bg-blue-600', 'shadow-sm', 'p-1', 'rounded-lg'); parent.classList.replace('w-10', 'w-9'); parent.classList.replace('h-10', 'h-9'); }
                  }
             };
