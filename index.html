@@ -98,31 +98,41 @@
                 </div>
             </div>
             <div class="p-4 lg:p-6 overflow-y-auto flex-1 bg-gray-50">
-                <div id="profil-riwayat-guru-container" class="mb-4 bg-white rounded-2xl shadow-sm border border-purple-100 p-4 lg:p-6 flex-col sm:flex-row items-center sm:items-start gap-4 lg:gap-6 relative overflow-hidden flex">
+                <div id="profil-riwayat-guru-container" class="mb-4 bg-white rounded-2xl shadow-sm border border-purple-100 p-4 lg:p-6 relative overflow-hidden grid grid-cols-[auto_1fr] gap-x-3 sm:gap-x-4 lg:gap-x-6 gap-y-4">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-purple-50 rounded-bl-full z-0 opacity-50"></div>
-                    <div class="relative z-10 shrink-0"><img id="profil-riwayat-foto" src="" class="w-20 h-24 lg:w-24 lg:h-32 rounded-xl object-cover border-4 border-white shadow-md bg-purple-50" alt="Foto Guru"></div>
-                    <div class="relative z-10 flex-1 text-center sm:text-left mt-2 sm:mt-0 w-full">
+                    <div class="relative z-10 col-span-1 row-span-1 sm:row-span-3 shrink-0"><img id="profil-riwayat-foto" src="" class="w-20 h-24 lg:w-24 lg:h-32 rounded-xl object-cover border-4 border-white shadow-md bg-purple-50" alt="Foto Guru"></div>
+                    <div class="relative z-10 col-span-1 sm:col-span-1 text-left w-full min-w-0">
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start">
-                            <div><h3 id="profil-riwayat-nama" class="text-xl lg:text-2xl font-bold text-gray-800 mb-1">Nama Guru</h3><p id="profil-riwayat-jabatan" class="text-purple-600 font-bold text-sm mb-4">Jabatan</p></div>
-                            <button onclick="window.bukaCetakIDCardDariRiwayat()" class="hidden sm:flex text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg items-center gap-1 font-bold transition-colors shadow-sm mb-3 sm:mb-0"><i class="fa-solid fa-id-badge"></i> Cetak ID Card</button>
+                            <div class="min-w-0 w-full"><h3 id="profil-riwayat-nama" class="text-xl lg:text-2xl font-bold text-gray-800 mb-1 leading-tight truncate">Nama Guru</h3><p id="profil-riwayat-jabatan" class="text-purple-600 font-bold text-sm mb-2 sm:mb-3">Jabatan</p></div>
+                            <button onclick="window.bukaCetakIDCardDariRiwayat()" class="hidden sm:flex text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg items-center gap-1 font-bold transition-colors shadow-sm mb-3 sm:mb-0 shrink-0"><i class="fa-solid fa-id-badge"></i> Cetak ID Card</button>
                         </div>
-                        <div class="flex flex-wrap justify-center sm:justify-start gap-2 lg:gap-3">
+                        <div class="flex flex-wrap justify-start gap-2 lg:gap-3">
                             <div class="bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-lg flex items-center gap-2 shadow-sm"><i class="fa-solid fa-id-card text-gray-400"></i> <span id="profil-riwayat-nip" class="text-xs font-bold text-gray-700">NIP</span></div>
                             <div class="bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-lg flex items-center gap-2 shadow-sm"><i class="fa-solid fa-phone text-gray-400"></i> <span id="profil-riwayat-hp" class="text-xs font-bold text-gray-700">No. HP</span></div>
                         </div>
-                        <div class="mt-3 bg-purple-50/70 border border-purple-100 px-4 py-2.5 rounded-xl inline-block text-left shadow-sm w-full sm:w-auto">
-                            <p class="text-[10px] font-bold text-purple-500 uppercase tracking-wider mb-0.5"><i class="fa-solid fa-calendar-day mr-1"></i> Jadwal Masuk Hari Ini:</p>
-                            <div id="profil-riwayat-jadwal-hari-ini" class="text-sm font-bold text-purple-900 leading-tight">Memuat...</div>
+                    </div>
+                    <div class="relative z-10 col-span-2 sm:col-span-1 w-full text-center sm:text-left mt-1 sm:mt-0 min-w-0">
+                        <div class="bg-purple-50/70 border border-purple-100 px-3 py-2 rounded-xl block sm:inline-block shadow-sm w-full sm:w-auto overflow-hidden">
+                            <p class="text-[9px] font-bold text-purple-500 uppercase tracking-wider mb-0.5 truncate"><i class="fa-solid fa-calendar-day mr-1"></i> Jadwal Masuk Hari Ini:</p>
+                            <div id="profil-riwayat-jadwal-hari-ini" class="text-[11px] sm:text-xs font-bold text-purple-900 leading-tight truncate">Memuat...</div>
                         </div>
-                        <div class="mt-4 flex flex-wrap justify-center sm:justify-start gap-2 pt-4 border-t border-purple-100">
-                            <button onclick="window.absenHadirDariRiwayat()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold shadow-md transition-colors flex items-center gap-2"><i class="fa-solid fa-location-dot"></i> Absen Hadir (GPS)</button>
-                            <div class="flex flex-wrap gap-2">
-                                <button onclick="window.bukaPengajuanDariRiwayat('all', 'Izin')" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2.5 rounded-xl text-sm font-bold shadow-md transition-colors flex items-center gap-2"><i class="fa-solid fa-envelope-open-text"></i> Izin</button>
-                                <button onclick="window.bukaPengajuanDariRiwayat('all', 'Sakit')" class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-2.5 rounded-xl text-sm font-bold shadow-md transition-colors flex items-center gap-2"><i class="fa-solid fa-notes-medical"></i> Sakit</button>
-                                <button onclick="window.bukaPengajuanDariRiwayat('all', 'Cuti')" class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-2.5 rounded-xl text-sm font-bold shadow-md transition-colors flex items-center gap-2"><i class="fa-solid fa-briefcase"></i> Cuti</button>
-                            </div>
-                            <button onclick="window.bukaCetakIDCardDariRiwayat()" class="sm:hidden w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2.5 rounded-xl text-sm font-bold shadow-md transition-colors flex items-center justify-center gap-2 mt-1 border border-gray-200"><i class="fa-solid fa-id-badge"></i> Cetak ID Card Saya</button>
+                    </div>
+                    <div class="relative z-10 col-span-2 sm:col-span-1 pt-4 border-t border-purple-100 mt-2 sm:mt-0 w-full">
+                        <div class="flex flex-row flex-nowrap sm:flex-wrap justify-between sm:justify-start gap-1.5 sm:gap-2 w-full">
+                            <button onclick="window.absenHadirDariRiwayat()" class="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white p-2 sm:px-4 sm:py-2.5 rounded-xl text-[10px] sm:text-sm font-bold shadow-md transition-colors flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
+                                <i class="fa-solid fa-location-dot text-sm sm:text-base"></i> <span class="hidden sm:inline">Absen Hadir (GPS)</span><span class="sm:hidden leading-none">Hadir</span>
+                            </button>
+                            <button onclick="window.bukaPengajuanDariRiwayat('all', 'Izin')" class="flex-1 sm:flex-none bg-blue-500 hover:bg-blue-600 text-white p-2 sm:px-4 sm:py-2.5 rounded-xl text-[10px] sm:text-sm font-bold shadow-md transition-colors flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
+                                <i class="fa-solid fa-envelope-open-text text-sm sm:text-base"></i> <span class="leading-none">Izin</span>
+                            </button>
+                            <button onclick="window.bukaPengajuanDariRiwayat('all', 'Sakit')" class="flex-1 sm:flex-none bg-orange-500 hover:bg-orange-600 text-white p-2 sm:px-4 sm:py-2.5 rounded-xl text-[10px] sm:text-sm font-bold shadow-md transition-colors flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
+                                <i class="fa-solid fa-notes-medical text-sm sm:text-base"></i> <span class="leading-none">Sakit</span>
+                            </button>
+                            <button onclick="window.bukaPengajuanDariRiwayat('all', 'Cuti')" class="flex-1 sm:flex-none bg-indigo-500 hover:bg-indigo-600 text-white p-2 sm:px-4 sm:py-2.5 rounded-xl text-[10px] sm:text-sm font-bold shadow-md transition-colors flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
+                                <i class="fa-solid fa-briefcase text-sm sm:text-base"></i> <span class="leading-none">Cuti</span>
+                            </button>
                         </div>
+                        <button onclick="window.bukaCetakIDCardDariRiwayat()" class="sm:hidden w-full justify-center bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2.5 rounded-xl text-sm font-bold shadow-md transition-colors flex items-center gap-2 mt-2 border border-gray-200"><i class="fa-solid fa-id-badge"></i> Cetak ID Card Saya</button>
                     </div>
                 </div>
 
@@ -457,35 +467,35 @@
     </div>
 
     <!-- Login -->
-    <div id="login-screen" class="fixed inset-0 bg-slate-50 z-[8000] flex flex-col items-center justify-center p-4 transition-opacity duration-300">
-        <div class="bg-white rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(148,163,184,0.3)] overflow-hidden w-full max-w-[320px] flex flex-col border border-slate-100">
+    <div id="login-screen" class="fixed inset-0 bg-emerald-50/70 backdrop-blur-sm z-[8000] flex flex-col items-center justify-center p-4 transition-opacity duration-300">
+        <div class="bg-white rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(16,185,129,0.2)] overflow-hidden w-full max-w-[320px] flex flex-col border border-emerald-100">
             <div class="bg-white p-6 pb-2 text-center relative overflow-hidden">
-                <div id="login-logo-wrapper" class="relative z-10 w-16 h-16 bg-slate-50 rounded-2xl mx-auto flex items-center justify-center text-slate-600 text-3xl mb-3 shadow-sm border border-slate-100 p-1">
+                <div id="login-logo-wrapper" class="relative z-10 w-16 h-16 bg-emerald-50 rounded-2xl mx-auto flex items-center justify-center text-emerald-600 text-3xl mb-3 shadow-sm border border-emerald-100 p-1">
                     <img id="login-logo-img" src="" class="max-w-full max-h-full object-contain hidden drop-shadow-sm">
                     <i id="login-logo-icon" class="fa-solid fa-graduation-cap"></i>
                 </div>
-                <h2 class="relative z-10 text-xl font-bold text-slate-800 tracking-wide">Sistem Madrasah</h2>
+                <h2 class="relative z-10 text-xl font-bold text-emerald-900 tracking-wide">ABSENSI GURU<br>MADRASAH ARROHMAH</h2>
             </div>
             <div class="p-6 bg-white pt-2">
                 <form onsubmit="window.prosesLogin(event)">
                     <div id="login-error" class="hidden mb-4 bg-red-50 text-red-600 p-3 rounded-xl text-xs font-bold border border-red-100 text-center flex items-center justify-center gap-1.5"><i class="fa-solid fa-circle-exclamation"></i> Username / Password salah!</div>
                     <div id="login-fields" class="space-y-4">
-                        <p class="text-[10px] text-slate-400 text-center mb-4 leading-relaxed font-medium">Username di isi No ID Guru, Password 1234.</p>
+                        <p class="text-[10px] text-emerald-600/70 text-center mb-4 leading-relaxed font-medium">Username di isi No ID Guru, Password 1234.</p>
                         <div>
-                            <label class="block text-[11px] font-bold text-slate-600 mb-1.5">Username</label>
+                            <label class="block text-[11px] font-bold text-emerald-700 mb-1.5">Username</label>
                             <div class="relative group">
-                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><i class="fa-solid fa-user text-xs"></i></div>
-                                <input type="text" id="login-user" class="w-full border-2 border-slate-100 bg-slate-50 rounded-xl pl-9 p-3 focus:border-slate-400 focus:bg-white focus:ring-0 outline-none text-xs text-slate-700 transition-all placeholder:text-slate-300" required placeholder="Masukkan username / NIP...">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-emerald-400/80"><i class="fa-solid fa-user text-xs"></i></div>
+                                <input type="text" id="login-user" class="w-full border-2 border-emerald-100 bg-emerald-50/50 rounded-xl pl-9 p-3 focus:border-emerald-400 focus:bg-white focus:ring-0 outline-none text-xs text-emerald-800 transition-all placeholder:text-emerald-300" required placeholder="Masukkan username / NIP...">
                             </div>
                         </div>
                         <div>
-                            <label class="block text-[11px] font-bold text-slate-600 mb-1.5">Password</label>
+                            <label class="block text-[11px] font-bold text-emerald-700 mb-1.5">Password</label>
                             <div class="relative group">
-                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><i class="fa-solid fa-lock text-xs"></i></div>
-                                <input type="password" id="login-pass" class="w-full border-2 border-slate-100 bg-slate-50 rounded-xl pl-9 p-3 focus:border-slate-400 focus:bg-white focus:ring-0 outline-none text-xs text-slate-700 transition-all placeholder:text-slate-300" required placeholder="••••••••">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-emerald-400/80"><i class="fa-solid fa-lock text-xs"></i></div>
+                                <input type="password" id="login-pass" class="w-full border-2 border-emerald-100 bg-emerald-50/50 rounded-xl pl-9 p-3 focus:border-emerald-400 focus:bg-white focus:ring-0 outline-none text-xs text-emerald-800 transition-all placeholder:text-emerald-300" required placeholder="••••••••">
                             </div>
                         </div>
-                        <button type="submit" class="w-full bg-slate-800 text-white font-bold rounded-xl px-4 py-3 hover:bg-slate-900 shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2 mt-4 text-sm transition-all"><i class="fa-solid fa-right-to-bracket"></i> Masuk Sistem</button>
+                        <button type="submit" class="w-full bg-emerald-600 text-white font-bold rounded-xl px-4 py-3 hover:bg-emerald-700 shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 mt-4 text-sm transition-all"><i class="fa-solid fa-right-to-bracket"></i> Masuk Sistem</button>
                     </div>
                 </form>
             </div>
@@ -1236,7 +1246,7 @@
             const t=new Date(), hc=window.getHijriComponents(t), nh=['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][t.getDay()], ts=window.getTodayInputFormat();
             const jh=(window.appState.jadwal_guru||[]).find(j=>j.hari===nh&&String(j.id_guru)===String(guruId));
             const ah=(window.appState.agenda||[]).filter(a=>a.tgl===ts), ar=ah.find(a=>a.tipe==='Rapat'||a.ket.toLowerCase().includes('rapat')), il=ah.find(a=>a.tipe==='Libur');
-            const ej=document.getElementById('profil-riwayat-jadwal-hari-ini'); if(ej){if(ar)ej.innerHTML=`<span class="text-yellow-600"><i class="fa-solid fa-users-viewfinder"></i> RAPAT (${ar.ket})</span>${jh?`<br><span class="text-xs opacity-70">${jh.jam.replace(/<hr.*?>/g,', ')}</span>`:''}`; else if(il)ej.innerHTML=`<span class="text-red-500"><i class="fa-solid fa-calendar-xmark"></i> LIBUR (${il.ket})</span>`; else if(jh)ej.innerHTML=`<i class="fa-solid fa-clock"></i> ${jh.jam.replace(/<hr.*?>/g,' &bull; ')}`; else ej.innerHTML=`<span class="text-gray-500 italic text-xs font-medium">Kosong / Tidak ada jadwal ngajar hari ini</span>`;}
+            const ej=document.getElementById('profil-riwayat-jadwal-hari-ini'); if(ej){if(ar)ej.innerHTML=`<span class="text-yellow-600"><i class="fa-solid fa-users-viewfinder"></i> RAPAT (${ar.ket})</span>${jh?` <span class="opacity-70">&bull; ${jh.jam.replace(/<(hr|br).*?>/g,' &bull; ')}</span>`:''}`; else if(il)ej.innerHTML=`<span class="text-red-500"><i class="fa-solid fa-calendar-xmark"></i> LIBUR (${il.ket})</span>`; else if(jh)ej.innerHTML=`<i class="fa-solid fa-clock"></i> ${jh.jam.replace(/<(hr|br).*?>/g,' &bull; ')}`; else ej.innerHTML=`<span class="text-gray-500 italic text-xs font-medium">Kosong / Tidak ada jadwal ngajar hari ini</span>`;}
             
             let rw=[]; (window.appState.absensi_guru||[]).forEach(r=>{const dg=r.data.find(d=>String(d.id_guru)===String(guruId));if(dg)rw.push({t:r.tanggal,s1:dg.status_1||'-',s2:dg.status_2||'-',s3:dg.status_3||'-',i1:dg.info_1||'',i2:dg.info_2||'',i3:dg.info_3||''});}); rw.sort((a,b)=>new Date(b.t)-new Date(a.t));
             const ct=document.getElementById('table-riwayat-guru'); if(rw.length===0)ct.innerHTML='<tr><td colspan="7" class="text-center py-8 text-gray-500">Belum ada data absensi untuk guru ini.</td></tr>'; else ct.innerHTML=rw.map((r,i)=>{const gb=(s)=>s==='Hadir'?`<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold">HADIR</span>`:s==='Izin'?`<span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold">IZIN</span>`:s==='Sakit'?`<span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-[10px] font-bold">SAKIT</span>`:s==='Cuti'?`<span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-[10px] font-bold">CUTI</span>`:s==='-'?`<span class="text-gray-400 font-bold">-</span>`:`<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-bold">${s.toUpperCase()}</span>`; const p=r.t.split('-'),d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2])),nhr=['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][d.getDay()]; let hs='';try{const hcd=window.getHijriComponents(d);hs=`${hcd.d} ${["Muharram", "Safar", "Rabi'ul Awal", "Rabi'ul Akhir", "Jumadil Awal", "Jumadil Akhir", "Rajab", "Sya'ban", "Ramadhan", "Syawal", "Dzulqa'dah", "Dzulhijjah"][hcd.m-1]} ${hcd.y} H`;}catch(e){} const tf=`<div class="font-bold text-purple-700 leading-tight mb-1">${hs}</div><div class="text-[11px] text-gray-500">${nhr}, ${p[2]}/${p[1]}/${p[0]}</div>`, it=[r.i1,r.i2,r.i3].filter(x=>x&&x.trim()!==''&&!x.includes('Tepat Waktu')).join(', ')||'-'; const j=(window.appState.jadwal_guru||[]).find(jx=>jx.hari===nhr&&String(jx.id_guru)===String(guruId)), a=(window.appState.agenda||[]).filter(ax=>ax.tgl===r.t), rp=a.find(ax=>ax.tipe==='Rapat'||ax.ket.toLowerCase().includes('rapat')), lb=a.find(ax=>ax.tipe==='Libur'); let dj=j?j.jam.replace(/<hr.*?>/g,'<br>'):'<span class="text-gray-400 italic">Kosong</span>'; if(rp)dj=`<div class="text-yellow-700 font-bold text-[10px] mb-1">RAPAT</div>${j?`<div class="opacity-50 text-[10px]">${dj}</div>`:''}`; else if(lb)dj=`<div class="text-red-600 font-bold text-[10px] mb-1">LIBUR</div>`; else if(j)dj=`<div class="text-purple-700 font-medium">${dj}</div>`; return`<tr class="hover:bg-purple-50 border-b border-gray-100"><td class="px-4 py-3 text-center text-gray-500 text-xs">${i+1}</td><td class="px-4 py-3 text-sm text-gray-800">${tf}</td><td class="px-4 py-3 text-xs leading-tight min-w-[130px]">${dj}</td><td class="px-4 py-3 text-center">${gb(r.s1)}</td><td class="px-4 py-3 text-center">${gb(r.s2)}</td><td class="px-4 py-3 text-center">${gb(r.s3)}</td><td class="px-4 py-3 text-xs text-gray-500">${it}</td></tr>`;}).join('');
@@ -1489,7 +1499,7 @@
                  if(logo) { 
                      imgEl.src = logo; imgEl.classList.remove('hidden'); iconEl.classList.add('hidden'); 
                      // Hapus frame (background, shadow, padding) agar logo nempel transparan
-                     parent.classList.remove('bg-white', 'bg-blue-600', 'bg-slate-50', 'shadow-lg', 'shadow-sm', 'p-1', 'rounded-2xl', 'rounded-lg', 'border', 'border-slate-100');
+                     parent.classList.remove('bg-white', 'bg-blue-600', 'bg-slate-50', 'bg-emerald-50', 'shadow-lg', 'shadow-sm', 'p-1', 'rounded-2xl', 'rounded-lg', 'border', 'border-slate-100', 'border-emerald-100');
                      // Perbesar ukuran wadah sedikit untuk logo tanpa frame
                      if(imgId === 'login-logo-img') { parent.classList.replace('w-16', 'w-24'); parent.classList.replace('h-16', 'h-24'); }
                      if(imgId === 'sidebar-logo-img') { parent.classList.replace('w-9', 'w-10'); parent.classList.replace('h-9', 'h-10'); }
@@ -1497,7 +1507,7 @@
                  else { 
                      imgEl.src = ''; imgEl.classList.add('hidden'); iconEl.classList.remove('hidden'); 
                      // Kembalikan frame jika gambar kosong dan sistem hanya memakai icon topi toga
-                     if(imgId === 'login-logo-img') { parent.classList.add('bg-slate-50', 'shadow-sm', 'border', 'border-slate-100', 'p-1', 'rounded-2xl'); parent.classList.replace('w-24', 'w-16'); parent.classList.replace('h-24', 'h-16'); }
+                     if(imgId === 'login-logo-img') { parent.classList.add('bg-emerald-50', 'shadow-sm', 'border', 'border-emerald-100', 'p-1', 'rounded-2xl'); parent.classList.replace('w-24', 'w-16'); parent.classList.replace('h-24', 'h-16'); }
                      if(imgId === 'sidebar-logo-img') { parent.classList.add('bg-blue-600', 'shadow-sm', 'p-1', 'rounded-lg'); parent.classList.replace('w-10', 'w-9'); parent.classList.replace('h-10', 'h-9'); }
                  }
             };
