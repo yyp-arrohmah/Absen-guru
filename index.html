@@ -744,11 +744,93 @@
         </main>
     </div>
 
-    <!-- ===== SCRIPT GOOGLE DRIVE API & LOGIKA ===== -->
-    <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIqY09nI0Zdrx60cmLhUjn1shXIpAH80vn2gb3xbt9muyd7Pn25ieWhuPcFyJX-14e/exec';
-        window.appState = window.appState || { guru: [], absensi_guru: [], jadwal_guru: [], agenda: [], pengaturan: { hijri_offset: 0, kalender_mode: 'kemenag', admin_user: 'admin', admin_pass: '12345', lokasi: { aktif: false, lat: -7.250445, lng: 112.768845, radius: 100 } } };
-        let syncTimeout=null, activeScannerMode='', scannerState='stopped', html5QrCode=null, currentUser=null;
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+        // 1. Kofigurasi Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCnBi2M54PLAtyouxC2KTZ8bTK_iIDeKK0",
+            authDomain: "madrasah-arrohmah.firebaseapp.com",
+            databaseURL: "https://madrasah-arrohmah-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "madrasah-arrohmah",
+            storageBucket: "madrasah-arrohmah.firebasestorage.app",
+            messagingSenderId: "873668065881",
+            appId: "1:873668065881:web:cd3af0aefb39e156e70f48"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // 2. State Aplikasi Global
+        window.appState = {
+            guru: [], siswa: [], mapel: [], absensi_guru: [], absensi_siswa: [], jadwal_guru: [],
+            pengaturan: { 
+                admin_user: "admin", admin_pass: "12345",
+                operators: [],
+                lokasi: { aktif: false, lat: -7.250445, lng: 112.768845, radius: 100 }
+            }
+        };
+
+        window.currentUser = null;
+        let syncTimeout = null;
+
+        // 3. Modals & Utilities Global
+        window.getTodayInputFormat = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
+        window.playBeep = () => { try { const audioCtx = new (window.AudioContext || window.webkitAudioContext)(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.connect(gain); gain.connect(audioCtx.destination); osc.type = 'sine'; osc.frequency.setValueAtTime(1000, audioCtx.currentTime); gain.gain.setValueAtTime(0.1, audioCtx.currentTime); osc.start(); osc.stop(audioCtx.currentTime + 0.1); } catch(e) {} };
+        window.playHadirSound = () => { try { if('speechSynthesis' in window) { const utter = new SpeechSynthesisUtterance("Hadir"); utter.lang = 'id-ID'; window.speechSynthesis.speak(utter); } } catch(e) {} };
+        window.getDistanceFromLatLonInM = (lat1, lon1, lat2, lon2) => { const R = 6371e3; const p1 = lat1 * Math.PI/180; const p2 = lat2 * Math.PI/180; const dp = (lat2-lat1) * Math.PI/180; const dl = (lon2-lon1) * Math.PI/180; const a = Math.sin(dp/2) * Math.sin(dp/2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dl/2) * Math.sin(dl/2); return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))); };
+        window.formatHijriyah = (dateString) => { try { const d = new Date(dateString); return new Intl.DateTimeFormat('id-ID-u-ca-islamic', {day:'numeric', month:'long', year:'numeric'}).format(d); } catch(e) { return dateString; } };
+
+        window.showAlert = (title, message, type='info', callback=null) => { document.getElementById('alert-title').innerText = title; document.getElementById('alert-message').innerText = message; const icon = document.getElementById('alert-icon'); if(type === 'error') icon.innerHTML = '<i class="fa-solid fa-circle-xmark text-red-500"></i>'; else if(type === 'success') icon.innerHTML = '<i class="fa-solid fa-circle-check text-green-500"></i>'; else icon.innerHTML = '<i class="fa-solid fa-circle-info text-blue-500"></i>'; document.getElementById('alert-modal').classList.replace('hidden', 'flex'); document.getElementById('alert-close-btn').onclick = () => { document.getElementById('alert-modal').classList.replace('flex', 'hidden'); if(callback) setTimeout(callback, 300); }; };
+        window.showConfirm = (title, message, callback) => { document.getElementById('confirm-title').innerText = title; document.getElementById('confirm-message').innerText = message; document.getElementById('confirm-modal').classList.replace('hidden', 'flex'); document.getElementById('confirm-yes-btn').onclick = () => { document.getElementById('confirm-modal').classList.replace('flex', 'hidden'); if(callback) callback(); }; };
+        window.closeConfirm = () => { document.getElementById('confirm-modal').classList.replace('flex', 'hidden'); };
+
+        // 4. Sinkronisasi Data Firebase
+        window.saveState = async () => {
+            localStorage.setItem('CloudMadrasahData', JSON.stringify(window.appState));
+            const syncBadge = document.getElementById('cloud-sync-status');
+            if (syncBadge) { 
+                syncBadge.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Menyimpan ke Firebase...'; 
+                syncBadge.classList.remove('opacity-0'); 
+            }
+
+            if (syncTimeout) clearTimeout(syncTimeout);
+            syncTimeout = setTimeout(async () => {
+                try {
+                    await set(ref(db, 'MadrasahData/'), window.appState);
+                    if (syncBadge) syncBadge.innerHTML = '<i class="fa-solid fa-check mr-2 text-green-400"></i>Tersimpan di Firebase!';
+                } catch(e) {
+                    if (syncBadge) syncBadge.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-2 text-yellow-400"></i>Tersimpan Lokal (Cloud Gagal)';
+                }
+                if (syncBadge) setTimeout(() => syncBadge.classList.add('opacity-0'), 2500);
+            }, 100); // Dipercepat menjadi 100ms
+        };
+
+        const initCloudDatabase = async () => {
+            const loader = document.getElementById('startup-loader');
+            try {
+                const snapshot = await get(child(ref(db), 'MadrasahData'));
+                if (snapshot.exists()) {
+                    const cloudData = snapshot.val();
+                    window.appState = { ...window.appState, ...cloudData };
+                    if (cloudData.pengaturan) {
+                        window.appState.pengaturan = { ...window.appState.pengaturan, ...cloudData.pengaturan };
+                    }
+                }
+            } catch (error) {
+                console.warn("Gagal memuat dari Firebase, menggunakan data lokal:", error);
+                const localData = localStorage.getItem('CloudMadrasahData');
+                if (localData) {
+                    try { window.appState = { ...window.appState, ...JSON.parse(localData) }; } catch(e) {}
+                }
+            }
+            if (loader) loader.classList.replace('flex', 'hidden');
+            if (typeof window.initHijriFilter === 'function') window.initHijriFilter();
+            window.updateAllViews();
+        };
+        
+        window.onload = () => { initCloudDatabase(); window.initHijriFilter(); };
         
         window.formatRp = (num) => 'Rp ' + parseInt(num).toLocaleString('id-ID');
         window.getToday = () => { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; };
