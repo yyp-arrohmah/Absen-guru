@@ -786,14 +786,18 @@
         window.showConfirm = (title, message, callback) => { document.getElementById('confirm-title').innerText = title; document.getElementById('confirm-message').innerText = message; document.getElementById('confirm-modal').classList.replace('hidden', 'flex'); document.getElementById('confirm-yes-btn').onclick = () => { document.getElementById('confirm-modal').classList.replace('flex', 'hidden'); if(callback) callback(); }; };
         window.closeConfirm = () => { document.getElementById('confirm-modal').classList.replace('flex', 'hidden'); };
 
-        // 4. Sinkronisasi Data Firebase
+        window.switchTab = (tabId, btn) => { document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active')); const tgt=document.getElementById('tab-'+tabId); if(tgt)tgt.classList.add('active'); document.querySelectorAll('.nav-btn').forEach(el=>{el.classList.remove('bg-blue-50','text-blue-700','active','bg-purple-50','text-purple-700');el.classList.add('text-gray-500');}); if(btn){ let bg='bg-blue-50',tc='text-blue-700'; if(btn.id.includes('guru')||btn.id==='nav-btn-idcard'){bg='bg-purple-50';tc='text-purple-700';} btn.classList.add(bg,tc,'active'); btn.classList.remove('text-gray-500'); if(window.innerWidth<1024)window.toggleSidebar(); } window.updateAllViews(); };
+        window.toggleSidebar = () => { const sb=document.getElementById('sidebar'),ov=document.getElementById('sidebar-overlay'); if(sb.classList.contains('-translate-x-full')){sb.classList.remove('-translate-x-full');ov.classList.remove('hidden');}else{sb.classList.add('-translate-x-full');ov.classList.add('hidden');} };
+        window.toggleSubmenu = (sId, iId) => { const s=document.getElementById(sId),i=document.getElementById(iId); if(s.classList.contains('hidden')){s.classList.replace('hidden','flex');i.classList.add('rotate-180');}else{s.classList.replace('flex','hidden');i.classList.remove('rotate-180');} };
+        window.bukaModalPengaturan = (tab) => { window.switchSettingTab(tab||'lokasi'); document.getElementById('modal-pengaturan').classList.replace('hidden','flex'); };
+
+        // 4. Sinkronisasi Data Firebase & Local Storage
         window.saveState = async () => {
-            localStorage.setItem('CloudMadrasahData', JSON.stringify(window.appState));
+            try { localStorage.setItem('CloudMadrasahData', JSON.stringify(window.appState)); } 
+            catch(e) { if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') setTimeout(() => window.showAlert('Penyimpanan Penuh', 'Penyimpanan lokal peramban penuh. Mohon perkecil ukuran foto guru.', 'error'), 500); }
+            
             const syncBadge = document.getElementById('cloud-sync-status');
-            if (syncBadge) { 
-                syncBadge.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Menyimpan ke Firebase...'; 
-                syncBadge.classList.remove('opacity-0'); 
-            }
+            if (syncBadge) { syncBadge.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Menyimpan ke Firebase...'; syncBadge.classList.remove('opacity-0'); }
 
             if (syncTimeout) clearTimeout(syncTimeout);
             syncTimeout = setTimeout(async () => {
@@ -804,41 +808,39 @@
                     if (syncBadge) syncBadge.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-2 text-yellow-400"></i>Tersimpan Lokal (Cloud Gagal)';
                 }
                 if (syncBadge) setTimeout(() => syncBadge.classList.add('opacity-0'), 2500);
-            }, 100); // Dipercepat menjadi 100ms
+            }, 100);
         };
 
         const initCloudDatabase = async () => {
             const loader = document.getElementById('startup-loader');
+            const localData = localStorage.getItem('CloudMadrasahData');
+            
+            // 1. Muat data lokal secara instan agar UI langsung responsif
+            if(localData) { 
+                try { 
+                    const p = JSON.parse(localData); window.appState = {...window.appState, ...p}; 
+                    if(p.pengaturan) window.appState.pengaturan = {...window.appState.pengaturan, ...p.pengaturan}; 
+                } catch(e){} 
+            }
+
+            // 2. Sinkronisasi data dari Firebase di latar belakang
             try {
                 const snapshot = await get(child(ref(db), 'MadrasahData'));
                 if (snapshot.exists()) {
                     const cloudData = snapshot.val();
                     window.appState = { ...window.appState, ...cloudData };
-                    if (cloudData.pengaturan) {
-                        window.appState.pengaturan = { ...window.appState.pengaturan, ...cloudData.pengaturan };
-                    }
+                    if (cloudData.pengaturan) window.appState.pengaturan = { ...window.appState.pengaturan, ...cloudData.pengaturan };
+                    try { localStorage.setItem('CloudMadrasahData', JSON.stringify(window.appState)); } catch(err){}
                 }
-            } catch (error) {
-                console.warn("Gagal memuat dari Firebase, menggunakan data lokal:", error);
-                const localData = localStorage.getItem('CloudMadrasahData');
-                if (localData) {
-                    try { window.appState = { ...window.appState, ...JSON.parse(localData) }; } catch(e) {}
-                }
-            }
+            } catch (error) { console.warn("Gagal memuat dari Firebase, menggunakan data lokal:", error); }
+
             if (loader) loader.classList.replace('flex', 'hidden');
             if (typeof window.initHijriFilter === 'function') window.initHijriFilter();
             window.updateAllViews();
         };
         
         window.onload = () => { initCloudDatabase(); window.initHijriFilter(); };
-        
-        window.formatRp = (num) => 'Rp ' + parseInt(num).toLocaleString('id-ID');
-        window.getToday = () => { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; };
-        window.getTodayInputFormat = () => { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
-        window.playBeep = () => { try { const a=new (window.AudioContext||window.webkitAudioContext)();const o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.type='sine';o.frequency.setValueAtTime(1000,a.currentTime);g.gain.setValueAtTime(0.1,a.currentTime);o.start();o.stop(a.currentTime+0.1);}catch(e){} };
-        window.playHadirSound = () => { try { if('speechSynthesis' in window) { const u = new SpeechSynthesisUtterance("Hadir"); u.lang = 'id-ID'; window.speechSynthesis.speak(u); } } catch(e){} };
-        window.getDistanceFromLatLonInM = (lat1, lon1, lat2, lon2) => { const R=6371e3, p1=lat1*Math.PI/180, p2=lat2*Math.PI/180, dp=(lat2-lat1)*Math.PI/180, dl=(lon2-lon1)*Math.PI/180, a=Math.sin(dp/2)*Math.sin(dp/2)+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)*Math.sin(dl/2); return R*(2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))); };
-        
+
         window.getLokalGPS = () => {
             return new Promise((resolve, reject) => {
                 if (!navigator.geolocation) return reject({code: 0, message: "Browser tidak mendukung GPS."});
@@ -903,93 +905,6 @@
         window.syncMasehiDate = (type) => { const elT=document.getElementById(`hijri-tgl-${type}`),elB=document.getElementById(`hijri-bln-${type}`),elY=document.getElementById(`hijri-thn-${type}`); if(!elT||!elB||!elY)return; const dates=window.getDatesInHijriMonth(parseInt(elY.value),parseInt(elB.value)); if(dates.length>0) { let tD=dates[parseInt(elT.value)-1]||dates[dates.length-1]; const inp=document.getElementById(type==='agenda'?'agenda-tgl':`tgl-${type}`); if(inp) inp.value=`${tD.getFullYear()}-${String(tD.getMonth()+1).padStart(2,'0')}-${String(tD.getDate()).padStart(2,'0')}`; if(type==='absen-guru')window.renderAbsenGuru(); } };
         window.syncHijriDate = (type, dateObj=null) => { let d=dateObj; if(!d){const t=document.getElementById(type==='agenda'?'agenda-tgl':`tgl-${type}`)?.value; if(!t)return; const p=t.split('-'); d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));} const h=window.getHijriComponents(d); const elT=document.getElementById(`hijri-tgl-${type}`),elB=document.getElementById(`hijri-bln-${type}`),elY=document.getElementById(`hijri-thn-${type}`); if(elT)elT.value=h.d; if(elB)elB.value=h.m; if(elY){if(![...elY.options].find(o=>parseInt(o.value)===h.y))elY.innerHTML+=`<option value="${h.y}">${h.y}</option>`; elY.value=h.y;} };
         window.initHijriFilter = () => { window.populateHijriDropdowns('absen-guru'); window.populateHijriDropdowns('agenda'); window.initKalenderState(); const t=new Date(); const ig=document.getElementById('tgl-absen-guru'); if(ig)ig.value=window.getTodayInputFormat(); window.syncHijriDate('absen-guru',t); const ia=document.getElementById('agenda-tgl'); if(ia)ia.value=window.getTodayInputFormat(); window.syncHijriDate('agenda',t); try{const hc=window.getHijriComponents(t);const sm=document.getElementById('filter-bulan-hijri'),sy=document.getElementById('filter-tahun-hijri'); if(sm)sm.value=hc.m; if(sy){if(![...sy.options].find(o=>parseInt(o.value)===hc.y))sy.innerHTML+=`<option value="${hc.y}">${hc.y} H</option>`; sy.value=hc.y;}}catch(e){} };
-
-        window.showAlert = (title, message, type='info', callback=null) => { document.getElementById('alert-title').innerText=title; document.getElementById('alert-message').innerText=message; const i=document.getElementById('alert-icon'); i.innerHTML=type==='error'?'<i class="fa-solid fa-circle-xmark text-red-500"></i>':type==='success'?'<i class="fa-solid fa-circle-check text-green-500"></i>':'<i class="fa-solid fa-circle-info text-blue-500"></i>'; document.getElementById('alert-modal').classList.replace('hidden','flex'); document.getElementById('alert-close-btn').onclick=()=>{document.getElementById('alert-modal').classList.replace('flex','hidden'); if(callback)setTimeout(callback,300);}; };
-        window.showConfirm = (title, message, callback) => { document.getElementById('confirm-title').innerText=title; document.getElementById('confirm-message').innerText=message; document.getElementById('confirm-modal').classList.replace('hidden','flex'); document.getElementById('confirm-yes-btn').onclick=()=>{document.getElementById('confirm-modal').classList.replace('flex','hidden'); if(callback)callback();}; };
-        window.closeConfirm = () => document.getElementById('confirm-modal').classList.replace('flex','hidden');
-        window.switchTab = (tabId, btn) => { document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active')); const tgt=document.getElementById('tab-'+tabId); if(tgt)tgt.classList.add('active'); document.querySelectorAll('.nav-btn').forEach(el=>{el.classList.remove('bg-blue-50','text-blue-700','active','bg-purple-50','text-purple-700');el.classList.add('text-gray-500');}); if(btn){ let bg='bg-blue-50',tc='text-blue-700'; if(btn.id.includes('guru')||btn.id==='nav-btn-idcard'){bg='bg-purple-50';tc='text-purple-700';} btn.classList.add(bg,tc,'active'); btn.classList.remove('text-gray-500'); if(window.innerWidth<1024)window.toggleSidebar(); } window.updateAllViews(); };
-        window.toggleSidebar = () => { const sb=document.getElementById('sidebar'),ov=document.getElementById('sidebar-overlay'); if(sb.classList.contains('-translate-x-full')){sb.classList.remove('-translate-x-full');ov.classList.remove('hidden');}else{sb.classList.add('-translate-x-full');ov.classList.add('hidden');} };
-        window.toggleSubmenu = (sId, iId) => { const s=document.getElementById(sId),i=document.getElementById(iId); if(s.classList.contains('hidden')){s.classList.replace('hidden','flex');i.classList.add('rotate-180');}else{s.classList.replace('flex','hidden');i.classList.remove('rotate-180');} };
-        window.bukaModalPengaturan = (tab) => { window.switchSettingTab(tab||'lokasi'); document.getElementById('modal-pengaturan').classList.replace('hidden','flex'); };
-
-        const initCloudDatabase = async () => {
-            const ldr = document.getElementById('startup-loader'); 
-            const loc = localStorage.getItem('CloudMadrasahData');
-            
-            // 1. Muat data lokal secara instan agar UI langsung responsif tanpa menunggu jaringan
-            if(loc) { 
-                try { 
-                    const p = JSON.parse(loc); 
-                    window.appState = {...window.appState, ...p}; 
-                    if(p.pengaturan) window.appState.pengaturan = {...window.appState.pengaturan, ...p.pengaturan}; 
-                } catch(e){} 
-            }
-            
-            // 2. Ambil sync terbaru dari Cloud di latar belakang secara asinkron
-            if (SCRIPT_URL && SCRIPT_URL.includes('script.google.com')) {
-                fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'GET_ALL' })
-                })
-                .then(r => r.json())
-                .then(res => { 
-                    if(res.success && res.data) {
-                        window.appState = {...window.appState, ...res.data}; 
-                        if(res.data.pengaturan) window.appState.pengaturan = {...window.appState.pengaturan, ...res.data.pengaturan}; 
-                        try { localStorage.setItem('CloudMadrasahData', JSON.stringify(window.appState)); } catch(err){} 
-                        window.updateAllViews();
-                    } 
-                })
-                .catch(e => console.warn("Sync cloud latar belakang gagal/lambat, menggunakan data lokal."));
-            }
-            
-            // 3. Fungsi simpan yang dipercepat
-            window.saveState = async () => {
-                // Simpan ke memori lokal HP/Laptop secara instan (0 milidetik)
-                try { 
-                    localStorage.setItem('CloudMadrasahData', JSON.stringify(window.appState)); 
-                } catch(e) { 
-                    if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') { 
-                        setTimeout(() => window.showAlert('Penyimpanan Penuh', 'Penyimpanan lokal peramban Anda penuh. Mohon perkecil ukuran foto guru.', 'error'), 500); 
-                    } 
-                }
-                
-                const sb = document.getElementById('cloud-sync-status'); 
-                if(sb){
-                    sb.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Menyimpan ke Cloud...';
-                    sb.classList.remove('opacity-0');
-                }
-                
-                if(syncTimeout) clearTimeout(syncTimeout);
-                
-                // Jeda dipercepat dari 800ms menjadi 100ms
-                syncTimeout = setTimeout(async () => { 
-                    try { 
-                        if(SCRIPT_URL && SCRIPT_URL.includes('script.google.com')){ 
-                            const r = await fetch(SCRIPT_URL, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                                body: JSON.stringify({ action: 'SYNC_ALL', payload: window.appState })
-                            }); 
-                            const json = await r.json(); 
-                            if(json.success && sb) {
-                                sb.innerHTML = '<i class="fa-solid fa-check mr-2 text-green-400"></i>Tersimpan di Google Drive!'; 
-                            } else throw new Error(); 
-                        } else if(sb) {
-                            sb.innerHTML = '<i class="fa-solid fa-check mr-2 text-green-400"></i>Tersimpan Lokal!'; 
-                        }
-                    } catch(e) { 
-                        if(sb) sb.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-2 text-yellow-400"></i>Disimpan Lokal (Cloud Gagal)'; 
-                    } 
-                    if(sb) setTimeout(() => sb.classList.add('opacity-0'), 1500); 
-                }, 00); // 100ms agar pengiriman ke Drive langsung berjalan cepat
-            };
-            
-            if(ldr) ldr.classList.replace('flex', 'hidden'); 
-            window.updateAllViews();
-        };
-        window.onload = () => { initCloudDatabase(); window.initHijriFilter(); };
 
         window.prosesLogin = (e) => {
             e.preventDefault(); const u=document.getElementById('login-user').value.trim(), p=document.getElementById('login-pass').value, err=document.getElementById('login-error'), s=window.appState.pengaturan||{};
