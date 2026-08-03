@@ -221,8 +221,17 @@
                     </div>
                 </div>
                 <div class="mb-5 flex gap-3">
-                    <div class="flex-1"><label class="block text-sm font-bold text-gray-700 mb-2">Alasan Ringkas:</label><input type="text" id="input-alasan-surat" class="w-full border border-gray-300 rounded-xl p-3 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm" placeholder="Cth: Acara keluarga / Demam..."></div>
-                    <div class="w-24 shrink-0"><label class="block text-sm font-bold text-gray-700 mb-2">Jml Hari:</label><input type="number" id="input-hari-surat" class="w-full border border-gray-300 rounded-xl p-3 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm text-center font-bold" value="1" min="1" max="14"></div>
+                    <div class="flex-1">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Alasan Ringkas:</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="input-alasan-surat" class="w-full border border-gray-300 rounded-xl p-3 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm" placeholder="Cth: Acara keluarga / Demam...">
+                            <button type="button" onclick="window.perhalusAlasanAI()" class="bg-amber-100 text-amber-700 font-bold px-3 rounded-xl border border-amber-200 hover:bg-amber-200 flex items-center justify-center transition-colors whitespace-nowrap" id="btn-ai-alasan" title="Perhalus dengan AI">✨ AI</button>
+                        </div>
+                    </div>
+                    <div class="w-24 shrink-0">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Jml Hari:</label>
+                        <input type="number" id="input-hari-surat" class="w-full border border-gray-300 rounded-xl p-3 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm text-center font-bold" value="1" min="1" max="14">
+                    </div>
                 </div>
                 <button onclick="window.prosesSuratKeterangan()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-colors flex items-center justify-center gap-2"><i class="fa-solid fa-receipt"></i> Buat Surat</button>
             </div>
@@ -1296,8 +1305,8 @@
         window.checkWaktuAbsenGuru = (guru, tgl, statusScan) => {
             const p=tgl.split('-'), d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2])), nh=['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][d.getDay()];
             const ah=(window.appState.agenda||[]).filter(a=>a.tgl===tgl);
-            const ar=ah.find(a=>a.tipe==='Rapat'||a.ket.toLowerCase().includes('rapat'));
-            const apRapot=ah.find(a=>a.ket.toLowerCase().includes('pembagian rapot') || a.ket.toLowerCase().includes('pembagian rapor'));
+            const ar=ah.find(a=>a.tipe==='Rapat'||(a.ket||'').toLowerCase().includes('rapat'));
+            const apRapot=ah.find(a=>(a.ket||'').toLowerCase().includes('pembagian rapot') || (a.ket||'').toLowerCase().includes('pembagian rapor'));
             
             if (apRapot) {
                 const jab = (guru.jabatan || '').toLowerCase();
@@ -1364,8 +1373,8 @@
             if(!tE.value){tE.value=window.getTodayInputFormat();window.syncHijriDate('absen-guru');} const tgl=tE.value;
             const rh=(window.appState.absensi_guru||[]).find(a=>a.tanggal===tgl)||{data:[]}, p=tgl.split('-'), d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2])), nh=['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][d.getDay()];
             const ah=(window.appState.agenda||[]).filter(a=>a.tgl===tgl);
-            const ar=ah.find(a=>a.tipe==='Rapat'||a.ket.toLowerCase().includes('rapat'));
-            const apRapot=ah.find(a=>a.ket.toLowerCase().includes('pembagian rapot') || a.ket.toLowerCase().includes('pembagian rapor'));
+            const ar=ah.find(a=>a.tipe==='Rapat'||(a.ket||'').toLowerCase().includes('rapat'));
+            const apRapot=ah.find(a=>(a.ket||'').toLowerCase().includes('pembagian rapot') || (a.ket||'').toLowerCase().includes('pembagian rapor'));
             const jh=(window.appState.jadwal_guru||[]).filter(j=>j.hari===nh), ijt=new Set(jh.map(j=>String(j.id_guru)));
             
             let gt = [];
@@ -1505,15 +1514,16 @@
 
         window.tempInfoJarak = ''; window.tempScanText = ''; window.tempScannerMode = ''; window.tempSuratSesi = '';
         window.processScanResult = async (rawText) => {
-            let idLokal = rawText.trim(); if(rawText.includes('mmuibt.net')) { try { const b64 = rawText.split('id=')[1]; idLokal = atob(b64).split('#')[0]; } catch(e){} }
+            let textStr = String(rawText || '');
+            let idLokal = textStr.trim(); if(textStr.includes('mmuibt.net')) { try { const b64 = textStr.split('id=')[1]; idLokal = atob(b64).split('#')[0]; } catch(e){} }
             const isGuru = window.appState.guru.find(g => String(g.nip) === idLokal || String(g.id) === idLokal);
             if (!isGuru) return window.showAlert('Tidak Ditemukan', `ID / Barcode Guru "${idLokal}" tidak terdaftar.`, 'error');
             const namaOrang = isGuru.nama; const modeScanEl = document.getElementById('mode-scan-guru'); const statusScan = (activeScannerMode === 'absen-guru-tab' && modeScanEl) ? modeScanEl.value : 'Hadir'; 
             window.tempInfoJarak = ''; const tglEl = document.getElementById('tgl-absen-guru'); const tgl = (tglEl && tglEl.value) ? tglEl.value : window.getTodayInputFormat();
             const ah = (window.appState.agenda || []).filter(a => a.tgl === tgl); 
             const il = ah.find(a => a.tipe === 'Libur'); 
-            const ar = ah.find(a => a.tipe === 'Rapat' || a.ket.toLowerCase().includes('rapat'));
-            const apRapot = ah.find(a => a.ket.toLowerCase().includes('pembagian rapot') || a.ket.toLowerCase().includes('pembagian rapor'));
+            const ar = ah.find(a => a.tipe === 'Rapat' || (a.ket||'').toLowerCase().includes('rapat'));
+            const apRapot = ah.find(a => (a.ket||'').toLowerCase().includes('pembagian rapot') || (a.ket||'').toLowerCase().includes('pembagian rapor'));
             
             if (apRapot) {
                 const jab = (isGuru.jabatan || '').toLowerCase();
@@ -1555,7 +1565,8 @@
         window.tutupLuarRadiusModal = () => document.getElementById('modal-luar-radius').classList.replace('flex','hidden');
 
         window.executeAbsensiData = (rawText, forceStatus = null, silent = false, passedCekWaktu = null) => {
-            let idLokal = rawText.trim(); if(rawText.includes('mmuibt.net')) { try { idLokal = atob(rawText.split('id=')[1]).split('#')[0]; } catch(e){} }
+            let textStr = String(rawText || '');
+            let idLokal = textStr.trim(); if(textStr.includes('mmuibt.net')) { try { idLokal = atob(textStr.split('id=')[1]).split('#')[0]; } catch(e){} }
             const infoJarak = window.tempInfoJarak || '';
             if (activeScannerMode === 'absen-cepat' || activeScannerMode === 'absen-guru-tab') {
                 const tEl=document.getElementById('tgl-absen-guru'), t=(activeScannerMode==='absen-guru-tab'&&tEl&&tEl.value)?tEl.value:window.getTodayInputFormat();
@@ -1631,7 +1642,7 @@
             if(cs1 && cs2 && cs3) { if(selSesi.length === 0) return window.showAlert('Gagal', 'Pilih minimal satu sesi untuk pengajuan.', 'error'); } else { selSesi = [1, 2, 3]; }
             if(!al) return window.showAlert('Gagal', 'Alasan wajib diisi.', 'error'); 
             document.getElementById('modal-surat-keterangan').classList.replace('flex','hidden');
-            let idLokal = window.tempScanText.trim(); if(window.tempScanText.includes('mmuibt.net')){try{idLokal=atob(window.tempScanText.split('id=')[1]).split('#')[0];}catch(e){}}
+            let idLokal = String(window.tempScanText || '').trim(); if(idLokal.includes('mmuibt.net')){try{idLokal=atob(idLokal.split('id=')[1]).split('#')[0];}catch(e){}}
             const g = window.appState.guru.find(x => String(x.nip)===idLokal || String(x.id)===idLokal); if(!g) return;
             const baseDate = new Date(); const currDay = ['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][baseDate.getDay()];
             const jToday = (window.appState.jadwal_guru||[]).find(j => j.hari === currDay && String(j.id_guru) === String(g.id)); let isPast = false;
