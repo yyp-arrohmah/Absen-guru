@@ -134,22 +134,43 @@
                     </div>
                 </div>
 
-                <div class="flex bg-white rounded-xl shadow-sm border border-gray-200 mb-4 overflow-x-auto hide-scrollbar sticky top-0 z-20">
-                    <button onclick="window.switchSubTabRiwayat('harian')" id="subtab-btn-harian" class="flex-1 py-3 px-4 text-sm font-bold border-b-2 border-purple-600 text-purple-600 transition-colors whitespace-nowrap"><i class="fa-solid fa-list-check mr-1.5"></i> Riwayat Harian</button>
-                    <button onclick="window.switchSubTabRiwayat('rekap')" id="subtab-btn-rekap" class="flex-1 py-3 px-4 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors whitespace-nowrap"><i class="fa-solid fa-chart-pie mr-1.5"></i> Rekap Bulan Ini</button>
-                    <button onclick="window.switchSubTabRiwayat('jadwal')" id="subtab-btn-jadwal" class="flex-1 py-3 px-4 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors whitespace-nowrap"><i class="fa-solid fa-calendar-days mr-1.5"></i> Jadwal Mengajar</button>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-6">
+                    <button onclick="window.bukaPopupPortal('harian')" class="bg-white border border-purple-200 hover:bg-purple-50 hover:border-purple-300 text-purple-700 p-5 rounded-2xl shadow-sm transition-all flex flex-col items-center justify-center gap-3 group">
+                        <div class="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-list-check"></i></div>
+                        <span class="font-bold text-sm">Riwayat Harian</span>
+                    </button>
+                    <button onclick="window.bukaPopupPortal('rekap')" class="bg-white border border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 text-emerald-700 p-5 rounded-2xl shadow-sm transition-all flex flex-col items-center justify-center gap-3 group">
+                        <div class="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-chart-pie"></i></div>
+                        <span class="font-bold text-sm">Rekap Bulan Ini</span>
+                    </button>
+                    <button onclick="window.bukaPopupPortal('jadwal')" class="bg-white border border-blue-200 hover:bg-blue-50 hover:border-blue-300 text-blue-700 p-5 rounded-2xl shadow-sm transition-all flex flex-col items-center justify-center gap-3 group">
+                        <div class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-calendar-days"></i></div>
+                        <span class="font-bold text-sm">Jadwal Mengajar</span>
+                    </button>
                 </div>
+            </div>
+        </div>
+    </div>
 
-                <div id="view-riwayat-harian" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden block">
-                    <div class="bg-purple-50 p-3 border-b border-purple-100 flex justify-between items-center"><span class="text-xs font-bold text-purple-800 uppercase">Detail Absensi per Tanggal</span></div>
-                    <div class="overflow-x-auto pb-4 max-h-[45vh]">
-                        <table class="w-full text-sm text-left">
-                            <thead class="bg-purple-50 text-xs text-purple-900 font-bold uppercase border-b border-purple-100 sticky top-0 z-10 shadow-sm"><tr><th class="px-4 py-3.5 w-16 text-center">No</th><th class="px-4 py-3.5">Tanggal</th><th class="px-4 py-3.5">Jadwal Masuk</th><th class="px-4 py-3.5 text-center">Jam Ke-1</th><th class="px-4 py-3.5 text-center">Jam Ke-2</th><th class="px-4 py-3.5 text-center">Jam Ke-3</th><th class="px-4 py-3.5">Keterangan</th></tr></thead>
-                            <tbody id="table-riwayat-guru" class="divide-y divide-gray-100 bg-white relative z-0"><tr><td colspan="7" class="text-center py-8 text-gray-500">Memuat data...</td></tr></tbody>
-                        </table>
+    <!-- MODAL POPUP PORTAL DATA -->
+    <div id="modal-popup-portal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100010] hidden items-center justify-center p-0 sm:p-4 transition-opacity">
+        <div class="bg-white rounded-none sm:rounded-3xl shadow-2xl overflow-hidden max-w-5xl w-full h-full sm:h-auto sm:max-h-[95vh] flex flex-col relative">
+            <div id="popup-portal-header" class="bg-purple-600 p-4 text-white flex justify-between items-center shrink-0">
+                <h3 class="font-bold flex items-center text-sm" id="popup-portal-title"><i class="fa-solid fa-folder-open mr-2"></i>Detail</h3>
+                <button onclick="window.tutupPopupPortal()" id="popup-portal-close" class="text-white/70 hover:text-white bg-purple-700 w-8 h-8 flex justify-center items-center rounded-full transition-colors"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4 lg:p-6 overflow-y-auto flex-1 bg-gray-50">
+                <div id="view-riwayat-harian" class="hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden block">
+                        <div class="bg-purple-50 p-3 border-b border-purple-100 flex justify-between items-center"><span class="text-xs font-bold text-purple-800 uppercase">Detail Absensi per Tanggal</span></div>
+                        <div class="overflow-x-auto pb-4 max-h-[60vh]">
+                            <table class="w-full text-sm text-left">
+                                <thead class="bg-purple-50 text-xs text-purple-900 font-bold uppercase border-b border-purple-100 sticky top-0 z-10 shadow-sm"><tr><th class="px-4 py-3.5 w-16 text-center">No</th><th class="px-4 py-3.5">Tanggal</th><th class="px-4 py-3.5">Jadwal Masuk</th><th class="px-4 py-3.5 text-center">Jam Ke-1</th><th class="px-4 py-3.5 text-center">Jam Ke-2</th><th class="px-4 py-3.5 text-center">Jam Ke-3</th><th class="px-4 py-3.5">Keterangan</th></tr></thead>
+                                <tbody id="table-riwayat-guru" class="divide-y divide-gray-100 bg-white relative z-0"><tr><td colspan="7" class="text-center py-8 text-gray-500">Memuat data...</td></tr></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-
                 <div id="view-riwayat-rekap" class="hidden">
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
                         <div class="flex justify-between items-center border-b border-gray-100 pb-3 mb-4"><h4 class="font-bold text-gray-800">Statistik Absensi Bulan Ini</h4><span id="rekap-bulan-hijri-teks" class="text-xs font-bold bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg border border-emerald-200">Muharram 1446 H</span></div>
@@ -157,10 +178,9 @@
                         <p class="text-[10px] text-gray-400 mt-4 text-center">*Rekap dihitung berdasarkan kalender Hijriyah bulan berjalan.</p>
                     </div>
                 </div>
-
                 <div id="view-riwayat-jadwal" class="hidden">
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div class="bg-purple-50 p-3 border-b border-purple-100 flex justify-between items-center"><span class="text-xs font-bold text-purple-800 uppercase">Jadwal Sepekan</span></div>
+                        <div class="bg-blue-50 p-3 border-b border-blue-100 flex justify-between items-center"><span class="text-xs font-bold text-blue-800 uppercase">Jadwal Sepekan</span></div>
                         <div class="overflow-x-auto pb-2">
                             <table class="w-full text-sm text-left">
                                 <thead class="bg-gray-50 text-xs text-gray-600 font-bold uppercase border-b border-gray-200">
@@ -468,7 +488,7 @@
     <div id="login-screen" class="fixed inset-0 bg-emerald-50/70 backdrop-blur-sm z-[8000] flex flex-col items-center justify-center p-4 transition-opacity duration-300">
         <div class="bg-white rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(16,185,129,0.2)] overflow-hidden w-full max-w-[320px] flex flex-col border border-emerald-100">
             <div class="bg-white p-6 pb-2 text-center relative overflow-hidden">
-                <div id="login-logo-wrapper" class="relative z-10 w-16 h-16 bg-emerald-50 rounded-2xl mx-auto flex items-center justify-center text-emerald-600 text-3xl mb-3 shadow-sm border border-emerald-100 p-1">
+                <div id="login-logo-wrapper" class="relative z-10 w-24 h-24 bg-emerald-50 rounded-2xl mx-auto flex items-center justify-center text-emerald-600 text-5xl mb-3 shadow-sm border border-emerald-100 p-2">
                     <img id="login-logo-img" src="" class="max-w-full max-h-full object-contain hidden drop-shadow-sm">
                     <i id="login-logo-icon" class="fa-solid fa-graduation-cap"></i>
                 </div>
@@ -506,7 +526,7 @@
         <aside id="sidebar" class="bg-white w-64 h-full border-r border-gray-200 flex flex-col fixed lg:relative z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
             <div class="p-6 border-b border-gray-100 flex justify-between items-center">
                 <div class="flex items-center gap-3">
-                    <div id="sidebar-logo-wrapper" class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold p-1 shadow-sm">
+                    <div id="sidebar-logo-wrapper" class="w-14 h-14 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold p-1.5 shadow-sm text-2xl">
                         <img id="sidebar-logo-img" src="" class="w-full h-full object-contain hidden drop-shadow-sm">
                         <i id="sidebar-logo-icon" class="fa-solid fa-graduation-cap"></i>
                     </div>
@@ -654,7 +674,7 @@
                         <div><h2 class="text-2xl font-bold text-gray-800">Jadwal Kelas</h2><p class="text-gray-500 text-sm">Jadwal mengajar berdasarkan kelas. (Jumat Ditiadakan)</p></div>
                         <div class="flex items-center gap-3">
                             <button onclick="window.renderJadwalKelas()" class="bg-white text-gray-800 border border-gray-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-gray-50 transition-colors flex items-center gap-2"><i class="fa-solid fa-rotate-right"></i> Perbarui Tampilan</button>
-                            <button onclick="window.cetakJadwalKelasPDF()" class="bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-red-700 transition-colors flex items-center gap-2"><i class="fa-solid fa-file-pdf"></i> Cetak PDF A4</button>
+                            <button onclick="window.cetakJadwalKelasExcel()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-emerald-700 transition-colors flex items-center gap-2"><i class="fa-solid fa-file-excel"></i> Cetak Excel</button>
                         </div>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden" id="cetak-area-jadwal-kelas">
@@ -1081,35 +1101,31 @@
             }).join('');
         };
 
-        window.cetakJadwalKelasPDF = () => {
-            const targetContainer = document.getElementById('cetak-area-jadwal-kelas'); if (!targetContainer) return;
-            window.showAlert('Memproses', 'Menyiapkan dokumen PDF Jadwal Kelas...', 'info');
-            const scrollContainer = targetContainer.querySelector('.overflow-x-auto');
-            const originalOverflow = scrollContainer ? scrollContainer.style.overflowX : '';
-            const originalMinWidth = targetContainer.style.minWidth;
-            if (scrollContainer) scrollContainer.style.overflowX = 'visible';
-            targetContainer.style.minWidth = '1000px'; 
-            const titleDiv = document.createElement('div');
-            titleDiv.innerHTML = '<h2 style="text-align: center; margin: 20px 0; font-size: 24px; font-weight: bold; color: #1f2937;">JADWAL KELAS MADRASAH</h2>';
-            targetContainer.insertBefore(titleDiv, targetContainer.firstChild);
+        window.cetakJadwalKelasExcel = () => {
+            try {
+                const targetContainer = document.getElementById('cetak-area-jadwal-kelas'); 
+                if (!targetContainer) return;
+                
+                const table = targetContainer.querySelector('table');
+                if (!table) return window.showAlert("Gagal", "Tabel jadwal kelas tidak ditemukan.", "error");
 
-            html2canvas(targetContainer, { scale: 2, backgroundColor: '#ffffff', useCORS: true }).then(canvas => {
-                if (scrollContainer) scrollContainer.style.overflowX = originalOverflow;
-                targetContainer.style.minWidth = originalMinWidth; targetContainer.removeChild(titleDiv); 
-                const imgData = canvas.toDataURL('image/png'); const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4'); 
-                const pdfWidth = pdf.internal.pageSize.getWidth(), pdfHeight = pdf.internal.pageSize.getHeight();
-                const imgProps = pdf.getImageProperties(imgData); const marginX = 10, marginY = 15; 
-                const maxW = pdfWidth - (marginX * 2), maxH = pdfHeight - (marginY * 2);
-                let imgW = maxW, imgH = (imgProps.height * imgW) / imgProps.width;
-                if (imgH > maxH) { imgH = maxH; imgW = (imgProps.width * imgH) / imgProps.height; }
-                const posX = marginX + (maxW - imgW) / 2;
-                pdf.addImage(imgData, 'PNG', posX, marginY, imgW, imgH); pdf.save('Jadwal_Kelas_Madrasah.pdf');
-                window.showAlert('Selesai', 'Jadwal Kelas berhasil diunduh sebagai PDF.', 'success');
-            }).catch(err => {
-                if (scrollContainer) scrollContainer.style.overflowX = originalOverflow;
-                targetContainer.style.minWidth = originalMinWidth; if(titleDiv.parentNode) targetContainer.removeChild(titleDiv);
-                window.showAlert('Gagal', 'Terjadi kesalahan saat mencetak PDF.', 'error');
-            });
+                window.showAlert('Memproses', 'Menyiapkan dokumen Excel Jadwal Kelas...', 'info');
+                
+                // Gunakan pustaka XLSX untuk mengubah HTML Table ke Sheet Excel
+                const ws = XLSX.utils.table_to_sheet(table, { raw: true });
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Jadwal_Kelas");
+                
+                // Simpan File
+                XLSX.writeFile(wb, 'Jadwal_Kelas_Madrasah.xlsx');
+                
+                // Tunda sedikit notifikasi sukses agar animasi tidak tumpang tindih
+                setTimeout(() => {
+                    window.showAlert('Berhasil', 'Jadwal Kelas berhasil diunduh sebagai Excel.', 'success');
+                }, 500);
+            } catch(err) {
+                window.showAlert('Gagal', 'Terjadi kesalahan saat mencetak Excel.', 'error');
+            }
         };
 
         window.checkWaktuAbsenGuru = (guru, tgl, statusScan) => {
@@ -1296,7 +1312,8 @@
                 else { btnLogout.classList.add('hidden'); btnClose.classList.remove('hidden'); }
             }
 
-            window.switchSubTabRiwayat('harian');
+            // Sembunyikan semua sub-tab agar tidak tampil sebelum dipanggil popup
+            ['harian', 'rekap', 'jadwal'].forEach(t => { const v = document.getElementById(`view-riwayat-${t}`); if(v) v.style.display = 'none'; });
             document.getElementById('profil-riwayat-foto').src = g.foto||'https://ui-avatars.com/api/?name=Foto&background=cbd5e1&color=fff';
             document.getElementById('profil-riwayat-nama').innerText = g.nama||'-'; document.getElementById('profil-riwayat-jabatan').innerText = g.jabatan||'Guru'; document.getElementById('profil-riwayat-nip').innerText = g.nip||'-'; document.getElementById('profil-riwayat-hp').innerText = g.hp||'-';
             const t=new Date(), hc=window.getHijriComponents(t), nh=['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][t.getDay()], ts=window.getTodayInputFormat();
@@ -1317,7 +1334,30 @@
             document.getElementById('modal-riwayat-guru').classList.replace('hidden','flex');
         };
 
-        window.switchSubTabRiwayat = (tab) => { ['harian','rekap','jadwal'].forEach(t=>{const v=document.getElementById(`view-riwayat-${t}`),b=document.getElementById(`subtab-btn-${t}`); if(v&&b){if(t===tab){v.style.display='block';b.classList.add('border-purple-600','text-purple-600');b.classList.remove('border-transparent','text-gray-500');}else{v.style.display='none';b.classList.remove('border-purple-600','text-purple-600');b.classList.add('border-transparent','text-gray-500');}}}); };
+        window.bukaPopupPortal = (tab) => {
+            ['harian', 'rekap', 'jadwal'].forEach(t => {
+                const v = document.getElementById(`view-riwayat-${t}`);
+                if (v) v.style.display = (t === tab) ? 'block' : 'none';
+            });
+            const titles = { 'harian': '<i class="fa-solid fa-list-check mr-2"></i>Riwayat Harian', 'rekap': '<i class="fa-solid fa-chart-pie mr-2"></i>Rekap Bulan Ini', 'jadwal': '<i class="fa-solid fa-calendar-days mr-2"></i>Jadwal Mengajar' };
+            document.getElementById('popup-portal-title').innerHTML = titles[tab] || 'Detail';
+            
+            const header = document.getElementById('popup-portal-header');
+            const btnClose = document.getElementById('popup-portal-close');
+            if (tab === 'rekap') {
+                header.className = 'p-4 text-white flex justify-between items-center shrink-0 bg-emerald-600';
+                btnClose.className = 'text-white/70 hover:text-white bg-emerald-700 w-8 h-8 flex justify-center items-center rounded-full transition-colors';
+            } else if (tab === 'jadwal') {
+                header.className = 'p-4 text-white flex justify-between items-center shrink-0 bg-blue-600';
+                btnClose.className = 'text-white/70 hover:text-white bg-blue-700 w-8 h-8 flex justify-center items-center rounded-full transition-colors';
+            } else {
+                header.className = 'p-4 text-white flex justify-between items-center shrink-0 bg-purple-600';
+                btnClose.className = 'text-white/70 hover:text-white bg-purple-700 w-8 h-8 flex justify-center items-center rounded-full transition-colors';
+            }
+            document.getElementById('modal-popup-portal').classList.replace('hidden', 'flex');
+        };
+        window.tutupPopupPortal = () => document.getElementById('modal-popup-portal').classList.replace('flex', 'hidden');
+
         window.renderGridRiwayat = () => { const c=document.getElementById('grid-riwayat-guru'),sv=(document.getElementById('search-riwayat-guru')?.value||'').toLowerCase(); if(!c)return; let gl=window.appState.guru||[]; if(window.currentUser&&window.currentUser.role==='guru'){gl=gl.filter(g=>String(g.id)===String(window.currentUser.id_guru));const sc=document.getElementById('search-container-riwayat');if(sc)sc.style.display='none';}else{if(sv)gl=gl.filter(g=>(g.nama||'').toLowerCase().includes(sv)||(g.nip||'').toLowerCase().includes(sv));} if(gl.length===0){c.innerHTML='<div class="col-span-full text-center py-10 text-gray-500">Tidak ada data guru.</div>';return;} c.innerHTML=gl.map(g=>`<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col items-center text-center hover:shadow-md transition-all cursor-pointer hover:border-purple-300 group" onclick="window.bukaModalRiwayat('${g.id}')"><img src="${g.foto||'https://ui-avatars.com/api/?name=Guru&background=cbd5e1'}" class="w-20 h-20 rounded-full object-cover mb-3 border-4 border-purple-50 group-hover:border-purple-100 transition-colors"><h4 class="font-bold text-gray-800 text-sm w-full truncate">${g.nama}</h4><p class="text-xs text-purple-600 mb-4">${g.jabatan||'-'}</p><button class="w-full bg-purple-50 text-purple-700 text-xs font-bold py-2.5 rounded-xl group-hover:bg-purple-600 group-hover:text-white transition-colors"><i class="fa-solid fa-clock-rotate-left mr-1"></i> Buka Portal</button></div>`).join(''); };
 
         window.tempInfoJarak = ''; window.tempScanText = ''; window.tempScannerMode = ''; window.tempSuratSesi = '';
