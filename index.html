@@ -545,6 +545,7 @@
                             <button onclick="window.toggleSubmenu('submenu-khidmah', 'icon-khidmah')" class="w-full flex items-center justify-between px-4 py-3 text-left text-sm font-medium text-purple-700 hover:bg-purple-50 transition-colors outline-none rounded-xl"><div class="flex items-center gap-3"><i class="fa-solid fa-chalkboard-user w-5"></i> Data Guru</div><i id="icon-khidmah" class="fa-solid fa-chevron-down transition-transform duration-300 text-xs"></i></button>
                             <div id="submenu-khidmah" class="flex flex-col gap-1 mt-1 pl-4 border-l-2 border-purple-200 ml-2">
                                 <button id="nav-btn-guru" onclick="window.switchTab('guru', this)" class="nav-btn w-full flex items-center gap-3 px-4 py-2 rounded-xl text-left text-sm font-medium text-gray-500 hover:bg-purple-50 transition-colors"><i class="fa-solid fa-user-tie w-5"></i> Profil Guru</button>
+                                <button id="nav-btn-riwayat-guru" onclick="window.switchTab('riwayat-guru', this)" class="nav-btn w-full flex items-center gap-3 px-4 py-2 rounded-xl text-left text-sm font-medium text-gray-500 hover:bg-purple-50 transition-colors"><i class="fa-solid fa-clock-rotate-left w-5"></i> Portal Riwayat</button>
                                 <button id="nav-btn-absen-guru" onclick="window.switchTab('absen-guru', this)" class="nav-btn w-full flex items-center gap-3 px-4 py-2 rounded-xl text-left text-sm font-medium text-gray-500 hover:bg-purple-50 transition-colors"><i class="fa-solid fa-calendar-check w-5"></i> Absensi Guru</button>
                                 <button id="nav-btn-jadwal-guru" onclick="window.switchTab('jadwal-guru', this)" class="nav-btn w-full flex items-center gap-3 px-4 py-2 rounded-xl text-left text-sm font-medium text-gray-500 hover:bg-purple-50 transition-colors"><i class="fa-solid fa-calendar-days w-5"></i> Jadwal Guru</button>
                                 <button id="nav-btn-jadwal-kelas" onclick="window.switchTab('jadwal-kelas', this)" class="nav-btn w-full flex items-center gap-3 px-4 py-2 rounded-xl text-left text-sm font-medium text-gray-500 hover:bg-emerald-50 transition-colors"><i class="fa-solid fa-layer-group w-5"></i> Jadwal Kelas</button>
@@ -575,13 +576,55 @@
             <div class="w-full">
                 <!-- DASHBOARD -->
                 <div id="tab-dashboard" class="tab-content active max-w-6xl mx-auto scroll-mt-6">
-                    <div id="dash-title-container" class="mb-8"><h2 class="text-2xl font-bold text-gray-800">Ringkasan Sistem</h2><p class="text-gray-500 text-sm">Informasi dasar madrasah.</p></div>
-                    <div id="dash-stats-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-8">
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4"><div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-xl"><i class="fa-solid fa-chalkboard-user"></i></div><div><p class="text-gray-500 text-xs font-bold uppercase">Total Guru</p><h3 class="text-2xl font-bold" id="dash-guru">0</h3></div></div>
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4"><div class="w-12 h-12 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center text-xl relative"><i class="fa-solid fa-chalkboard-user"></i><i class="fa-solid fa-check absolute bottom-2 right-1 text-[12px] bg-white rounded-full text-teal-600"></i></div><div><p class="text-gray-500 text-xs font-bold uppercase">Guru Hadir</p><h3 class="text-2xl font-bold text-teal-600" id="dash-guru-hadir">0</h3></div></div>
+                    <div id="dash-title-container" class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Ringkasan Kehadiran</h2>
+                        <p class="text-gray-500 text-sm">Statistik kehadiran guru per sesi mengajar.</p>
                     </div>
-                    <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4 border-t border-gray-200 pt-8">
-                        <div><h2 class="text-2xl font-bold text-gray-800">Riwayat Absensi</h2><p class="text-gray-500 text-sm">Pilih nama guru untuk melihat portal & riwayat kehadiran.</p></div>
+
+                    <!-- SESI 1 -->
+                    <div class="mb-6">
+                        <h3 class="font-bold text-gray-700 mb-3 flex items-center gap-2 border-b border-gray-200 pb-2"><span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-lg flex items-center justify-center"><i class="fa-solid fa-1"></i></span> Sesi 1 (Jam Pertama)</h3>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center gap-1"><div class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-sm"><i class="fa-solid fa-users"></i></div><div><h3 class="text-lg font-bold text-gray-800" id="dash-guru-1">0</h3><p class="text-gray-500 text-[10px] font-bold uppercase">Jadwal</p></div></div>
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center gap-1"><div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm"><i class="fa-solid fa-user-check"></i></div><div><h3 class="text-lg font-bold text-emerald-600" id="dash-hadir-1">0</h3><p class="text-gray-500 text-[10px] font-bold uppercase">Hadir</p></div></div>
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center gap-1"><div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm"><i class="fa-solid fa-envelope-open-text"></i></div><div><h3 class="text-lg font-bold text-blue-600" id="dash-izin-1">0</h3><p class="text-gray-500 text-[10px] font-bold uppercase">Izin</p></div></div>
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center gap-1"><div class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-sm"><i class="fa-solid fa-notes-medical"></i></div><div><h3 class="text-lg font-bold text-orange-600" id="dash-sakit-1">0</h3><p class="text-gray-500 text-[10px] font-bold uppercase">Sakit</p></div></div>
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center gap-1"><div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-sm"><i class="fa-solid fa-briefcase"></i></div><div><h3 class="text-lg font-bold text-indigo-600" id="dash-cuti-1">0</h3><p class="text-gray-500 text-[10px] font-bold uppercase">Cuti</p></div></div>
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center gap-1"><div class="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-sm"><i class="fa-solid fa-user-xmark"></i></div><div><h3 class="text-lg font-bold text-red-600" id="dash-alpa-1">0</h3><p class="text-gray-500 text-[10px] font-bold uppercase">Alpa</p></div></div>
+                        </div>
+                    </div>
+
+                    <!-- SESI 2 -->
+                    <div class="mb-6">
+                        <h3 class="font-bold text-gray-700 mb-3 flex items-center gap-2 border-b border-gray-200 pb-2"><span class="bg-emerald-100 text-emerald-600 w-8 h-8 rounded-lg flex items-center justify-center"><i class="fa-solid fa-2"></i></span> Sesi 2 (Jam Kedua)</h3>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center gap-1"><div class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-sm"><i class="fa-solid fa-users"></i></div><div><h3 class="text-lg font-bold text-gray-800" id="dash-guru-2">0</h3><p class="text-gray-500 text-[10px] font-bold uppercase">Jadwal</p></div></div>
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center gap-1"><div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm"><i class="fa-solid fa-user-check"></i></div><div><h3 class="text-lg font-bold text-emerald-600" id="dash-hadir-2">0</h3><p class="text-gray-500 text-[10px] font-bold uppercase">Hadir</p></div></div>
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center gap-1"><div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm"><i class="fa-solid fa-envelope-open-text"></i></div><div><h3 class="text-lg font-bold text-blue-600" id="dash-izin-2">0</h3><p class="text-gray-500 text-[10px] font-bold uppercase">Izin</p></div></div>
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center gap-1"><div class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-sm"><i class="fa-solid fa-notes-medical"></i></div><div><h3 class="text-lg font-bold text-orange-600" id="dash-sakit-2">0</h3><p class="text-gray-500 text-[10px] font-bold uppercase">Sakit</p></div></div>
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center gap-1"><div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-sm"><i class="fa-solid fa-briefcase"></i></div><div><h3 class="text-lg font-bold text-indigo-600" id="dash-cuti-2">0</h3><p class="text-gray-500 text-[10px] font-bold uppercase">Cuti</p></div></div>
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center gap-1"><div class="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-sm"><i class="fa-solid fa-user-xmark"></i></div><div><h3 class="text-lg font-bold text-red-600" id="dash-alpa-2">0</h3><p class="text-gray-500 text-[10px] font-bold uppercase">Alpa</p></div></div>
+                        </div>
+                    </div>
+
+                    <!-- SESI 3 -->
+                    <div class="mb-6">
+                        <h3 class="font-bold text-gray-700 mb-3 flex items-center gap-2 border-b border-gray-200 pb-2"><span class="bg-orange-100 text-orange-600 w-8 h-8 rounded-lg flex items-center justify-center"><i class="fa-solid fa-3"></i></span> Sesi 3 (Jam Ketiga)</h3>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center gap-1"><div class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-sm"><i class="fa-solid fa-users"></i></div><div><h3 class="text-lg font-bold text-gray-800" id="dash-guru-3">0</h3><p class="text-gray-500 text-[10px] font-bold uppercase">Jadwal</p></div></div>
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center gap-1"><div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm"><i class="fa-solid fa-user-check"></i></div><div><h3 class="text-lg font-bold text-emerald-600" id="dash-hadir-3">0</h3><p class="text-gray-500 text-[10px] font-bold uppercase">Hadir</p></div></div>
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center gap-1"><div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm"><i class="fa-solid fa-envelope-open-text"></i></div><div><h3 class="text-lg font-bold text-blue-600" id="dash-izin-3">0</h3><p class="text-gray-500 text-[10px] font-bold uppercase">Izin</p></div></div>
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center gap-1"><div class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-sm"><i class="fa-solid fa-notes-medical"></i></div><div><h3 class="text-lg font-bold text-orange-600" id="dash-sakit-3">0</h3><p class="text-gray-500 text-[10px] font-bold uppercase">Sakit</p></div></div>
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center gap-1"><div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-sm"><i class="fa-solid fa-briefcase"></i></div><div><h3 class="text-lg font-bold text-indigo-600" id="dash-cuti-3">0</h3><p class="text-gray-500 text-[10px] font-bold uppercase">Cuti</p></div></div>
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center gap-1"><div class="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-sm"><i class="fa-solid fa-user-xmark"></i></div><div><h3 class="text-lg font-bold text-red-600" id="dash-alpa-3">0</h3><p class="text-gray-500 text-[10px] font-bold uppercase">Alpa</p></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB PORTAL RIWAYAT GURU -->
+                <div id="tab-riwayat-guru" class="tab-content max-w-6xl mx-auto scroll-mt-6">
+                    <div id="riwayat-title-container" class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                        <div><h2 class="text-2xl font-bold text-gray-800">Portal Riwayat Guru</h2><p class="text-gray-500 text-sm">Pilih nama guru untuk melihat portal & riwayat kehadiran.</p></div>
                         <div id="search-container-riwayat" class="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm w-full md:w-auto"><i class="fa-solid fa-search text-gray-400"></i><input type="text" id="search-riwayat-guru" placeholder="Cari nama guru..." class="outline-none text-sm bg-transparent w-full min-w-[200px]" onkeyup="window.renderGridRiwayat()"></div>
                     </div>
                     <div id="grid-riwayat-guru" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
@@ -683,13 +726,13 @@
                                 <thead class="bg-emerald-50 text-xs text-emerald-900 font-bold uppercase border-b border-emerald-100">
                                     <tr>
                                         <!-- Menambahkan z-30 agar header kelas tidak tertimpa kolom lengket z-20 -->
-                                        <th class="px-4 py-3.5 min-w-[120px] sticky left-0 bg-emerald-50 z-30 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Kelas</th>
-                                        <th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Sabtu</th>
-                                        <th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Ahad</th>
-                                        <th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Senin</th>
-                                        <th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Selasa</th>
-                                        <th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Rabu</th>
-                                        <th class="px-3 py-3.5 text-center min-w-[140px] border-l border-emerald-100">Kamis</th>
+                                        <th class="px-4 py-4 min-w-[130px] sticky left-0 bg-emerald-50 z-30 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Kelas</th>
+                                        <th class="px-3 py-4 text-center min-w-[160px] border-l border-emerald-100">Sabtu</th>
+                                        <th class="px-3 py-4 text-center min-w-[160px] border-l border-emerald-100">Ahad</th>
+                                        <th class="px-3 py-4 text-center min-w-[160px] border-l border-emerald-100">Senin</th>
+                                        <th class="px-3 py-4 text-center min-w-[160px] border-l border-emerald-100">Selasa</th>
+                                        <th class="px-3 py-4 text-center min-w-[160px] border-l border-emerald-100">Rabu</th>
+                                        <th class="px-3 py-4 text-center min-w-[160px] border-l border-emerald-100">Kamis</th>
                                     </tr>
                                 </thead>
                                 <tbody id="table-jadwal-kelas" class="divide-y divide-gray-100 bg-white relative z-0"></tbody>
@@ -939,24 +982,102 @@
             const pn=document.getElementById('current-username'); 
             if(pn){ if(window.currentUser.role==='guru') pn.innerHTML=`${window.currentUser.user} <span class="text-purple-600 font-extrabold ml-1 border-l-2 border-gray-300 pl-1.5">${window.currentUser.jabatan}</span>`; else pn.innerText=window.currentUser.user; }
             const ig=window.currentUser.role==='guru', ak=window.currentUser.akses||{}; const t=(id,s)=>{const el=document.getElementById(id);if(el)s?el.classList.remove('hidden'):el.classList.add('hidden');};
-            t('menu-group-sekretaris',!ig&&ak.guru); t('menu-group-khidmah',!ig&&ak.guru); t('nav-btn-guru',!ig&&ak.guru); t('nav-btn-absen-guru',!ig&&ak.guru); t('nav-btn-jadwal-guru',!ig&&ak.guru); t('nav-btn-jadwal-kelas',!ig&&ak.guru); t('nav-btn-rekap-absen-guru',!ig&&ak.guru); t('nav-btn-idcard',!ig&&ak.guru); t('nav-btn-kalender',true); t('nav-btn-pengaturan',!ig&&ak.pengaturan); t('nav-btn-dashboard',!ig); t('nav-btn-riwayat-saya',ig);
-            if(ig) { window.switchTab('dashboard',document.getElementById('nav-btn-riwayat-saya')); const ds = document.getElementById('dash-stats-container'); if(ds) ds.classList.add('hidden'); const dt = document.getElementById('dash-title-container'); if(dt) dt.classList.add('hidden'); const fe = document.getElementById('filter-riwayat-guru'); if(fe){fe.value=window.currentUser.id_guru;fe.disabled=true;} window.renderGridRiwayat(); setTimeout(()=>window.bukaModalRiwayat(window.currentUser.id_guru),50); } 
-            else { const ds = document.getElementById('dash-stats-container'); if(ds) ds.classList.remove('hidden'); const dt = document.getElementById('dash-title-container'); if(dt) dt.classList.remove('hidden'); window.switchTab('dashboard',document.getElementById('nav-btn-dashboard')); }
+            t('menu-group-sekretaris',!ig&&ak.guru); t('menu-group-khidmah',!ig&&ak.guru); t('nav-btn-guru',!ig&&ak.guru); t('nav-btn-riwayat-guru',!ig&&ak.guru); t('nav-btn-absen-guru',!ig&&ak.guru); t('nav-btn-jadwal-guru',!ig&&ak.guru); t('nav-btn-jadwal-kelas',!ig&&ak.guru); t('nav-btn-rekap-absen-guru',!ig&&ak.guru); t('nav-btn-idcard',!ig&&ak.guru); t('nav-btn-kalender',true); t('nav-btn-pengaturan',!ig&&ak.pengaturan); t('nav-btn-dashboard',!ig); t('nav-btn-riwayat-saya',ig);
+            if(ig) { 
+                window.switchTab('riwayat-guru',document.getElementById('nav-btn-riwayat-saya')); const dt = document.getElementById('riwayat-title-container'); if(dt) dt.classList.add('hidden'); const fe = document.getElementById('filter-riwayat-guru'); if(fe){fe.value=window.currentUser.id_guru;fe.disabled=true;} window.renderGridRiwayat(); setTimeout(()=>window.bukaModalRiwayat(window.currentUser.id_guru),50); 
+            } else if (window.currentUser.role === 'operator') {
+                window.switchTab('dashboard',document.getElementById('nav-btn-dashboard'));
+                const ds = document.getElementById('dash-stats-container'); if(ds) ds.classList.remove('hidden'); const dt = document.getElementById('dash-title-container'); if(dt) dt.classList.remove('hidden');
+                document.getElementById('op-welcome-text').innerText = `Selamat Datang, ${window.currentUser.user}`;
+                document.getElementById('modal-portal-operator').classList.replace('hidden', 'flex');
+                if (ak.guru || ak.pengaturan) document.getElementById('btn-close-portal-operator').classList.remove('hidden');
+                else document.getElementById('btn-close-portal-operator').classList.add('hidden');
+                window.renderOpGridRiwayat();
+            } else { 
+                const ds = document.getElementById('dash-stats-container'); if(ds) ds.classList.remove('hidden'); const dt = document.getElementById('dash-title-container'); if(dt) dt.classList.remove('hidden'); window.switchTab('dashboard',document.getElementById('nav-btn-dashboard')); 
+            }
         };
-        window.prosesLogout = () => window.showConfirm("Keluar", "Keluar dari sistem?", () => { window.currentUser=null; document.getElementById('login-pass').value=''; document.getElementById('main-app').classList.add('hidden'); document.getElementById('modal-riwayat-guru').classList.remove('flex'); document.getElementById('modal-riwayat-guru').classList.add('hidden'); document.getElementById('login-screen').classList.remove('hidden'); });
+        window.prosesLogout = () => window.showConfirm("Keluar", "Keluar dari sistem?", () => { window.currentUser=null; document.getElementById('login-pass').value=''; document.getElementById('main-app').classList.add('hidden'); document.getElementById('modal-riwayat-guru').classList.remove('flex'); document.getElementById('modal-riwayat-guru').classList.add('hidden'); const mo=document.getElementById('modal-portal-operator'); if(mo){mo.classList.remove('flex');mo.classList.add('hidden');} document.getElementById('login-screen').classList.remove('hidden'); });
 
         window.updateDashboardStats = () => {
-            const st=window.appState; document.getElementById('dash-guru').innerText=st.guru?st.guru.length:0;
+            const st=window.appState;
             const hc=window.getHijriComponents(new Date()), de=document.getElementById('current-hijri-date-dashboard'); if(de)de.innerText=`${hc.d} ${["Muharram", "Safar", "Rabi'ul Awal", "Rabi'ul Akhir", "Jumadil Awal", "Jumadil Akhir", "Rajab", "Sya'ban", "Ramadhan", "Syawal", "Dzulqa'dah", "Dzulhijjah"][hc.m-1]} ${hc.y} H`;
-            const ts=window.getTodayInputFormat(); let gh=0;
-            if(st.absensi_guru){const r=st.absensi_guru.find(a=>a.tanggal===ts);if(r)gh=r.data.filter(d=>d.status_1==='Hadir'||d.status_2==='Hadir'||d.status_3==='Hadir').length;} document.getElementById('dash-guru-hadir').innerText=gh;
+            
+            const ts = window.getTodayInputFormat();
+            const d = new Date();
+            const nh = ['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][d.getDay()];
+
+            const r = (st.absensi_guru||[]).find(a=>a.tanggal===ts);
+            const dataAbsen = r ? r.data : [];
+            const agenda = (st.agenda||[]).filter(a=>a.tgl===ts);
+            const isRapat = agenda.some(a=>a.tipe==='Rapat'||a.ket.toLowerCase().includes('rapat'));
+            const apRapot = agenda.some(a=>a.ket.toLowerCase().includes('pembagian rapot') || a.ket.toLowerCase().includes('pembagian rapor'));
+            const isLibur = agenda.some(a=>a.tipe==='Libur');
+
+            // Hitung untuk masing-masing Sesi 1, 2, dan 3
+            [1, 2, 3].forEach(sesi => {
+                let h=0, iz=0, sk=0, ct=0, al=0;
+                let scheduledIds = new Set();
+                
+                if (apRapot) {
+                    (st.guru||[]).forEach(g => {
+                        const jab = (g.jabatan || '').toLowerCase();
+                        if (jab.includes('kepala sekolah') || jab.includes('tata usaha') || jab.includes('bendahara') || jab.includes('wali kelas')) scheduledIds.add(String(g.id));
+                    });
+                } else if (isRapat) {
+                    (st.guru||[]).forEach(g => scheduledIds.add(String(g.id)));
+                } else if (!isLibur) {
+                    (st.jadwal_guru||[]).forEach(j => { 
+                        if(j.hari === nh && j.jam.includes(`Jam ${sesi}`)) {
+                            scheduledIds.add(String(j.id_guru));
+                        }
+                    });
+                }
+
+                // Update Total Jadwal per sesi
+                const tGuru = scheduledIds.size;
+                const elGuru = document.getElementById(`dash-guru-${sesi}`); if(elGuru) elGuru.innerText = tGuru;
+
+                // Cek guru yang seharusnya masuk (Terjadwal)
+                scheduledIds.forEach(id => {
+                    const absen = dataAbsen.find(x => String(x.id_guru) === id);
+                    if (absen) {
+                        let stat = absen[`status_${sesi}`];
+                        if (stat === 'Hadir') h++;
+                        else if (stat === 'Izin') iz++;
+                        else if (stat === 'Sakit') sk++;
+                        else if (stat === 'Cuti') ct++;
+                        else al++;
+                    } else {
+                        al++; // Jika tidak ada data dan tidak absen
+                    }
+                });
+
+                // Tambahan guru yang tidak terjadwal di sesi ini, tapi mengajukan absen/cuti
+                dataAbsen.forEach(absen => {
+                    if (!scheduledIds.has(String(absen.id_guru))) {
+                        let stat = absen[`status_${sesi}`];
+                        if (stat==='Hadir') h++; 
+                        else if (stat==='Izin') iz++;
+                        else if (stat==='Sakit') sk++;
+                        else if (stat==='Cuti') ct++;
+                    }
+                });
+
+                // Terapkan ke Dashboard
+                const elHadir = document.getElementById(`dash-hadir-${sesi}`); if(elHadir) elHadir.innerText=h;
+                const elIzin = document.getElementById(`dash-izin-${sesi}`); if(elIzin) elIzin.innerText=iz;
+                const elSakit = document.getElementById(`dash-sakit-${sesi}`); if(elSakit) elSakit.innerText=sk;
+                const elCuti = document.getElementById(`dash-cuti-${sesi}`); if(elCuti) elCuti.innerText=ct;
+                const elAlpa = document.getElementById(`dash-alpa-${sesi}`); if(elAlpa) elAlpa.innerText=al;
+            });
         };
         window.updateAllViews = () => {
             const st=window.appState, isa=window.currentUser&&window.currentUser.role==='admin'; window.updateDashboardStats(); window.applyLogoToUI();
             const eg=document.getElementById('table-guru'); if(eg&&st.guru) { const ad=isa||(window.currentUser&&window.currentUser.akses&&window.currentUser.akses.guru); eg.innerHTML=st.guru.map(g=>`<tr class="hover:bg-gray-50 border-b border-gray-100"><td class="px-6 py-4 font-medium text-gray-900 text-xs">${g.nip}</td><td class="px-6 py-4 flex items-center gap-3"><img src="${g.foto||'https://ui-avatars.com/api/?name=Guru&background=cbd5e1'}" class="w-10 h-10 rounded-full object-cover border border-purple-200"><div><span class="font-bold text-sm block">${g.nama}</span><span class="text-xs text-gray-500 font-normal">${g.jabatan||'-'} | ${g.hp||'-'}</span></div></td><td class="px-6 py-4 text-right"><button onclick="window.editGuru('${g.id}')" class="text-blue-500 bg-blue-50 p-2 rounded-lg hover:bg-blue-100"><i class="fa-solid fa-pen"></i></button>${ad?`<button onclick="window.hapusGuru('${g.id}')" class="text-red-500 bg-red-50 p-2 rounded-lg ml-1 hover:bg-red-100"><i class="fa-solid fa-trash"></i></button>`:''}</td></tr>`).join(''); }
             const sg=document.getElementById('select-guru-idcard'); if(sg){let o=`<option value="">-- Pilih Nama Guru --</option>`;if(st.guru)st.guru.forEach(g=>o+=`<option value="${g.id}">${g.nama} - ${g.jabatan}</option>`);sg.innerHTML=o;}
             const er=document.getElementById('filter-riwayat-guru'); if(er){const cv=er.value;let o=`<option value="">-- Pilih Guru --</option>`;if(st.guru)st.guru.forEach(g=>o+=`<option value="${g.id}">${g.nama}</option>`);er.innerHTML=o;if(window.currentUser&&window.currentUser.role==='guru'){er.value=window.currentUser.id_guru;er.disabled=true;}else{er.value=cv;er.disabled=false;}}
-            ['renderAbsenGuru','renderJadwalGuru','renderJadwalKelas','renderRekapAbsenGuru','renderGridRiwayat'].forEach(f=>{if(typeof window[f]==='function')window[f]();});
+            ['renderAbsenGuru','renderJadwalGuru','renderJadwalKelas','renderRekapAbsenGuru','renderGridRiwayat', 'renderOpGridRiwayat'].forEach(f=>{if(typeof window[f]==='function')window[f]();});
         };
 
         window.resetFormGuru = () => { document.getElementById('guru-mode').value='add'; document.getElementById('guru-id').value=''; document.getElementById('guru-nip').value=''; document.getElementById('guru-nama').value=''; document.getElementById('guru-jabatan').value=''; document.getElementById('guru-hp').value=''; window.tempFotoGuru=''; document.getElementById('preview-foto-container').classList.add('hidden'); document.getElementById('preview-foto-img').src=''; document.getElementById('btn-hapus-foto-guru').classList.add('hidden'); document.getElementById('btn-submit-guru').innerText='Simpan Data Guru'; document.getElementById('btn-cancel-guru').classList.add('hidden'); };
@@ -1068,11 +1189,12 @@
                     if (!classData[ext.kelas]) classData[ext.kelas] = {};
                     if (!classData[ext.kelas][j.hari]) classData[ext.kelas][j.hari] = {};
                     if (!classData[ext.kelas][j.hari][jamStr]) classData[ext.kelas][j.hari][jamStr] = [];
+                    
                     let entryText = '';
                     if (ext.pelajaran) {
-                        entryText = `<span class="text-[10px] font-medium text-gray-500 block mb-0.5 leading-tight">${namaGuru}</span><span class="text-[14px] font-extrabold text-emerald-800 block max-w-full truncate tracking-wide">${ext.pelajaran}</span>`;
+                        entryText = `<div class="flex flex-col pt-1"><span class="text-xs font-bold text-gray-800 leading-tight line-clamp-2">${ext.pelajaran}</span><span class="text-[10px] font-semibold text-emerald-600 mt-1 truncate" title="${namaGuru}">${namaGuru}</span></div>`;
                     } else {
-                        entryText = `<span class="text-xs font-bold text-emerald-700 block leading-tight">${namaGuru}</span>`;
+                        entryText = `<div class="flex flex-col pt-1"><span class="text-[11px] font-bold text-gray-800 leading-tight line-clamp-2" title="${namaGuru}">${namaGuru}</span></div>`;
                     }
                     classData[ext.kelas][j.hari][jamStr].push(entryText);
                 };
@@ -1084,18 +1206,33 @@
             const sc = Array.from(uniqueClasses).sort((a,b) => a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'}));
             
             if (sc.length === 0) { c.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-gray-500 font-medium">Belum ada data jadwal kelas terdaftar.</td></tr>`; return; }
+            
             c.innerHTML = sc.map(cls => {
                 // Menambahkan z-20 agar cell lengket menutupi elemen lain di bawahnya saat scroll horizontal
-                let h = `<tr class="border-b border-gray-100 hover:bg-emerald-50/20"><td class="px-4 py-3 font-bold text-sm text-gray-800 sticky left-0 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] min-w-[120px] z-20">${cls}</td>`;
+                let h = `<tr class="border-b border-gray-100 hover:bg-emerald-50/40 transition-colors group">
+                            <td class="px-4 py-4 font-extrabold text-sm text-emerald-900 sticky left-0 bg-white group-hover:bg-emerald-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.08)] min-w-[130px] z-20 align-top transition-colors border-r border-gray-100">${cls}</td>`;
+                
                 days.forEach(d => {
                     const dd = classData[cls]?.[d];
                     if (dd) {
-                        h += `<td class="px-2 py-2 align-top border-l border-gray-100"><div class="flex flex-col gap-1.5 w-full h-full justify-center">`;
-                        if (dd['Jam 1']) h += `<div class="bg-white border border-emerald-200 rounded p-1.5 shadow-sm text-center"><span class="text-[10px] text-gray-500 block leading-none mb-1">Jam 1</span><span class="text-xs font-bold text-emerald-700 leading-tight">${dd['Jam 1'].join('<br>')}</span></div>`;
-                        if (dd['Jam 2']) h += `<div class="bg-white border border-emerald-200 rounded p-1.5 shadow-sm text-center"><span class="text-[10px] text-gray-500 block leading-none mb-1">Jam 2</span><span class="text-xs font-bold text-emerald-700 leading-tight">${dd['Jam 2'].join('<br>')}</span></div>`;
-                        if (dd['Jam 3']) h += `<div class="bg-white border border-emerald-200 rounded p-1.5 shadow-sm text-center mt-0.5"><span class="text-[10px] text-gray-500 block leading-none mb-1">Jam 3</span><span class="text-xs font-bold text-emerald-700 leading-tight">${dd['Jam 3'].join('<br>')}</span></div>`;
+                        h += `<td class="px-2 py-3 align-top border-l border-gray-100 min-w-[160px]"><div class="flex flex-col gap-2 w-full h-full">`;
+                        
+                        ['Jam 1', 'Jam 2', 'Jam 3'].forEach((jam, idx) => {
+                            if(dd[jam]) {
+                                const bgColors = ['bg-blue-50/60 border-blue-200', 'bg-emerald-50/60 border-emerald-200', 'bg-orange-50/60 border-orange-200'];
+                                const labelColors = ['bg-blue-200 text-blue-800', 'bg-emerald-200 text-emerald-800', 'bg-orange-200 text-orange-800'];
+                                
+                                h += `<div class="relative ${bgColors[idx]} border rounded-xl p-3 pt-4 shadow-sm text-left">
+                                        <span class="absolute top-0 right-0 ${labelColors[idx]} text-[9px] font-extrabold px-2 py-0.5 rounded-bl-xl rounded-tr-xl">${jam.toUpperCase()}</span>
+                                        ${dd[jam].join('<div class="my-2 border-t border-dashed border-gray-300/60 w-full"></div>')}
+                                      </div>`;
+                            }
+                        });
+                        
                         h += `</div></td>`;
-                    } else { h += `<td class="px-2 py-2 align-top border-l border-gray-100 bg-gray-50/30"></td>`; }
+                    } else { 
+                        h += `<td class="px-2 py-3 align-middle border-l border-gray-100 bg-gray-50/50 min-w-[160px]"><div class="flex items-center justify-center h-full text-gray-300 text-xl font-light">-</div></td>`; 
+                    }
                 });
                 return h + `</tr>`;
             }).join('');
