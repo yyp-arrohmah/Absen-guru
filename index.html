@@ -273,9 +273,10 @@
                 <div class="border-b border-dashed border-gray-300 mb-3"></div>
                 <div class="space-y-2 text-xs mb-3">
                     <div class="flex justify-between"><span>Hadir Mengajar</span><b id="slip-honor-hadir">-</b></div>
-                    <div class="flex justify-between"><span>Hadir Piket</span><b id="slip-honor-piket">-</b></div>
-                    <div class="flex justify-between"><span>Tarif per Sesi</span><span id="slip-honor-tarif">-</span></div>
-                    <div class="flex justify-between"><span>Total Transport</span><span id="slip-honor-transport">-</span></div>
+                    <div class="flex justify-between text-gray-500 text-[10px]"><span>Tarif Mengajar</span><span id="slip-honor-tarif-mengajar">-</span></div>
+                    <div class="flex justify-between mt-1"><span>Hadir Piket</span><b id="slip-honor-piket">-</b></div>
+                    <div class="flex justify-between text-gray-500 text-[10px]"><span>Tarif Piket</span><span id="slip-honor-tarif-piket">-</span></div>
+                    <div class="flex justify-between mt-2 pt-2 border-t border-dashed border-gray-200 font-bold"><span>Total Transport</span><span id="slip-honor-transport">-</span></div>
                 </div>
                 <div class="border-b border-dashed border-gray-300 mb-3"></div>
                 <div class="flex justify-between font-bold text-sm mb-6"><span>Total Honor</span><span id="slip-honor-total" class="text-gray-900 font-extrabold">-</span></div>
@@ -817,7 +818,6 @@
                                         <th class="px-4 py-3.5 text-center">Sakit</th>
                                         <th class="px-4 py-3.5 text-center">Cuti</th>
                                         <th class="px-4 py-3.5 text-center">Alpa</th>
-                                        <th class="px-4 py-3.5 text-center text-yellow-700">Telat</th>
                                         <th class="px-4 py-3.5 text-center">Hadir</th>
                                     </tr>
                                 </thead>
@@ -840,6 +840,11 @@
                                 </div>
                                 <div class="hidden sm:block border-l border-gray-300 h-5 mx-1"></div>
                                 <div class="flex items-center gap-1">
+                                    <label class="text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap"><i class="fa-solid fa-shield mr-1 text-orange-600"></i> Piket/Hadir:</label>
+                                    <input type="number" id="input-tarif-piket" class="w-20 outline-none text-xs sm:text-sm font-bold text-orange-700 bg-transparent text-right" value="10000">
+                                </div>
+                                <div class="hidden sm:block border-l border-gray-300 h-5 mx-1"></div>
+                                <div class="flex items-center gap-1">
                                     <label class="text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap"><i class="fa-solid fa-car mr-1 text-blue-600"></i> Transport/Hadir:</label>
                                     <input type="number" id="input-tarif-transport" class="w-20 outline-none text-xs sm:text-sm font-bold text-blue-700 bg-transparent text-right" value="5000">
                                 </div>
@@ -857,9 +862,10 @@
                                         <th class="px-4 py-3.5">Nama Guru</th>
                                         <th class="px-4 py-3.5">Jabatan</th>
                                         <th class="px-4 py-3.5 text-center">Jarak</th>
-                                        <th class="px-4 py-3.5 text-center" title="Hadir Mengajar">Mengajar</th>
-                                        <th class="px-4 py-3.5 text-center" title="Hadir Piket">Piket</th>
-                                        <th class="px-4 py-3.5 text-right">Honor</th>
+                                        <th class="px-4 py-3.5 text-center" title="Hadir Mengajar">Mjr</th>
+                                        <th class="px-4 py-3.5 text-center" title="Hadir Piket">Pkt</th>
+                                        <th class="px-4 py-3.5 text-right">H. Mengajar</th>
+                                        <th class="px-4 py-3.5 text-right">H. Piket</th>
                                         <th class="px-4 py-3.5 text-right">Transport</th>
                                         <th class="px-4 py-3.5 text-right">Total</th>
                                     </tr>
@@ -1480,6 +1486,24 @@
                 gt = window.appState.guru.filter(g=>ijt.has(String(g.id))||rh.data.some(dx=>String(dx.id_guru)===String(g.id)));
             }
 
+            // HITUNG GURU PENGGANTI (PIKET OTOMATIS GANTIKAN YANG ABSEN)
+            let absenSesi = { 1: [], 2: [], 3: [] };
+            jh.forEach(j => {
+                const exT = rh.data.find(dx => String(dx.id_guru) === String(j.id_guru));
+                [1,2,3].forEach(sesi => {
+                    if(j.jam.includes(`Jam ${sesi}`) && !window.isJamPiket(j.jam, sesi)) {
+                        if(exT && ['Izin','Sakit','Cuti','Alpa'].includes(exT[`status_${sesi}`])) {
+                            const extract = j.jam.match(new RegExp(`Jam ${sesi}:.*?<b class="(?:kelas|mapel)-text.*?>(.*?)</b>`));
+                            const kelas = extract ? extract[1] : 'Kelas';
+                            const guruScheduled = (window.appState.guru||[]).find(g => String(g.id) === String(j.id_guru));
+                            const gName = guruScheduled ? guruScheduled.nama : 'Guru';
+                            absenSesi[sesi].push({nama: gName, kelas: kelas});
+                        }
+                    }
+                });
+            });
+            let usedPiket = { 1: 0, 2: 0, 3: 0 };
+
             if(gt.length===0) { c.innerHTML=`<tr><td colspan="3" class="px-4 py-8 text-center text-gray-500">Tidak ada jadwal/kegiatan pada hari ini.</td></tr>`; return; }
             c.innerHTML=gt.map((g,i)=>{
                 const pr=rh.data.find(dx=>String(dx.id_guru)===String(g.id)), j=jh.find(jx=>String(jx.id_guru)===String(g.id));
@@ -1494,8 +1518,29 @@
                     jadwalInfo = 'Agenda Rapat Bersama';
                 }
 
-                const ui=(jn,hj)=>{if(!hj)return'';const st=pr?pr[`status_${jn}`]:'';const b=st==='Hadir'?'<span class="ml-2 bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold">HADIR</span>':st==='Izin'?'<span class="ml-2 bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold">IZIN</span>':st==='Sakit'?'<span class="ml-2 bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-[10px] font-bold">SAKIT</span>':st==='Cuti'?'<span class="ml-2 bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-[10px] font-bold">CUTI</span>':'';return`<div class="mb-2 p-2 border border-purple-100 rounded-lg bg-white w-full"><div class="text-[11px] font-bold text-purple-800 mb-2 border-b flex justify-between"><span>Jam Ke-${jn}</span> ${b}</div><div class="flex flex-wrap gap-3 justify-center"><label class="cursor-pointer text-[11px] flex items-center"><input type="radio" name="absen_guru_${g.id}_jam${jn}" value="Hadir" class="mr-1" ${st==='Hadir'?'checked':''}> Hadir</label><label class="cursor-pointer text-[11px] flex items-center"><input type="radio" name="absen_guru_${g.id}_jam${jn}" value="Izin" class="mr-1" ${st==='Izin'?'checked':''}> Izin</label><label class="cursor-pointer text-[11px] flex items-center"><input type="radio" name="absen_guru_${g.id}_jam${jn}" value="Sakit" class="mr-1" ${st==='Sakit'?'checked':''}> Sakit</label><label class="cursor-pointer text-[11px] flex items-center"><input type="radio" name="absen_guru_${g.id}_jam${jn}" value="Cuti" class="mr-1" ${st==='Cuti'?'checked':''}> Cuti</label></div></div>`;};
-                return`<tr class="absen-guru-row border-b border-gray-100" data-id="${g.id}"><td class="px-4 py-3 text-center align-top">${i+1}</td><td class="px-4 py-3 font-bold align-top">${g.nama}<br><span class="text-xs text-gray-500">${g.jabatan}</span><div class="mt-2 text-[10px] text-gray-400"><b>Jadwal:</b><br>${jadwalInfo}</div></td><td class="px-4 py-3 align-top flex flex-col sm:flex-row gap-2">${ui(1,h1)}${ui(2,h2)}${ui(3,h3)}</td></tr>`;
+                // Terapkan info pengganti ke UI Absensi
+                let info1 = '', info2 = '', info3 = '';
+                [1,2,3].forEach(sesi => {
+                    if(j && j.jam.includes(`Jam ${sesi}`) && window.isJamPiket(j.jam, sesi)) {
+                        if (usedPiket[sesi] < absenSesi[sesi].length) {
+                            const replaced = absenSesi[sesi][usedPiket[sesi]];
+                            const htm = `<span class="mt-1 bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-[9px] font-bold block leading-tight border border-blue-200">Pengganti:<br>${replaced.kelas} (${replaced.nama.split(' ')[0]})</span>`;
+                            if(sesi===1) info1 = htm; if(sesi===2) info2 = htm; if(sesi===3) info3 = htm;
+                            usedPiket[sesi]++;
+                        } else {
+                            const htm = `<span class="mt-1 bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded text-[9px] font-bold block leading-tight border border-orange-200"><i class="fa-solid fa-user-shield"></i> Guru Piket</span>`;
+                            if(sesi===1) info1 = htm; if(sesi===2) info2 = htm; if(sesi===3) info3 = htm;
+                        }
+                    }
+                });
+
+                const ui=(jn,hj,infoHtml)=>{
+                    if(!hj)return'';
+                    const st=pr?pr[`status_${jn}`]:'';
+                    const b=st==='Hadir'?'<span class="ml-2 bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold">HADIR</span>':st==='Izin'?'<span class="ml-2 bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold">IZIN</span>':st==='Sakit'?'<span class="ml-2 bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-[10px] font-bold">SAKIT</span>':st==='Cuti'?'<span class="ml-2 bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-[10px] font-bold">CUTI</span>':'';
+                    return`<div class="mb-2 p-2 border border-purple-100 rounded-lg bg-white w-full"><div class="text-[11px] font-bold text-purple-800 mb-2 border-b flex justify-between items-start"><div><span>Jam Ke-${jn}</span>${infoHtml}</div> ${b}</div><div class="flex flex-wrap gap-2 justify-center"><label class="cursor-pointer text-[11px] flex items-center"><input type="radio" name="absen_guru_${g.id}_jam${jn}" value="Hadir" class="mr-1" ${st==='Hadir'?'checked':''}> Hadir</label><label class="cursor-pointer text-[11px] flex items-center"><input type="radio" name="absen_guru_${g.id}_jam${jn}" value="Izin" class="mr-1" ${st==='Izin'?'checked':''}> Izin</label><label class="cursor-pointer text-[11px] flex items-center"><input type="radio" name="absen_guru_${g.id}_jam${jn}" value="Sakit" class="mr-1" ${st==='Sakit'?'checked':''}> Sakit</label><label class="cursor-pointer text-[11px] flex items-center"><input type="radio" name="absen_guru_${g.id}_jam${jn}" value="Cuti" class="mr-1" ${st==='Cuti'?'checked':''}> Cuti</label></div></div>`;
+                };
+                return`<tr class="absen-guru-row border-b border-gray-100" data-id="${g.id}"><td class="px-4 py-3 text-center align-top">${i+1}</td><td class="px-4 py-3 font-bold align-top">${g.nama}<br><span class="text-xs text-gray-500">${g.jabatan}</span><div class="mt-2 text-[10px] text-gray-400"><b>Jadwal:</b><br>${jadwalInfo}</div></td><td class="px-4 py-3 align-top flex flex-col sm:flex-row gap-2">${ui(1,h1,info1)}${ui(2,h2,info2)}${ui(3,h3,info3)}</td></tr>`;
             }).join('');
         };
         window.simpanAbsenGuru = () => {
@@ -1520,8 +1565,8 @@
         
         window.renderRekapAbsenGuru = () => {
             const c=document.getElementById('table-rekap-absen-guru'), sm=document.getElementById('filter-bulan-hijri'), sy=document.getElementById('filter-tahun-hijri'); if(!c||!sm||!sy)return;
-            // Tambahkan inisialisasi telat = 0
-            const rd=window.appState.guru.map(g=>({id:g.id,nama:g.nama,target:0,hadir:0,izin:0,sakit:0,cuti:0,alpa:0,telat:0})), dt=window.getDatesInHijriMonth(parseInt(sy.value),parseInt(sm.value)), t=new Date(); t.setHours(0,0,0,0);
+            
+            const rd=window.appState.guru.map(g=>({id:g.id,nama:g.nama,target:0,hadir:0,izin:0,sakit:0,cuti:0,alpa:0})), dt=window.getDatesInHijriMonth(parseInt(sy.value),parseInt(sm.value)), t=new Date(); t.setHours(0,0,0,0);
             dt.forEach(d=>{
                 const nh=['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][d.getDay()], ds=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`, da=((window.appState.absensi_guru||[]).find(a=>a.tanggal===ds)||{data:[]}).data, ip=d<=t;
                 rd.forEach(gr=>{
@@ -1536,21 +1581,18 @@
                                     const s1=ex.status_1; 
                                     if(s1==='Hadir') {
                                         gr.hadir++;
-                                        if(ex.info_1 && ex.info_1.includes('Terlambat')) gr.telat++;
                                     } else if(s1==='Izin') gr.izin++; else if(s1==='Sakit') gr.sakit++; else if(s1==='Cuti') gr.cuti++; else gr.alpa++;
                                 }
                                 if(h2){
                                     const s2=ex.status_2; 
                                     if(s2==='Hadir') {
                                         gr.hadir++;
-                                        if(ex.info_2 && ex.info_2.includes('Terlambat')) gr.telat++;
                                     } else if(s2==='Izin') gr.izin++; else if(s2==='Sakit') gr.sakit++; else if(s2==='Cuti') gr.cuti++; else gr.alpa++;
                                 }
                                 if(h3){
                                     const s3=ex.status_3; 
                                     if(s3==='Hadir') {
                                         gr.hadir++;
-                                        if(ex.info_3 && ex.info_3.includes('Terlambat')) gr.telat++;
                                     } else if(s3==='Izin') gr.izin++; else if(s3==='Sakit') gr.sakit++; else if(s3==='Cuti') gr.cuti++; else gr.alpa++;
                                 }
                             }else{
@@ -1560,8 +1602,8 @@
                     }
                 });
             });
-            // Update struktur tabel HTML untuk memasukkan kolom telat
-            c.innerHTML=rd.length===0?'<tr><td colspan="9" class="text-center py-8">Belum ada data guru.</td></tr>':rd.map((g,i)=>`<tr class="border-b border-gray-100 hover:bg-purple-50/30"><td class="px-4 py-3 text-center">${i+1}</td><td class="px-4 py-3"><div class="flex justify-between items-center"><span class="font-bold">${g.nama}</span><button onclick="window.bukaModalRiwayat('${g.id}')" class="text-[10px] bg-purple-100 text-purple-700 px-2 py-1 rounded hover:bg-purple-200 transition-colors shadow-sm" title="Lihat Riwayat"><i class="fa-solid fa-clock-rotate-left"></i></button></div></td><td class="px-4 py-3 text-center text-purple-700 font-bold bg-purple-50/30">${g.target}</td><td class="px-4 py-3 text-center text-blue-700 font-bold">${g.izin}</td><td class="px-4 py-3 text-center text-orange-700 font-bold">${g.sakit}</td><td class="px-4 py-3 text-center text-indigo-700 font-bold">${g.cuti}</td><td class="px-4 py-3 text-center text-red-700 font-bold">${g.alpa}</td><td class="px-4 py-3 text-center text-yellow-700 font-bold">${g.telat}</td><td class="px-4 py-3 text-center text-green-700 font-bold">${g.hadir}</td></tr>`).join('');
+            
+            c.innerHTML=rd.length===0?'<tr><td colspan="8" class="text-center py-8">Belum ada data guru.</td></tr>':rd.map((g,i)=>`<tr class="border-b border-gray-100 hover:bg-purple-50/30"><td class="px-4 py-3 text-center">${i+1}</td><td class="px-4 py-3"><div class="flex justify-between items-center"><span class="font-bold">${g.nama}</span><button onclick="window.bukaModalRiwayat('${g.id}')" class="text-[10px] bg-purple-100 text-purple-700 px-2 py-1 rounded hover:bg-purple-200 transition-colors shadow-sm" title="Lihat Riwayat"><i class="fa-solid fa-clock-rotate-left"></i></button></div></td><td class="px-4 py-3 text-center text-purple-700 font-bold bg-purple-50/30">${g.target}</td><td class="px-4 py-3 text-center text-blue-700 font-bold">${g.izin}</td><td class="px-4 py-3 text-center text-orange-700 font-bold">${g.sakit}</td><td class="px-4 py-3 text-center text-indigo-700 font-bold">${g.cuti}</td><td class="px-4 py-3 text-center text-red-700 font-bold">${g.alpa}</td><td class="px-4 py-3 text-center text-green-700 font-bold">${g.hadir}</td></tr>`).join('');
         };
         window.hapusRekapAbsenGuruBulanIni = () => { const sm=document.getElementById('filter-bulan-hijri'), sy=document.getElementById('filter-tahun-hijri'); if(!sm||!sy)return; window.showConfirm('Hapus Rekap',`Reset absen bulan terpilih?`,()=>{ const dt=window.getDatesInHijriMonth(parseInt(sy.value),parseInt(sm.value)).map(d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`); window.appState.absensi_guru=window.appState.absensi_guru.filter(a=>!dt.includes(a.tanggal)); window.saveState(); window.renderRekapAbsenGuru(); }); };
 
@@ -2137,9 +2179,11 @@
             const c=document.getElementById('table-honor-guru'), sm=document.getElementById('filter-bulan-hijri-honor'), sy=document.getElementById('filter-tahun-hijri-honor'); if(!c||!sm||!sy)return;
             
             const tarifHonor = parseInt(window.appState.pengaturan?.tarif_honor) || 15000;
+            const tarifPiket = parseInt(window.appState.pengaturan?.tarif_piket) || 10000;
             const tarifTransport = parseInt(window.appState.pengaturan?.tarif_transport) || 5000;
             
             const inputTarif = document.getElementById('input-tarif-honor'); if(inputTarif) inputTarif.value = tarifHonor;
+            const inputPiket = document.getElementById('input-tarif-piket'); if(inputPiket) inputPiket.value = tarifPiket;
             const inputTransport = document.getElementById('input-tarif-transport'); if(inputTransport) inputTransport.value = tarifTransport;
 
             const rd = window.appState.guru.map(g=>({id:g.id,nama:g.nama,jabatan:g.jabatan,jarak:g.jarak||0,hadir:0,piket:0}));
@@ -2153,33 +2197,65 @@
                 const ip = d <= t;
                 if(!ip) return;
                 
+                // Cari data sesi kosong karena absen
+                let absenSesi = { 1: 0, 2: 0, 3: 0 };
+                const jh = (window.appState.jadwal_guru||[]).filter(j=>j.hari===nhr);
+                jh.forEach(j => {
+                    const exT = da.find(x => String(x.id_guru) === String(j.id_guru));
+                    [1,2,3].forEach(sesi => {
+                        if(j.jam.includes(`Jam ${sesi}`) && !window.isJamPiket(j.jam, sesi)) {
+                            if(exT && ['Izin','Sakit','Cuti','Alpa'].includes(exT[`status_${sesi}`])) {
+                                absenSesi[sesi]++;
+                            }
+                        }
+                    });
+                });
+                let usedPiket = { 1: 0, 2: 0, 3: 0 };
+                
                 rd.forEach(gr => {
                     const ex = da.find(x=>String(x.id_guru)===String(gr.id));
                     if(ex) {
-                        const jx = (window.appState.jadwal_guru||[]).find(j=>j.hari===nhr&&String(j.id_guru)===String(gr.id));
+                        const jx = jh.find(j=>String(j.id_guru)===String(gr.id));
 
-                        if(ex.status_1==='Hadir') { if(jx && window.isJamPiket(jx.jam, 1)) gr.piket++; else gr.hadir++; }
-                        if(ex.status_2==='Hadir') { if(jx && window.isJamPiket(jx.jam, 2)) gr.piket++; else gr.hadir++; }
-                        if(ex.status_3==='Hadir') { if(jx && window.isJamPiket(jx.jam, 3)) gr.piket++; else gr.hadir++; }
+                        if(ex.status_1==='Hadir') { 
+                            if(jx && window.isJamPiket(jx.jam, 1)) {
+                                if(usedPiket[1] < absenSesi[1]) { gr.hadir++; usedPiket[1]++; } else { gr.piket++; }
+                            } else gr.hadir++; 
+                        }
+                        if(ex.status_2==='Hadir') { 
+                            if(jx && window.isJamPiket(jx.jam, 2)) {
+                                if(usedPiket[2] < absenSesi[2]) { gr.hadir++; usedPiket[2]++; } else { gr.piket++; }
+                            } else gr.hadir++; 
+                        }
+                        if(ex.status_3==='Hadir') { 
+                            if(jx && window.isJamPiket(jx.jam, 3)) {
+                                if(usedPiket[3] < absenSesi[3]) { gr.hadir++; usedPiket[3]++; } else { gr.piket++; }
+                            } else gr.hadir++; 
+                        }
                     }
                 });
             });
 
-            c.innerHTML = rd.length === 0 ? '<tr><td colspan="9" class="text-center py-8">Belum ada data guru.</td></tr>' : rd.map((g,i) => {
+            c.innerHTML = rd.length === 0 ? '<tr><td colspan="10" class="text-center py-8">Belum ada data guru.</td></tr>' : rd.map((g,i) => {
+                const totalHonor = g.hadir * tarifHonor;
+                const totalPiket = g.piket * tarifPiket;
                 const totalKehadiran = g.hadir + g.piket;
-                const totalHonor = totalKehadiran * tarifHonor;
                 const validTransport = g.jarak < 2 ? 0 : tarifTransport; // Jika jarak < 2km, transport 0
                 const totalTransport = totalKehadiran * validTransport;
-                const grandTotal = totalHonor + totalTransport;
+                const grandTotal = totalHonor + totalPiket + totalTransport;
                 
-                return `<tr class="border-b border-gray-100 hover:bg-purple-50/50 cursor-pointer transition-colors" onclick="window.bukaSlipHonor('${g.id}','${g.nama}','${g.jabatan||'-'}',${g.hadir},${g.piket},${tarifHonor},${validTransport},${grandTotal})" title="Klik baris ini untuk mencetak Slip Honor">
+                const safeNama = g.nama.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                const safeJabatan = (g.jabatan||'-').replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                
+                return `<tr class="border-b border-gray-100 hover:bg-purple-50/50 cursor-pointer transition-colors" onclick="window.bukaSlipHonor('${g.id}','${safeNama}','${safeJabatan}',${g.hadir},${g.piket},${tarifHonor},${tarifPiket},${validTransport},${grandTotal})" title="Klik baris ini untuk mencetak Slip Honor">
                     <td class="px-4 py-3 text-center">${i+1}</td>
                     <td class="px-4 py-3 font-bold">${g.nama}</td>
                     <td class="px-4 py-3 text-xs text-gray-500">${g.jabatan||'-'}</td>
                     <td class="px-4 py-3 text-center text-blue-600 font-bold bg-blue-50/30">${g.jarak} km</td>
                     <td class="px-4 py-3 text-center text-green-700 font-bold bg-green-50/30">${g.hadir}</td>
                     <td class="px-4 py-3 text-center text-orange-600 font-bold bg-orange-50/30">${g.piket}</td>
-                    <td class="px-4 py-3 text-right text-gray-700">${window.formatRp(totalHonor)}</td>
+                    <td class="px-4 py-3 text-right text-green-700">${window.formatRp(totalHonor)}</td>
+                    <td class="px-4 py-3 text-right text-orange-700">${window.formatRp(totalPiket)}</td>
                     <td class="px-4 py-3 text-right text-blue-700">${validTransport === 0 ? '<span class="text-[10px] text-red-500 block leading-tight">- Jarak &lt; 2km -</span>Rp 0' : window.formatRp(totalTransport)}</td>
                     <td class="px-4 py-3 text-right font-bold text-gray-900">${window.formatRp(grandTotal)}</td>
                 </tr>`;
@@ -2188,16 +2264,18 @@
 
         window.simpanTarifHonor = () => { 
             const valHonor = document.getElementById('input-tarif-honor').value;
+            const valPiket = document.getElementById('input-tarif-piket').value;
             const valTransport = document.getElementById('input-tarif-transport').value;
             if(!window.appState.pengaturan) window.appState.pengaturan = {};
             window.appState.pengaturan.tarif_honor = parseInt(valHonor) || 0;
+            window.appState.pengaturan.tarif_piket = parseInt(valPiket) || 0;
             window.appState.pengaturan.tarif_transport = parseInt(valTransport) || 0;
             window.saveState();
             window.renderHonorGuru();
-            window.showAlert('Berhasil', 'Tarif honor dan transport berhasil disimpan.', 'success');
+            window.showAlert('Berhasil', 'Tarif honor, piket, dan transport berhasil disimpan.', 'success');
         };
 
-        window.bukaSlipHonor = (id, nm, jb, h, p, tHonor, tTransport, tot) => {
+        window.bukaSlipHonor = (id, nm, jb, h, p, tHonor, tPiket, tTransport, tot) => {
             const mNames = ["Muharram", "Safar", "Rabi'ul Awal", "Rabi'ul Akhir", "Jumadil Awal", "Jumadil Akhir", "Rajab", "Sya'ban", "Ramadhan", "Syawal", "Dzulqa'dah", "Dzulhijjah"];
             const sm = parseInt(document.getElementById('filter-bulan-hijri-honor').value);
             const sy = document.getElementById('filter-tahun-hijri-honor').value;
@@ -2205,11 +2283,14 @@
             document.getElementById('slip-honor-periode').innerText = `Periode: ${mNames[sm-1]} ${sy} H`;
             document.getElementById('slip-honor-nama').innerText = nm;
             document.getElementById('slip-honor-jabatan').innerText = jb;
+            
             document.getElementById('slip-honor-hadir').innerText = `${h} Sesi`;
+            document.getElementById('slip-honor-tarif-mengajar').innerText = window.formatRp(tHonor) + ' / sesi';
+            
             document.getElementById('slip-honor-piket').innerText = `${p} Sesi`;
+            document.getElementById('slip-honor-tarif-piket').innerText = window.formatRp(tPiket) + ' / sesi';
             
             const totalKehadiran = h + p;
-            document.getElementById('slip-honor-tarif').innerText = window.formatRp(tHonor);
             document.getElementById('slip-honor-transport').innerText = window.formatRp(tTransport * totalKehadiran);
             document.getElementById('slip-honor-total').innerText = window.formatRp(tot);
             
