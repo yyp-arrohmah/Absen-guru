@@ -493,6 +493,7 @@
                                 <div><label class="block text-xs font-bold text-gray-700 mb-1">Password</label><input type="password" id="op-pass" class="w-full border border-gray-300 p-2.5 rounded-xl text-sm outline-none focus:ring-1 focus:ring-blue-500" placeholder="Biarkan kosong jika tidak diubah (saat edit)"></div>
                                 <div><label class="block text-xs font-bold text-gray-700 mb-2">Hak Akses Menu</label>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-gray-50 p-3 rounded-xl border border-gray-200">
+                                        <label class="flex items-center gap-2 text-sm cursor-pointer hover:opacity-80"><input type="checkbox" id="akses-dashboard" class="w-4 h-4 accent-blue-600"> <span class="truncate">Dashboard (Beranda)</span></label>
                                         <label class="flex items-center gap-2 text-sm cursor-pointer hover:opacity-80"><input type="checkbox" id="akses-guru" class="w-4 h-4 accent-blue-600"> <span class="truncate">Profil Guru</span></label>
                                         <label class="flex items-center gap-2 text-sm cursor-pointer hover:opacity-80"><input type="checkbox" id="akses-riwayat" class="w-4 h-4 accent-blue-600"> <span class="truncate">Portal Riwayat</span></label>
                                         <label class="flex items-center gap-2 text-sm cursor-pointer hover:opacity-80"><input type="checkbox" id="akses-absen" class="w-4 h-4 accent-blue-600"> <span class="truncate">Absensi Guru</span></label>
@@ -633,9 +634,14 @@
             <div class="w-full">
                 <!-- DASHBOARD -->
                 <div id="tab-dashboard" class="tab-content active max-w-6xl mx-auto scroll-mt-6">
-                    <div id="dash-title-container" class="mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800">Ringkasan Kehadiran</h2>
-                        <p class="text-gray-500 text-sm">Statistik kehadiran guru per sesi mengajar. (Klik kotak untuk melihat daftar nama)</p>
+                    <div id="dash-title-container" class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">Ringkasan Kehadiran</h2>
+                            <p class="text-gray-500 text-sm">Statistik kehadiran guru per sesi mengajar. (Klik kotak untuk melihat daftar nama)</p>
+                        </div>
+                        <button onclick="window.perbaruiDataDashboard()" class="w-full sm:w-auto bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 px-4 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors shadow-sm">
+                            <i class="fa-solid fa-rotate-right" id="icon-refresh-dash"></i> Perbarui Data
+                        </button>
                     </div>
 
                     <!-- SESI 1 -->
@@ -985,7 +991,7 @@
             }, 100);
         };
 
-        const initCloudDatabase = async () => {
+        window.initCloudDatabase = async () => {
             const loader = document.getElementById('startup-loader');
             const localData = localStorage.getItem('CloudMadrasahData');
             
@@ -1012,8 +1018,21 @@
             if (typeof window.initHijriFilter === 'function') window.initHijriFilter();
             if (typeof window.updateAllViews === 'function') window.updateAllViews();
         };
+
+        window.perbaruiDataDashboard = async () => {
+            const icon = document.getElementById('icon-refresh-dash');
+            if(icon) icon.classList.add('fa-spin'); // Menambahkan animasi berputar
+            try {
+                await window.initCloudDatabase();
+                window.showAlert('Berhasil', 'Data dashboard berhasil diperbarui dari sistem Cloud.', 'success');
+            } catch (e) {
+                window.showAlert('Gagal', 'Terjadi kesalahan saat memperbarui data. Cek koneksi internet.', 'error');
+            } finally {
+                if(icon) icon.classList.remove('fa-spin');
+            }
+        };
         
-        window.onload = () => { initCloudDatabase(); window.initHijriFilter(); };
+        window.onload = () => { window.initCloudDatabase(); window.initHijriFilter(); };
 
         window.getLokalGPS = () => {
             return new Promise((resolve, reject) => {
@@ -1149,6 +1168,7 @@
             const t=(id,s)=>{const el=document.getElementById(id);if(el)s?el.classList.remove('hidden'):el.classList.add('hidden');};
             
             // Logika hak akses spesifik per menu
+            const h_dashboard = ad || ak.dashboard;
             const h_guru = ad || ak.guru;
             const h_riwayat = ad || ak.riwayat;
             const h_absen = ad || ak.absen;
@@ -1178,12 +1198,24 @@
             t('nav-btn-kalender', !ig && h_kalender);
             t('nav-btn-pengaturan', !ig && h_pengaturan);
             
-            t('nav-btn-dashboard', !ig); t('nav-btn-riwayat-saya', ig);
+            t('nav-btn-dashboard', !ig && h_dashboard); t('nav-btn-riwayat-saya', ig);
             
             if(ig) { 
                 window.switchTab('riwayat-guru',document.getElementById('nav-btn-riwayat-saya')); const dt = document.getElementById('riwayat-title-container'); if(dt) dt.classList.add('hidden'); const fe = document.getElementById('filter-riwayat-guru'); if(fe){fe.value=window.currentUser.id_guru;fe.disabled=true;} window.renderGridRiwayat(); setTimeout(()=>window.bukaModalRiwayat(window.currentUser.id_guru),50); 
             } else if (window.currentUser.role === 'operator') {
-                window.switchTab('dashboard',document.getElementById('nav-btn-dashboard'));
+                let fT = 'dashboard', fB = 'nav-btn-dashboard';
+                if (!h_dashboard) {
+                    if (h_kalender) { fT = 'kalender'; fB = 'nav-btn-kalender'; }
+                    else if (h_guru) { fT = 'guru'; fB = 'nav-btn-guru'; }
+                    else if (h_riwayat) { fT = 'riwayat-guru'; fB = 'nav-btn-riwayat-guru'; }
+                    else if (h_absen) { fT = 'absen-guru'; fB = 'nav-btn-absen-guru'; }
+                    else if (h_jadwal_guru) { fT = 'jadwal-guru'; fB = 'nav-btn-jadwal-guru'; }
+                    else if (h_jadwal_kelas) { fT = 'jadwal-kelas'; fB = 'nav-btn-jadwal-kelas'; }
+                    else if (h_rekap) { fT = 'rekap-absen-guru'; fB = 'nav-btn-rekap-absen-guru'; }
+                    else if (h_honor) { fT = 'honor-guru'; fB = 'nav-btn-honor-guru'; }
+                    else if (h_idcard) { fT = 'idcard'; fB = 'nav-btn-idcard'; }
+                }
+                window.switchTab(fT, document.getElementById(fB));
                 const ds = document.getElementById('dash-stats-container'); if(ds) ds.classList.remove('hidden'); const dt = document.getElementById('dash-title-container'); if(dt) dt.classList.remove('hidden');
                 const pOp = document.getElementById('modal-portal-operator'); 
                 if(pOp) { document.getElementById('op-welcome-text').innerText = `Selamat Datang, ${window.currentUser.user}`; pOp.classList.replace('hidden', 'flex'); if (anyKhidmah || h_pengaturan) document.getElementById('btn-close-portal-operator').classList.remove('hidden'); else document.getElementById('btn-close-portal-operator').classList.add('hidden'); window.renderOpGridRiwayat(); }
@@ -2140,6 +2172,7 @@
             const p = document.getElementById('op-pass').value;
             let hashedP = p ? await window.hashText(p) : ''; // Enkripsi sebelum simpan
             const aksesData = {
+                dashboard: document.getElementById('akses-dashboard').checked,
                 guru: document.getElementById('akses-guru').checked,
                 riwayat: document.getElementById('akses-riwayat').checked,
                 absen: document.getElementById('akses-absen').checked,
@@ -2188,6 +2221,7 @@
             document.getElementById('op-pass').value = '';
             
             const ak = op.akses || {};
+            document.getElementById('akses-dashboard').checked = ak.dashboard || false;
             document.getElementById('akses-guru').checked = ak.guru || false;
             document.getElementById('akses-riwayat').checked = ak.riwayat || false;
             document.getElementById('akses-absen').checked = ak.absen || false;
@@ -2207,7 +2241,7 @@
             document.getElementById('op-user').value = '';
             document.getElementById('op-pass').value = '';
             
-            ['guru', 'riwayat', 'absen', 'jadwal-guru', 'jadwal-kelas', 'rekap', 'honor', 'idcard', 'kalender', 'pengaturan'].forEach(id => {
+            ['dashboard', 'guru', 'riwayat', 'absen', 'jadwal-guru', 'jadwal-kelas', 'rekap', 'honor', 'idcard', 'kalender', 'pengaturan'].forEach(id => {
                 const el = document.getElementById(`akses-${id}`); if (el) el.checked = false;
             });
             
