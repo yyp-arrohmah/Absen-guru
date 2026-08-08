@@ -277,6 +277,7 @@
                     <div class="flex justify-between mt-1"><span>Hadir Piket</span><b id="slip-honor-piket">-</b></div>
                     <div class="flex justify-between text-gray-500 text-[10px]"><span>Tarif Piket</span><span id="slip-honor-tarif-piket">-</span></div>
                     <div class="flex justify-between mt-2 pt-2 border-t border-dashed border-gray-200 font-bold"><span>Total Transport</span><span id="slip-honor-transport">-</span></div>
+                    <div class="flex justify-between mt-1 text-purple-800 font-bold"><span>Tunjangan Jabatan</span><span id="slip-honor-tunjangan">-</span></div>
                 </div>
                 <div class="border-b border-dashed border-gray-300 mb-3"></div>
                 <div class="flex justify-between font-bold text-sm mb-6"><span>Total Honor</span><span id="slip-honor-total" class="text-gray-900 font-extrabold">-</span></div>
@@ -690,7 +691,7 @@
                 <div id="tab-guru" class="tab-content max-w-6xl mx-auto scroll-mt-6">
                     <div class="mb-8 flex flex-col md:flex-row md:justify-between md:items-center gap-4"><div><h2 class="text-2xl font-bold text-gray-800">Data Guru</h2></div></div>
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="lg:col-span-1"><div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6"><h3 class="font-bold mb-4"><i class="fa-solid fa-user-plus text-purple-500 mr-2"></i>Tambah Guru</h3><form onsubmit="window.simpanGuru(event)" class="space-y-4"><input type="hidden" id="guru-mode" value="add"><input type="hidden" id="guru-id" value=""><div><label class="block text-sm font-medium mb-1">NIP/ID Khusus</label><input type="text" id="guru-nip" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500" required></div><div><label class="block text-sm font-medium mb-1">Nama Lengkap</label><input type="text" id="guru-nama" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500" required></div><div><label class="block text-sm font-medium mb-1">Jabatan</label><select id="guru-jabatan" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer bg-white"><option value="">-- Pilih Jabatan --</option><option value="Kepala Sekolah">Kepala Sekolah</option><option value="Tata Usaha">Tata Usaha</option><option value="Bendahara">Bendahara</option><option value="Wali Kelas Shifir">Wali Kelas Shifir</option><option value="Wali Kelas 1A">Wali Kelas 1A</option><option value="Wali Kelas 1B">Wali Kelas 1B</option><option value="Wali Kelas 1C">Wali Kelas 1C</option><option value="Wali Kelas 1D">Wali Kelas 1D</option><option value="Wali Kelas 2">Wali Kelas 2</option><option value="Wali Kelas 3">Wali Kelas 3</option><option value="Wali Kelas 4">Wali Kelas 4</option><option value="Wali Kelas 5">Wali Kelas 5</option><option value="Wali Kelas 6">Wali Kelas 6</option><option value="Guru / Staf Biasa">Guru / Staf Biasa</option></select></div><div><label class="block text-sm font-medium mb-1">No. HP</label><input type="text" id="guru-hp" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500"></div><div><label class="block text-sm font-medium mb-1">Jarak ke Madrasah (km)</label><input type="number" step="0.1" id="guru-jarak" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500" placeholder="Cth: 2.5"></div>
+                        <div class="lg:col-span-1"><div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6"><h3 class="font-bold mb-4"><i class="fa-solid fa-user-plus text-purple-500 mr-2"></i>Tambah Guru</h3><form onsubmit="window.simpanGuru(event)" class="space-y-4"><input type="hidden" id="guru-mode" value="add"><input type="hidden" id="guru-id" value=""><div><label class="block text-sm font-medium mb-1">NIP/ID Khusus</label><input type="text" id="guru-nip" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500" required></div><div><label class="block text-sm font-medium mb-1">Nama Lengkap</label><input type="text" id="guru-nama" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500" required></div><div><label class="block text-sm font-medium mb-1">Jabatan</label><select id="guru-jabatan" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer bg-white"><option value="">-- Pilih Jabatan --</option><option value="Kepala Sekolah">Kepala Sekolah</option><option value="Tata Usaha">Tata Usaha</option><option value="Bendahara">Bendahara</option><option value="Wali Kelas Shifir">Wali Kelas Shifir</option><option value="Wali Kelas 1A">Wali Kelas 1A</option><option value="Wali Kelas 1B">Wali Kelas 1B</option><option value="Wali Kelas 1C">Wali Kelas 1C</option><option value="Wali Kelas 1D">Wali Kelas 1D</option><option value="Wali Kelas 2">Wali Kelas 2</option><option value="Wali Kelas 3">Wali Kelas 3</option><option value="Wali Kelas 4">Wali Kelas 4</option><option value="Wali Kelas 5">Wali Kelas 5</option><option value="Wali Kelas 6">Wali Kelas 6</option><option value="Guru / Staf Biasa">Guru / Staf Biasa</option></select></div><div><label class="block text-sm font-medium mb-1">No. HP</label><input type="text" id="guru-hp" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500"></div><div><label class="block text-sm font-medium mb-1">Jarak ke Madrasah (km)</label><input type="number" step="0.1" id="guru-jarak" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500" placeholder="Cth: 2.5"></div><div><label class="block text-sm font-medium mb-1">Tunjangan Jabatan (Rp/Bln)</label><input type="number" id="guru-tunjangan" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500" placeholder="Opsional (Cth: 150000)"></div>
                         <div class="mt-4"><label class="block text-sm font-medium mb-2">Foto Profil (Opsional)</label><div class="flex items-center gap-4"><div id="preview-foto-container" class="hidden w-16 h-16 rounded-full overflow-hidden border-2 border-purple-200 cursor-pointer hover:opacity-80 transition-opacity" onclick="window.reopenCropper('guru')"><img id="preview-foto-img" src="" class="w-full h-full object-cover" alt="Preview Foto"></div><button type="button" onclick="window.reopenCropper('guru')" class="bg-purple-50 text-purple-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-purple-100 border border-purple-200 flex items-center gap-2 shadow-sm transition-colors"><i class="fa-solid fa-camera"></i> Pilih Foto Baru</button><button type="button" id="btn-hapus-foto-guru" onclick="window.hapusFotoForm('guru')" class="hidden bg-red-50 text-red-600 px-3 py-2 rounded-lg text-sm font-bold hover:bg-red-100 border border-red-200 transition-colors shadow-sm"><i class="fa-solid fa-trash"></i></button></div></div>
                         <button type="submit" id="btn-submit-guru" class="w-full bg-purple-600 text-white rounded-lg p-2.5 font-bold hover:bg-purple-700 mt-2 shadow-md">Simpan Data Guru</button><button type="button" id="btn-cancel-guru" onclick="window.resetFormGuru()" class="w-full bg-gray-100 text-gray-700 rounded-lg p-2.5 font-bold hover:bg-gray-200 mt-2 hidden">Batal</button></form></div></div>
                         <div class="lg:col-span-2"><div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"><table class="w-full text-sm text-left"><thead class="bg-purple-50 text-xs text-purple-900 font-bold uppercase border-b border-purple-100"><tr><th class="px-6 py-3">NIP</th><th class="px-6 py-3">Profil Guru</th><th class="px-6 py-3 text-right">Aksi</th></tr></thead><tbody id="table-guru" class="divide-y divide-gray-100 bg-white"></tbody></table></div></div>
@@ -867,10 +868,12 @@
                                         <th class="px-4 py-3.5 text-right">H. Mengajar</th>
                                         <th class="px-4 py-3.5 text-right">H. Piket</th>
                                         <th class="px-4 py-3.5 text-right">Transport</th>
+                                        <th class="px-4 py-3.5 text-right">Tunjangan</th>
                                         <th class="px-4 py-3.5 text-right">Total</th>
                                     </tr>
                                 </thead>
                                 <tbody id="table-honor-guru" class="divide-y divide-gray-100 bg-white"></tbody>
+                                <tfoot id="tfoot-honor-guru" class="bg-purple-50 border-t-2 border-purple-200 font-bold hidden"></tfoot>
                             </table>
                         </div>
                     </div>
@@ -952,6 +955,9 @@
         window.getDistanceFromLatLonInM = (lat1, lon1, lat2, lon2) => { const R = 6371e3; const p1 = lat1 * Math.PI/180; const p2 = lat2 * Math.PI/180; const dp = (lat2-lat1) * Math.PI/180; const dl = (lon2-lon1) * Math.PI/180; const a = Math.sin(dp/2) * Math.sin(dp/2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dl/2) * Math.sin(dl/2); return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))); };
         window.formatHijriyah = (dateString) => { try { const d = new Date(dateString); return new Intl.DateTimeFormat('id-ID-u-ca-islamic', {day:'numeric', month:'long', year:'numeric'}).format(d); } catch(e) { return dateString; } };
         window.isJamPiket = (jamStr, jamNum) => { if(!jamStr) return false; const m = jamStr.match(new RegExp(`Jam ${jamNum}:[\\s\\S]*?(?:<hr|$)`, 'i')); return m ? /Piket/i.test(m[0]) : false; };
+        
+        // Fungsi Enkripsi Password (SHA-256)
+        window.hashText = async (text) => { const msgBuffer = new TextEncoder().encode(text); const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer); return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join(''); };
 
         window.showAlert = (title, message, type='info', callback=null) => { document.getElementById('alert-title').innerText = title; document.getElementById('alert-message').innerText = message; const icon = document.getElementById('alert-icon'); if(type === 'error') icon.innerHTML = '<i class="fa-solid fa-circle-xmark text-red-500"></i>'; else if(type === 'success') icon.innerHTML = '<i class="fa-solid fa-circle-check text-green-500"></i>'; else icon.innerHTML = '<i class="fa-solid fa-circle-info text-blue-500"></i>'; document.getElementById('alert-modal').classList.replace('hidden', 'flex'); document.getElementById('alert-close-btn').onclick = () => { document.getElementById('alert-modal').classList.replace('flex', 'hidden'); if(callback) setTimeout(callback, 300); }; };
         window.showConfirm = (title, message, callback) => { document.getElementById('confirm-title').innerText = title; document.getElementById('confirm-message').innerText = message; document.getElementById('confirm-modal').classList.replace('hidden', 'flex'); document.getElementById('confirm-yes-btn').onclick = () => { document.getElementById('confirm-modal').classList.replace('flex', 'hidden'); if(callback) callback(); }; };
@@ -1074,13 +1080,67 @@
         window.syncHijriDate = (type, dateObj=null) => { let d=dateObj; if(!d){const t=document.getElementById(type==='agenda'?'agenda-tgl':`tgl-${type}`)?.value; if(!t)return; const p=t.split('-'); d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));} const h=window.getHijriComponents(d); const elT=document.getElementById(`hijri-tgl-${type}`),elB=document.getElementById(`hijri-bln-${type}`),elY=document.getElementById(`hijri-thn-${type}`); if(elT)elT.value=h.d; if(elB)elB.value=h.m; if(elY){if(![...elY.options].find(o=>parseInt(o.value)===h.y))elY.innerHTML+=`<option value="${h.y}">${h.y}</option>`; elY.value=h.y;} };
         window.initHijriFilter = () => { window.populateHijriDropdowns('absen-guru'); window.populateHijriDropdowns('agenda'); window.initKalenderState(); const t=new Date(); const ig=document.getElementById('tgl-absen-guru'); if(ig)ig.value=window.getTodayInputFormat(); window.syncHijriDate('absen-guru',t); const ia=document.getElementById('agenda-tgl'); if(ia)ia.value=window.getTodayInputFormat(); window.syncHijriDate('agenda',t); try{const hc=window.getHijriComponents(t);const sm=document.getElementById('filter-bulan-hijri'),sy=document.getElementById('filter-tahun-hijri'); if(sm)sm.value=hc.m; if(sy){if(![...sy.options].find(o=>parseInt(o.value)===hc.y))sy.innerHTML+=`<option value="${hc.y}">${hc.y} H</option>`; sy.value=hc.y;} const sm_h=document.getElementById('filter-bulan-hijri-honor'),sy_h=document.getElementById('filter-tahun-hijri-honor'); if(sm_h)sm_h.value=hc.m; if(sy_h){if(![...sy_h.options].find(o=>parseInt(o.value)===hc.y))sy_h.innerHTML+=`<option value="${hc.y}">${hc.y} H</option>`; sy_h.value=hc.y;}}catch(e){} };
 
-        window.prosesLogin = (e) => {
-            e.preventDefault(); const u=document.getElementById('login-user').value.trim(), p=document.getElementById('login-pass').value, err=document.getElementById('login-error'), s=window.appState.pengaturan||{};
-            if(u===(s.admin_user||'admin')&&p===(s.admin_pass||'12345')) { window.currentUser={role:'admin',user:'Admin Utama',akses:{guru:true,pengaturan:true}}; return window.masukSistem(); }
-            const op=(s.operators||[]).find(x=>x.user===u&&x.pass===p); if(op) { window.currentUser={role:'operator',user:op.user,akses:op.akses||{}}; return window.masukSistem(); }
-            const g=(window.appState.guru||[]).find(x=>String(x.nip)===u||String(x.id)===u); if(g) { window.currentUser={role:'guru',user:g.nama,id_guru:g.id,akses:{},jabatan:g.jabatan||'Guru'}; return window.masukSistem(); }
+        window.loginAttempts = parseInt(localStorage.getItem('loginAttempts') || '0');
+        window.lockoutTime = parseInt(localStorage.getItem('lockoutTime') || '0');
+
+        window.prosesLogin = async (e) => {
+            e.preventDefault(); 
+            const u=document.getElementById('login-user').value.trim(), p=document.getElementById('login-pass').value, err=document.getElementById('login-error'), s=window.appState.pengaturan||{};
+            
+            // Cek status blokir Anti Brute-Force
+            const now = Date.now();
+            if (window.lockoutTime > now) {
+                const waitMin = Math.ceil((window.lockoutTime - now) / 60000);
+                err.innerHTML = `<i class="fa-solid fa-lock"></i> Terlalu banyak percobaan. Coba lagi dalam ${waitMin} menit.`;
+                err.classList.remove('hidden');
+                return;
+            }
+
+            const hashedP = await window.hashText(p); // Enkripsi sandi yang diinput
+
+            const adminUser = s.admin_user || 'admin';
+            const adminPass = s.admin_pass || '12345';
+            
+            let isLoginSuccess = false;
+
+            // Validasi Admin (Bisa menerima sandi lama maupun yang sudah dienkripsi)
+            if(u === adminUser && (p === adminPass || hashedP === adminPass)) { 
+                window.currentUser={role:'admin',user:'Admin Utama',akses:{guru:true,pengaturan:true}}; 
+                isLoginSuccess = true;
+            } else {
+                // Validasi Operator
+                const op=(s.operators||[]).find(x=>x.user===u && (x.pass===p || x.pass===hashedP)); 
+                if(op) { 
+                    window.currentUser={role:'operator',user:op.user,akses:op.akses||{}}; 
+                    isLoginSuccess = true;
+                } else {
+                    // Validasi Guru
+                    const g=(window.appState.guru||[]).find(x=>String(x.nip)===u||String(x.id)===u); 
+                    if(g && p === '1234') { 
+                        window.currentUser={role:'guru',user:g.nama,id_guru:g.id,akses:{},jabatan:g.jabatan||'Guru'}; 
+                        isLoginSuccess = true;
+                    }
+                }
+            }
+
+            if (isLoginSuccess) {
+                window.loginAttempts = 0; localStorage.setItem('loginAttempts', '0');
+                return window.masukSistem();
+            }
+
+            // Catat Kegagalan
+            window.loginAttempts++;
+            localStorage.setItem('loginAttempts', window.loginAttempts);
+            if (window.loginAttempts >= 5) {
+                window.lockoutTime = now + (3 * 60 * 1000); // Kunci selama 3 Menit
+                localStorage.setItem('lockoutTime', window.lockoutTime);
+                err.innerHTML = `<i class="fa-solid fa-lock"></i> Akses diblokir sementara. Coba lagi dalam 3 menit.`;
+            } else {
+                err.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Username / Password salah! (${5 - window.loginAttempts} percobaan tersisa)`;
+            }
             err.classList.remove('hidden');
         };
+        
         window.masukSistem = () => {
             document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').classList.remove('hidden'); 
             const pn=document.getElementById('current-username'); 
@@ -1208,21 +1268,21 @@
         };
         window.updateAllViews = () => {
             const st=window.appState, isa=window.currentUser&&window.currentUser.role==='admin'; window.updateDashboardStats(); window.applyLogoToUI();
-            const eg=document.getElementById('table-guru'); if(eg&&st.guru) { const ad=isa||(window.currentUser&&window.currentUser.akses&&window.currentUser.akses.guru); eg.innerHTML=st.guru.map(g=>`<tr class="hover:bg-gray-50 border-b border-gray-100"><td class="px-6 py-4 font-medium text-gray-900 text-xs">${g.nip}</td><td class="px-6 py-4 flex items-center gap-3"><img src="${g.foto||'https://ui-avatars.com/api/?name=Guru&background=cbd5e1'}" class="w-10 h-10 rounded-full object-cover border border-purple-200"><div><span class="font-bold text-sm block">${g.nama}</span><span class="text-xs text-gray-500 font-normal">${g.jabatan||'-'} | ${g.hp||'-'} ${g.jarak?` | Jarak: ${g.jarak} km`:''}</span></div></td><td class="px-6 py-4 text-right"><button onclick="window.editGuru('${g.id}')" class="text-blue-500 bg-blue-50 p-2 rounded-lg hover:bg-blue-100"><i class="fa-solid fa-pen"></i></button>${ad?`<button onclick="window.hapusGuru('${g.id}')" class="text-red-500 bg-red-50 p-2 rounded-lg ml-1 hover:bg-red-100"><i class="fa-solid fa-trash"></i></button>`:''}</td></tr>`).join(''); }
+            const eg=document.getElementById('table-guru'); if(eg&&st.guru) { const ad=isa||(window.currentUser&&window.currentUser.akses&&window.currentUser.akses.guru); eg.innerHTML=st.guru.map(g=>`<tr class="hover:bg-gray-50 border-b border-gray-100"><td class="px-6 py-4 font-medium text-gray-900 text-xs">${g.nip}</td><td class="px-6 py-4 flex items-center gap-3"><img src="${g.foto||'https://ui-avatars.com/api/?name=Guru&background=cbd5e1'}" class="w-10 h-10 rounded-full object-cover border border-purple-200"><div><span class="font-bold text-sm block">${g.nama}</span><span class="text-xs text-gray-500 font-normal">${g.jabatan||'-'} | ${g.hp||'-'} ${g.jarak?` | Jarak: ${g.jarak} km`:''} ${g.tunjangan?` | Tunjangan: ${window.formatRp(g.tunjangan)}`:''}</span></div></td><td class="px-6 py-4 text-right"><button onclick="window.editGuru('${g.id}')" class="text-blue-500 bg-blue-50 p-2 rounded-lg hover:bg-blue-100"><i class="fa-solid fa-pen"></i></button>${ad?`<button onclick="window.hapusGuru('${g.id}')" class="text-red-500 bg-red-50 p-2 rounded-lg ml-1 hover:bg-red-100"><i class="fa-solid fa-trash"></i></button>`:''}</td></tr>`).join(''); }
             const sg=document.getElementById('select-guru-idcard'); if(sg){let o=`<option value="">-- Pilih Nama Guru --</option>`;if(st.guru)st.guru.forEach(g=>o+=`<option value="${g.id}">${g.nama} - ${g.jabatan}</option>`);sg.innerHTML=o;}
             const er=document.getElementById('filter-riwayat-guru'); if(er){const cv=er.value;let o=`<option value="">-- Pilih Guru --</option>`;if(st.guru)st.guru.forEach(g=>o+=`<option value="${g.id}">${g.nama}</option>`);er.innerHTML=o;if(window.currentUser&&window.currentUser.role==='guru'){er.value=window.currentUser.id_guru;er.disabled=true;}else{er.value=cv;er.disabled=false;}}
             ['renderAbsenGuru','renderJadwalGuru','renderJadwalKelas','renderRekapAbsenGuru','renderHonorGuru','renderGridRiwayat', 'renderOpGridRiwayat'].forEach(f=>{if(typeof window[f]==='function')window[f]();});
         };
 
-        window.resetFormGuru = () => { document.getElementById('guru-mode').value='add'; document.getElementById('guru-id').value=''; document.getElementById('guru-nip').value=''; document.getElementById('guru-nama').value=''; document.getElementById('guru-jabatan').value=''; document.getElementById('guru-hp').value=''; document.getElementById('guru-jarak').value=''; window.tempFotoGuru=''; document.getElementById('preview-foto-container').classList.add('hidden'); document.getElementById('preview-foto-img').src=''; document.getElementById('btn-hapus-foto-guru').classList.add('hidden'); document.getElementById('btn-submit-guru').innerText='Simpan Data Guru'; document.getElementById('btn-cancel-guru').classList.add('hidden'); };
+        window.resetFormGuru = () => { document.getElementById('guru-mode').value='add'; document.getElementById('guru-id').value=''; document.getElementById('guru-nip').value=''; document.getElementById('guru-nama').value=''; document.getElementById('guru-jabatan').value=''; document.getElementById('guru-hp').value=''; document.getElementById('guru-jarak').value=''; document.getElementById('guru-tunjangan').value=''; window.tempFotoGuru=''; document.getElementById('preview-foto-container').classList.add('hidden'); document.getElementById('preview-foto-img').src=''; document.getElementById('btn-hapus-foto-guru').classList.add('hidden'); document.getElementById('btn-submit-guru').innerText='Simpan Data Guru'; document.getElementById('btn-cancel-guru').classList.add('hidden'); };
         window.simpanGuru = (e) => { 
             e.preventDefault(); 
-            const m=document.getElementById('guru-mode').value, id=document.getElementById('guru-id').value, nip=document.getElementById('guru-nip').value.trim(), nama=document.getElementById('guru-nama').value.trim(), jab=document.getElementById('guru-jabatan').value.trim(), hp=document.getElementById('guru-hp').value.trim(), jarak=parseFloat(document.getElementById('guru-jarak').value)||0, f=window.tempFotoGuru||''; 
-            if(m==='add')window.appState.guru.push({id:Date.now().toString(),nip,nama,jabatan:jab,hp,jarak,foto:f}); 
-            else {const i=window.appState.guru.findIndex(g=>String(g.id)===String(id));if(i>-1)window.appState.guru[i]={...window.appState.guru[i],nip,nama,jabatan:jab,hp,jarak,foto:f};} 
+            const m=document.getElementById('guru-mode').value, id=document.getElementById('guru-id').value, nip=document.getElementById('guru-nip').value.trim(), nama=document.getElementById('guru-nama').value.trim(), jab=document.getElementById('guru-jabatan').value.trim(), hp=document.getElementById('guru-hp').value.trim(), jarak=parseFloat(document.getElementById('guru-jarak').value)||0, tunj=parseInt(document.getElementById('guru-tunjangan').value)||0, f=window.tempFotoGuru||''; 
+            if(m==='add')window.appState.guru.push({id:Date.now().toString(),nip,nama,jabatan:jab,hp,jarak,tunjangan:tunj,foto:f}); 
+            else {const i=window.appState.guru.findIndex(g=>String(g.id)===String(id));if(i>-1)window.appState.guru[i]={...window.appState.guru[i],nip,nama,jabatan:jab,hp,jarak,tunjangan:tunj,foto:f};} 
             window.saveState(); window.updateAllViews(); window.resetFormGuru(); window.showAlert('Berhasil','Data guru disimpan.','success'); 
         };
-        window.editGuru = (id) => { const g=window.appState.guru.find(x=>String(x.id)===String(id)); if(!g)return; document.getElementById('guru-mode').value='edit'; document.getElementById('guru-id').value=g.id; document.getElementById('guru-nip').value=g.nip||''; document.getElementById('guru-nama').value=g.nama||''; document.getElementById('guru-jabatan').value=g.jabatan||''; document.getElementById('guru-hp').value=g.hp||''; document.getElementById('guru-jarak').value=g.jarak!==undefined?g.jarak:''; document.getElementById('btn-submit-guru').innerText='Perbarui Guru'; document.getElementById('btn-cancel-guru').classList.remove('hidden'); if(g.foto){document.getElementById('preview-foto-img').src=g.foto;document.getElementById('preview-foto-container').classList.remove('hidden');document.getElementById('btn-hapus-foto-guru').classList.remove('hidden');window.tempFotoGuru=g.foto;}else{document.getElementById('preview-foto-container').classList.add('hidden');document.getElementById('btn-hapus-foto-guru').classList.add('hidden');window.tempFotoGuru='';} document.getElementById('tab-guru').scrollIntoView(); };
+        window.editGuru = (id) => { const g=window.appState.guru.find(x=>String(x.id)===String(id)); if(!g)return; document.getElementById('guru-mode').value='edit'; document.getElementById('guru-id').value=g.id; document.getElementById('guru-nip').value=g.nip||''; document.getElementById('guru-nama').value=g.nama||''; document.getElementById('guru-jabatan').value=g.jabatan||''; document.getElementById('guru-hp').value=g.hp||''; document.getElementById('guru-jarak').value=g.jarak!==undefined?g.jarak:''; document.getElementById('guru-tunjangan').value=g.tunjangan||''; document.getElementById('btn-submit-guru').innerText='Perbarui Guru'; document.getElementById('btn-cancel-guru').classList.remove('hidden'); if(g.foto){document.getElementById('preview-foto-img').src=g.foto;document.getElementById('preview-foto-container').classList.remove('hidden');document.getElementById('btn-hapus-foto-guru').classList.remove('hidden');window.tempFotoGuru=g.foto;}else{document.getElementById('preview-foto-container').classList.add('hidden');document.getElementById('btn-hapus-foto-guru').classList.add('hidden');window.tempFotoGuru='';} document.getElementById('tab-guru').scrollIntoView(); };
         window.hapusGuru = (id) => window.showConfirm("Hapus", "Yakin ingin menghapus guru ini?", () => { window.appState.guru=window.appState.guru.filter(g=>String(g.id)!==String(id)); window.saveState(); window.updateAllViews(); });
 
         window.renderJadwalGuru = () => { 
@@ -2060,24 +2120,25 @@
         };
 
         // ADMIN & OPERATOR
-        window.simpanPengaturanLogin = (e) => {
+        window.simpanPengaturanLogin = async (e) => {
             e.preventDefault();
             const u = document.getElementById('setting-admin-user').value.trim();
             const p = document.getElementById('setting-admin-pass').value;
             if(!u) return;
             if(!window.appState.pengaturan) window.appState.pengaturan = {};
             window.appState.pengaturan.admin_user = u;
-            if(p) window.appState.pengaturan.admin_pass = p;
+            if(p) window.appState.pengaturan.admin_pass = await window.hashText(p); // Enkripsi sebelum simpan
             window.saveState();
             document.getElementById('setting-admin-pass').value = '';
-            window.showAlert('Berhasil', 'Akun admin berhasil diupdate.', 'success');
+            window.showAlert('Berhasil', 'Akun admin berhasil diupdate dengan lapisan enkripsi baru.', 'success');
         };
 
-        window.simpanOperator = (e) => {
+        window.simpanOperator = async (e) => {
             e.preventDefault();
             const id = document.getElementById('op-id').value;
             const u = document.getElementById('op-user').value.trim();
             const p = document.getElementById('op-pass').value;
+            let hashedP = p ? await window.hashText(p) : ''; // Enkripsi sebelum simpan
             const aksesData = {
                 guru: document.getElementById('akses-guru').checked,
                 riwayat: document.getElementById('akses-riwayat').checked,
@@ -2098,12 +2159,12 @@
                 const ix = window.appState.pengaturan.operators.findIndex(x => String(x.id) === String(id));
                 if(ix > -1) {
                     window.appState.pengaturan.operators[ix].user = u;
-                    if(p) window.appState.pengaturan.operators[ix].pass = p;
+                    if(p) window.appState.pengaturan.operators[ix].pass = hashedP;
                     window.appState.pengaturan.operators[ix].akses = aksesData;
                 }
             } else {
                 if(!p) return window.showAlert('Gagal', 'Password wajib diisi untuk operator baru.', 'error');
-                window.appState.pengaturan.operators.push({ id: Date.now().toString(), user: u, pass: p, akses: aksesData });
+                window.appState.pengaturan.operators.push({ id: Date.now().toString(), user: u, pass: hashedP, akses: aksesData });
             }
             window.saveState(); window.renderOperator(); window.resetFormOperator();
             window.showAlert('Berhasil', 'Data Operator berhasil disimpan.', 'success');
@@ -2186,7 +2247,7 @@
             const inputPiket = document.getElementById('input-tarif-piket'); if(inputPiket) inputPiket.value = tarifPiket;
             const inputTransport = document.getElementById('input-tarif-transport'); if(inputTransport) inputTransport.value = tarifTransport;
 
-            const rd = window.appState.guru.map(g=>({id:g.id,nama:g.nama,jabatan:g.jabatan,jarak:g.jarak||0,hadir:0,piket:0}));
+            const rd = window.appState.guru.map(g=>({id:g.id,nama:g.nama,jabatan:g.jabatan,jarak:g.jarak||0,tunjangan:g.tunjangan||0,hadir:0,piket:0}));
             const dt = window.getDatesInHijriMonth(parseInt(sy.value),parseInt(sm.value));
             const t = new Date(); t.setHours(0,0,0,0);
             
@@ -2236,30 +2297,46 @@
                 });
             });
 
-            c.innerHTML = rd.length === 0 ? '<tr><td colspan="10" class="text-center py-8">Belum ada data guru.</td></tr>' : rd.map((g,i) => {
-                const totalHonor = g.hadir * tarifHonor;
-                const totalPiket = g.piket * tarifPiket;
-                const totalKehadiran = g.hadir + g.piket;
-                const validTransport = g.jarak < 2 ? 0 : tarifTransport; // Jika jarak < 2km, transport 0
-                const totalTransport = totalKehadiran * validTransport;
-                const grandTotal = totalHonor + totalPiket + totalTransport;
+            const tf = document.getElementById('tfoot-honor-guru');
+            let grandTotalSemua = 0;
+
+            if (rd.length === 0) {
+                c.innerHTML = '<tr><td colspan="11" class="text-center py-8">Belum ada data guru.</td></tr>';
+                if(tf) { tf.innerHTML = ''; tf.classList.add('hidden'); }
+            } else {
+                c.innerHTML = rd.map((g,i) => {
+                    const totalHonor = g.hadir * tarifHonor;
+                    const totalPiket = g.piket * tarifPiket;
+                    const totalKehadiran = g.hadir + g.piket;
+                    const validTransport = g.jarak < 2 ? 0 : tarifTransport; // Jika jarak < 2km, transport 0
+                    const totalTransport = totalKehadiran * validTransport;
+                    const grandTotal = totalHonor + totalPiket + totalTransport + g.tunjangan;
+                    
+                    grandTotalSemua += grandTotal;
+                    
+                    const safeNama = g.nama.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                    const safeJabatan = (g.jabatan||'-').replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                    
+                    return `<tr class="border-b border-gray-100 hover:bg-purple-50/50 cursor-pointer transition-colors" onclick="window.bukaSlipHonor('${g.id}','${safeNama}','${safeJabatan}',${g.hadir},${g.piket},${tarifHonor},${tarifPiket},${validTransport},${g.tunjangan},${grandTotal})" title="Klik baris ini untuk mencetak Slip Honor">
+                        <td class="px-4 py-3 text-center">${i+1}</td>
+                        <td class="px-4 py-3 font-bold">${g.nama}</td>
+                        <td class="px-4 py-3 text-xs text-gray-500">${g.jabatan||'-'}</td>
+                        <td class="px-4 py-3 text-center text-blue-600 font-bold bg-blue-50/30">${g.jarak} km</td>
+                        <td class="px-4 py-3 text-center text-green-700 font-bold bg-green-50/30">${g.hadir}</td>
+                        <td class="px-4 py-3 text-center text-orange-600 font-bold bg-orange-50/30">${g.piket}</td>
+                        <td class="px-4 py-3 text-right text-green-700">${window.formatRp(totalHonor)}</td>
+                        <td class="px-4 py-3 text-right text-orange-700">${window.formatRp(totalPiket)}</td>
+                        <td class="px-4 py-3 text-right text-blue-700">${validTransport === 0 ? '<span class="text-[10px] text-red-500 block leading-tight">- Jarak &lt; 2km -</span>Rp 0' : window.formatRp(totalTransport)}</td>
+                        <td class="px-4 py-3 text-right text-purple-700 font-bold">${window.formatRp(g.tunjangan)}</td>
+                        <td class="px-4 py-3 text-right font-bold text-gray-900">${window.formatRp(grandTotal)}</td>
+                    </tr>`;
+                }).join('');
                 
-                const safeNama = g.nama.replace(/'/g, "\\'").replace(/"/g, "&quot;");
-                const safeJabatan = (g.jabatan||'-').replace(/'/g, "\\'").replace(/"/g, "&quot;");
-                
-                return `<tr class="border-b border-gray-100 hover:bg-purple-50/50 cursor-pointer transition-colors" onclick="window.bukaSlipHonor('${g.id}','${safeNama}','${safeJabatan}',${g.hadir},${g.piket},${tarifHonor},${tarifPiket},${validTransport},${grandTotal})" title="Klik baris ini untuk mencetak Slip Honor">
-                    <td class="px-4 py-3 text-center">${i+1}</td>
-                    <td class="px-4 py-3 font-bold">${g.nama}</td>
-                    <td class="px-4 py-3 text-xs text-gray-500">${g.jabatan||'-'}</td>
-                    <td class="px-4 py-3 text-center text-blue-600 font-bold bg-blue-50/30">${g.jarak} km</td>
-                    <td class="px-4 py-3 text-center text-green-700 font-bold bg-green-50/30">${g.hadir}</td>
-                    <td class="px-4 py-3 text-center text-orange-600 font-bold bg-orange-50/30">${g.piket}</td>
-                    <td class="px-4 py-3 text-right text-green-700">${window.formatRp(totalHonor)}</td>
-                    <td class="px-4 py-3 text-right text-orange-700">${window.formatRp(totalPiket)}</td>
-                    <td class="px-4 py-3 text-right text-blue-700">${validTransport === 0 ? '<span class="text-[10px] text-red-500 block leading-tight">- Jarak &lt; 2km -</span>Rp 0' : window.formatRp(totalTransport)}</td>
-                    <td class="px-4 py-3 text-right font-bold text-gray-900">${window.formatRp(grandTotal)}</td>
-                </tr>`;
-            }).join('');
+                if(tf) {
+                    tf.innerHTML = `<tr><td colspan="10" class="px-4 py-4 text-right uppercase tracking-wider text-purple-900 text-xs">Total Keseluruhan Pengeluaran Honor</td><td class="px-4 py-4 text-right text-base text-purple-700 whitespace-nowrap">${window.formatRp(grandTotalSemua)}</td></tr>`;
+                    tf.classList.remove('hidden');
+                }
+            }
         };
 
         window.simpanTarifHonor = () => { 
@@ -2275,7 +2352,7 @@
             window.showAlert('Berhasil', 'Tarif honor, piket, dan transport berhasil disimpan.', 'success');
         };
 
-        window.bukaSlipHonor = (id, nm, jb, h, p, tHonor, tPiket, tTransport, tot) => {
+        window.bukaSlipHonor = (id, nm, jb, h, p, tHonor, tPiket, tTransport, tTunjangan, tot) => {
             const mNames = ["Muharram", "Safar", "Rabi'ul Awal", "Rabi'ul Akhir", "Jumadil Awal", "Jumadil Akhir", "Rajab", "Sya'ban", "Ramadhan", "Syawal", "Dzulqa'dah", "Dzulhijjah"];
             const sm = parseInt(document.getElementById('filter-bulan-hijri-honor').value);
             const sy = document.getElementById('filter-tahun-hijri-honor').value;
@@ -2292,6 +2369,7 @@
             
             const totalKehadiran = h + p;
             document.getElementById('slip-honor-transport').innerText = window.formatRp(tTransport * totalKehadiran);
+            document.getElementById('slip-honor-tunjangan').innerText = window.formatRp(tTunjangan);
             document.getElementById('slip-honor-total').innerText = window.formatRp(tot);
             
             const now = new Date();
