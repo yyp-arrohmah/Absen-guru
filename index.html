@@ -1501,7 +1501,10 @@
             const ah=(window.appState.agenda||[]).filter(a=>a.tgl===tgl);
             const ar=ah.find(a=>a.tipe==='Rapat'||a.ket.toLowerCase().includes('rapat'));
             const apRapot=ah.find(a=>a.ket.toLowerCase().includes('pembagian rapot') || a.ket.toLowerCase().includes('pembagian rapor'));
+            const il=ah.find(a=>a.tipe==='Libur');
             
+            if(il && !ar && !apRapot) return {allowed:false, errorMsg:`Guru: ${guru.nama}\nHari ini ditetapkan sebagai Libur (${il.ket}).`};
+
             if (apRapot) {
                 const jab = (guru.jabatan || '').toLowerCase();
                 const isExempted = jab.includes('kepala sekolah') || jab.includes('tata usaha') || jab.includes('bendahara') || jab.includes('wali kelas');
@@ -1569,8 +1572,11 @@
             const ah=(window.appState.agenda||[]).filter(a=>a.tgl===tgl);
             const ar=ah.find(a=>a.tipe==='Rapat'||a.ket.toLowerCase().includes('rapat'));
             const apRapot=ah.find(a=>a.ket.toLowerCase().includes('pembagian rapot') || a.ket.toLowerCase().includes('pembagian rapor'));
+            const il=ah.find(a=>a.tipe==='Libur');
             const jh=(window.appState.jadwal_guru||[]).filter(j=>j.hari===nh), ijt=new Set(jh.map(j=>String(j.id_guru)));
             
+            if(il && !ar && !apRapot) { c.innerHTML=`<tr><td colspan="3" class="px-4 py-12 text-center text-red-600 font-bold bg-red-50/50"><i class="fa-solid fa-calendar-xmark text-5xl mb-4 block opacity-80 text-red-300"></i>Hari ini Libur (${il.ket})<br><span class="text-sm font-normal text-red-500 mt-1 block">Semua sesi absensi ditiadakan.</span></td></tr>`; return; }
+
             let gt = [];
             if (apRapot) {
                 gt = window.appState.guru.filter(g => {
@@ -1647,8 +1653,7 @@
             const ar=ah.find(a=>a.tipe==='Rapat'||a.ket.toLowerCase().includes('rapat'));
             const apRapot=ah.find(a=>a.ket.toLowerCase().includes('pembagian rapot') || a.ket.toLowerCase().includes('pembagian rapor'));
             
-            let inv=false; document.querySelectorAll('.absen-guru-row input[type="radio"]:checked').forEach(el=>{if(il&&!ar&&!apRapot&&el.value!=='Cuti')inv=true;}); 
-            if(inv)return window.showAlert('Gagal Menyimpan',`Hari ini Libur (${il.ket}).\nSistem menolak absen selain pengajuan Cuti.`,'error');
+            if(il && !ar && !apRapot) return window.showAlert('Gagal Menyimpan',`Hari ini Libur (${il.ket}).\nSistem menolak seluruh input absensi.`,'error');
             
             if(!window.appState.absensi_guru)window.appState.absensi_guru=[]; let r=window.appState.absensi_guru.find(a=>a.tanggal===tgl); const da=[];
             document.querySelectorAll('.absen-guru-row').forEach(row=>{
@@ -1780,8 +1785,8 @@
                 const jab = (isGuru.jabatan || '').toLowerCase();
                 const isExempted = jab.includes('kepala sekolah') || jab.includes('tata usaha') || jab.includes('bendahara') || jab.includes('wali kelas');
                 if (!isExempted) return window.showAlert('Absen Ditolak', `Hari ini Pembagian Rapot.\nGuru biasa diliburkan, tidak perlu absen.`, 'error');
-            } else if (il && !ar && statusScan.toLowerCase() !== 'cuti') {
-                return window.showAlert('Absen Ditolak', `Hari ini Libur: ${il.ket}\nSistem menolak absen selain pengajuan "Cuti".`, 'error');
+            } else if (il && !ar) {
+                return window.showAlert('Absen Ditolak', `Hari ini Libur: ${il.ket}\nSeluruh kegiatan absensi ditiadakan.`, 'error');
             }
 
             let cekWaktu = null;
