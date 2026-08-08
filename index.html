@@ -1225,6 +1225,26 @@
         };
         window.prosesLogout = () => window.showConfirm("Keluar", "Keluar dari sistem?", () => { window.currentUser=null; document.getElementById('login-pass').value=''; document.getElementById('main-app').classList.add('hidden'); document.getElementById('modal-riwayat-guru').classList.remove('flex'); document.getElementById('modal-riwayat-guru').classList.add('hidden'); const mo=document.getElementById('modal-portal-operator'); if(mo){mo.classList.remove('flex');mo.classList.add('hidden');} document.getElementById('login-screen').classList.remove('hidden'); });
 
+        window.getScheduledIds = (st, nh, sesi, apRapot, isRapat, isLibur) => {
+            let ids = new Set();
+            (st.guru||[]).forEach(g => {
+                const j = (st.jadwal_guru||[]).find(jx => jx.hari === nh && String(jx.id_guru) === String(g.id));
+                let isTarget = false;
+                if (apRapot) {
+                    const jab = (g.jabatan || '').toLowerCase();
+                    const isExempted = jab.includes('kepala sekolah') || jab.includes('tata usaha') || jab.includes('bendahara') || jab.includes('wali kelas');
+                    if (isExempted && sesi === 1) isTarget = true;
+                } else if (isRapat) {
+                    if (j) { if (j.jam.includes(`Jam ${sesi}`) && !window.isJamPiket(j.jam, sesi)) isTarget = true; }
+                    else { if (sesi === 1) isTarget = true; }
+                } else if (!isLibur) {
+                    if (j && j.jam.includes(`Jam ${sesi}`) && !window.isJamPiket(j.jam, sesi)) isTarget = true;
+                }
+                if (isTarget) ids.add(String(g.id));
+            });
+            return ids;
+        };
+
         window.updateDashboardStats = () => {
             const st=window.appState;
             const hc=window.getHijriComponents(new Date()), de=document.getElementById('current-hijri-date-dashboard'); if(de)de.innerText=`${hc.d} ${["Muharram", "Safar", "Rabi'ul Awal", "Rabi'ul Akhir", "Jumadil Awal", "Jumadil Akhir", "Rajab", "Sya'ban", "Ramadhan", "Syawal", "Dzulqa'dah", "Dzulhijjah"][hc.m-1]} ${hc.y} H`;
@@ -1243,22 +1263,7 @@
             // Hitung untuk masing-masing Sesi 1, 2, dan 3
             [1, 2, 3].forEach(sesi => {
                 let h=0, iz=0, sk=0, ct=0, al=0;
-                let scheduledIds = new Set();
-                
-                if (apRapot) {
-                    (st.guru||[]).forEach(g => {
-                        const jab = (g.jabatan || '').toLowerCase();
-                        if (jab.includes('kepala sekolah') || jab.includes('tata usaha') || jab.includes('bendahara') || jab.includes('wali kelas')) scheduledIds.add(String(g.id));
-                    });
-                } else if (isRapat) {
-                    (st.guru||[]).forEach(g => scheduledIds.add(String(g.id)));
-                } else if (!isLibur) {
-                    (st.jadwal_guru||[]).forEach(j => { 
-                        if(j.hari === nh && j.jam.includes(`Jam ${sesi}`) && !window.isJamPiket(j.jam, sesi)) {
-                            scheduledIds.add(String(j.id_guru));
-                        }
-                    });
-                }
+                let scheduledIds = window.getScheduledIds(st, nh, sesi, apRapot, isRapat, isLibur);
 
                 // Update Total Jadwal per sesi
                 const tGuru = scheduledIds.size;
@@ -1267,7 +1272,7 @@
                 // Cek guru yang seharusnya masuk (Terjadwal)
                 scheduledIds.forEach(id => {
                     const absen = dataAbsen.find(x => String(x.id_guru) === id);
-                    if (absen) {
+                    if (absen && absen[`status_${sesi}`]) {
                         let stat = absen[`status_${sesi}`];
                         if (stat === 'Hadir') h++;
                         else if (stat === 'Izin') iz++;
@@ -1275,7 +1280,7 @@
                         else if (stat === 'Cuti') ct++;
                         else al++;
                     } else {
-                        al++; // Jika tidak ada data dan tidak absen
+                        al++; // Jika tidak ada data dan tidak absen atau status kosong
                     }
                 });
 
@@ -2518,22 +2523,7 @@
             const apRapot = agenda.some(a=>a.ket.toLowerCase().includes('pembagian rapot') || a.ket.toLowerCase().includes('pembagian rapor'));
             const isLibur = agenda.some(a=>a.tipe==='Libur');
 
-            let scheduledIds = new Set();
-            if (apRapot) {
-                (st.guru||[]).forEach(g => {
-                    const jab = (g.jabatan || '').toLowerCase();
-                    if (jab.includes('kepala sekolah') || jab.includes('tata usaha') || jab.includes('bendahara') || jab.includes('wali kelas')) scheduledIds.add(String(g.id));
-                });
-            } else if (isRapat) {
-                (st.guru||[]).forEach(g => scheduledIds.add(String(g.id)));
-            } else if (!isLibur) {
-                (st.jadwal_guru||[]).forEach(j => {
-                    if(j.hari === nh && j.jam.includes(`Jam ${sesi}`) && !window.isJamPiket(j.jam, sesi)) {
-                        scheduledIds.add(String(j.id_guru));
-                    }
-                });
-            }
-
+            let scheduledIds = window.getScheduledIds(st, nh, sesi, apRapot, isRapat, isLibur);
             let resultList = [];
 
             if (targetStatus === 'Jadwal') {
@@ -2547,9 +2537,10 @@
                     const absen = dataAbsen.find(x => String(x.id_guru) === String(id));
                     const g = (st.guru||[]).find(x => String(x.id) === String(id));
                     if(g) {
-                        if (absen) {
+                        if (absen && absen[`status_${sesi}`]) {
                             let stat = absen[`status_${sesi}`];
                             if (stat === targetStatus) resultList.push(g.nama);
+                            else if (targetStatus === 'Alpa' && !['Hadir','Izin','Sakit','Cuti'].includes(stat)) resultList.push(g.nama);
                         } else {
                             if (targetStatus === 'Alpa') resultList.push(g.nama);
                         }
@@ -2560,7 +2551,7 @@
                 dataAbsen.forEach(absen => {
                     if (!scheduledIds.has(String(absen.id_guru))) {
                         let stat = absen[`status_${sesi}`];
-                        if (stat === targetStatus) {
+                        if (stat === targetStatus && stat !== 'Alpa') { // Ignore Alpa for unscheduled
                             const g = (st.guru||[]).find(x => String(x.id) === String(absen.id_guru));
                             if(g) resultList.push(g.nama + ' <span class="text-[10px] bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded ml-1">Diluar Jadwal</span>');
                         }
