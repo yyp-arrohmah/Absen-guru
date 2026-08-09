@@ -1231,9 +1231,7 @@
                 const j = (st.jadwal_guru||[]).find(jx => jx.hari === nh && String(jx.id_guru) === String(g.id));
                 let isTarget = false;
                 if (apRapot) {
-                    const jab = (g.jabatan || '').toLowerCase();
-                    const isExempted = jab.includes('kepala sekolah') || jab.includes('tata usaha') || jab.includes('bendahara') || jab.includes('wali kelas');
-                    if (isExempted && sesi === 1) isTarget = true;
+                    if (sesi === 1 || sesi === 2) isTarget = true;
                 } else if (isRapat) {
                     if (j) { if (j.jam.includes(`Jam ${sesi}`) && !window.isJamPiket(j.jam, sesi)) isTarget = true; }
                     else { if (sesi === 1) isTarget = true; }
@@ -1506,10 +1504,6 @@
             if(il && !ar && !apRapot) return {allowed:false, errorMsg:`Guru: ${guru.nama}\nHari ini ditetapkan sebagai Libur (${il.ket}).`};
 
             if (apRapot) {
-                const jab = (guru.jabatan || '').toLowerCase();
-                const isExempted = jab.includes('kepala sekolah') || jab.includes('tata usaha') || jab.includes('bendahara') || jab.includes('wali kelas');
-                if (!isExempted) return {allowed:false, errorMsg:`Guru: ${guru.nama}\nHari ini Pembagian Rapot. Anda diliburkan.`};
-                
                 const ct=new Date();
                 const startRapot=new Date(ct); startRapot.setHours(13,0,0,0);
                 const endRapot=new Date(ct); endRapot.setHours(16,0,0,0);
@@ -1517,12 +1511,12 @@
                 
                 if (tgl===ts && statusScan==='Hadir') {
                     if (ct >= startRapot && ct <= endRapot) {
-                        return {allowed:true, infoWaktu:`Hadir (Rapot)`, targetJam:1, hasJam2:false, hasJam3:false, validSessions:[{jamKe:1, iw:'Tepat Waktu'}]};
+                        return {allowed:true, infoWaktu:`Hadir (Rapot)`, targetJam:null, hasJam2:true, hasJam3:false, validSessions:[]};
                     } else {
                         return {allowed:false, errorMsg:`Waktu absen Pembagian Rapot adalah pukul 13:00 s/d 16:00 WIB.`};
                     }
                 } else {
-                    return {allowed:true, infoWaktu:`Hadir (Rapot)`, targetJam:1, hasJam2:false, hasJam3:false};
+                    return {allowed:true, infoWaktu:`Hadir (Rapot)`, targetJam:null, hasJam2:true, hasJam3:false};
                 }
             }
 
@@ -1578,12 +1572,7 @@
             if(il && !ar && !apRapot) { c.innerHTML=`<tr><td colspan="3" class="px-4 py-12 text-center text-red-600 font-bold bg-red-50/50"><i class="fa-solid fa-calendar-xmark text-5xl mb-4 block opacity-80 text-red-300"></i>Hari ini Libur (${il.ket})<br><span class="text-sm font-normal text-red-500 mt-1 block">Semua sesi absensi ditiadakan.</span></td></tr>`; return; }
 
             let gt = [];
-            if (apRapot) {
-                gt = window.appState.guru.filter(g => {
-                    const jab = (g.jabatan || '').toLowerCase();
-                    return jab.includes('kepala sekolah') || jab.includes('tata usaha') || jab.includes('bendahara') || jab.includes('wali kelas');
-                });
-            } else if (ar) {
+            if (apRapot || ar) {
                 gt = window.appState.guru;
             } else {
                 gt = window.appState.guru.filter(g=>ijt.has(String(g.id))||rh.data.some(dx=>String(dx.id_guru)===String(g.id)));
@@ -1614,7 +1603,7 @@
                 
                 let jadwalInfo = j ? j.jam : 'Belum diatur';
                 if(apRapot) {
-                    h1=true; h2=false; h3=false;
+                    h1=true; h2=true; h3=false;
                     jadwalInfo = '<span class="text-blue-600 font-bold">Pembagian Rapot (13:00 - 16:00)</span>';
                 } else if(ar&&!j) {
                     h1=true; h2=false; h3=false;
@@ -1692,8 +1681,8 @@
                     rd.forEach(gr => {
                         const isScheduled = scheduledIds.has(String(gr.id));
                         
-                        // TARGET MENGAJAR HANYA BERTAMBAH JIKA TIDAK LIBUR (Atau ada pengecualian wajib hadir)
-                        if (isScheduled) gr.target++; 
+                        // TARGET MENGAJAR HANYA BERTAMBAH JIKA TIDAK LIBUR DAN BUKAN RAPOT
+                        if (isScheduled && !apRapot) gr.target++; 
 
                         if (ip) {
                             const ex = da.find(x => String(x.id_guru) === String(gr.id));
@@ -1790,11 +1779,7 @@
             const ar = ah.find(a => a.tipe === 'Rapat' || a.ket.toLowerCase().includes('rapat'));
             const apRapot = ah.find(a => a.ket.toLowerCase().includes('pembagian rapot') || a.ket.toLowerCase().includes('pembagian rapor'));
             
-            if (apRapot) {
-                const jab = (isGuru.jabatan || '').toLowerCase();
-                const isExempted = jab.includes('kepala sekolah') || jab.includes('tata usaha') || jab.includes('bendahara') || jab.includes('wali kelas');
-                if (!isExempted) return window.showAlert('Absen Ditolak', `Hari ini Pembagian Rapot.\nGuru biasa diliburkan, tidak perlu absen.`, 'error');
-            } else if (il && !ar) {
+            if (il && !ar && !apRapot) {
                 return window.showAlert('Absen Ditolak', `Hari ini Libur: ${il.ket}\nSeluruh kegiatan absensi ditiadakan.`, 'error');
             }
 
@@ -1863,8 +1848,11 @@
                     }
 
                     // 2. CEK DUPLIKAT: Tolak jika status untuk sesi tersebut sudah ada
-                    if (td && sesiAktif && td[`status_${sesiAktif}`]) {
+                    if (sesiAktif && td && td[`status_${sesiAktif}`]) {
                         if(!silent) return window.showAlert('Sudah Tercatat', `Guru: ${g.nama}\nSudah absen dengan status ${td[`status_${sesiAktif}`].toUpperCase()} untuk Sesi Ke-${sesiAktif} hari ini.`, 'info');
+                        return;
+                    } else if (!sesiAktif && td && td['status_1']) {
+                        if(!silent) return window.showAlert('Sudah Tercatat', `Guru: ${g.nama}\nSudah absen dengan status ${td['status_1'].toUpperCase()} untuk hari ini.`, 'info');
                         return;
                     }
                     
