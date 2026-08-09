@@ -1668,40 +1668,49 @@
         window.renderRekapAbsenGuru = () => {
             const c=document.getElementById('table-rekap-absen-guru'), sm=document.getElementById('filter-bulan-hijri'), sy=document.getElementById('filter-tahun-hijri'); if(!c||!sm||!sy)return;
             
-            const rd=window.appState.guru.map(g=>({id:g.id,nama:g.nama,target:0,hadir:0,izin:0,sakit:0,cuti:0,alpa:0})), dt=window.getDatesInHijriMonth(parseInt(sy.value),parseInt(sm.value)), t=new Date(); t.setHours(0,0,0,0);
+            const st = window.appState;
+            const rd=st.guru.map(g=>({id:g.id,nama:g.nama,target:0,hadir:0,izin:0,sakit:0,cuti:0,alpa:0}));
+            const dt=window.getDatesInHijriMonth(parseInt(sy.value),parseInt(sm.value));
+            const t=new Date(); t.setHours(0,0,0,0);
+            
             dt.forEach(d=>{
-                const nh=['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][d.getDay()], ds=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`, da=((window.appState.absensi_guru||[]).find(a=>a.tanggal===ds)||{data:[]}).data, ip=d<=t;
-                rd.forEach(gr=>{
-                    const j=(window.appState.jadwal_guru||[]).find(jx=>jx.hari===nh&&String(jx.id_guru)===String(gr.id));
-                    if(j){
-                        const h1=j.jam.includes('Jam 1') && !window.isJamPiket(j.jam, 1), h2=j.jam.includes('Jam 2') && !window.isJamPiket(j.jam, 2), h3=j.jam.includes('Jam 3') && !window.isJamPiket(j.jam, 3); 
-                        if(h1)gr.target++; if(h2)gr.target++; if(h3)gr.target++;
-                        if(ip){
-                            const ex=da.find(x=>String(x.id_guru)===String(gr.id));
-                            if(ex){
-                                if(h1){
-                                    const s1=ex.status_1; 
-                                    if(s1==='Hadir') {
-                                        gr.hadir++;
-                                    } else if(s1==='Izin') gr.izin++; else if(s1==='Sakit') gr.sakit++; else if(s1==='Cuti') gr.cuti++; else gr.alpa++;
+                const nh=['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][d.getDay()];
+                const ds=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                const da=((st.absensi_guru||[]).find(a=>a.tanggal===ds)||{data:[]}).data;
+                const ip=d<=t;
+                
+                // CEK AGENDA LIBUR/RAPAT/RAPOT PADA HARI INI
+                const ah=(st.agenda||[]).filter(a=>a.tgl===ds);
+                const isRapat=ah.some(a=>a.tipe==='Rapat'||a.ket.toLowerCase().includes('rapat'));
+                const apRapot=ah.some(a=>a.ket.toLowerCase().includes('pembagian rapot') || a.ket.toLowerCase().includes('pembagian rapor'));
+                const isLibur=ah.some(a=>a.tipe==='Libur');
+
+                // KALKULASI SETIAP SESI SECARA SPESIFIK
+                [1, 2, 3].forEach(sesi => {
+                    const scheduledIds = window.getScheduledIds(st, nh, sesi, apRapot, isRapat, isLibur);
+                    
+                    rd.forEach(gr => {
+                        const isScheduled = scheduledIds.has(String(gr.id));
+                        
+                        // TARGET MENGAJAR HANYA BERTAMBAH JIKA TIDAK LIBUR (Atau ada pengecualian wajib hadir)
+                        if (isScheduled) gr.target++; 
+
+                        if (ip) {
+                            const ex = da.find(x => String(x.id_guru) === String(gr.id));
+                            if (ex && ex[`status_${sesi}`]) {
+                                const stat = ex[`status_${sesi}`];
+                                if (isScheduled) {
+                                    if(stat==='Hadir') gr.hadir++; else if(stat==='Izin') gr.izin++; else if(stat==='Sakit') gr.sakit++; else if(stat==='Cuti') gr.cuti++; else gr.alpa++;
+                                } else {
+                                    // Hitung juga guru pengganti / diluar jadwal jika mereka hadir
+                                    if(stat==='Hadir') gr.hadir++; else if(stat==='Izin') gr.izin++; else if(stat==='Sakit') gr.sakit++; else if(stat==='Cuti') gr.cuti++;
                                 }
-                                if(h2){
-                                    const s2=ex.status_2; 
-                                    if(s2==='Hadir') {
-                                        gr.hadir++;
-                                    } else if(s2==='Izin') gr.izin++; else if(s2==='Sakit') gr.sakit++; else if(s2==='Cuti') gr.cuti++; else gr.alpa++;
-                                }
-                                if(h3){
-                                    const s3=ex.status_3; 
-                                    if(s3==='Hadir') {
-                                        gr.hadir++;
-                                    } else if(s3==='Izin') gr.izin++; else if(s3==='Sakit') gr.sakit++; else if(s3==='Cuti') gr.cuti++; else gr.alpa++;
-                                }
-                            }else{
-                                if(h1)gr.alpa++; if(h2)gr.alpa++; if(h3)gr.alpa++;
+                            } else {
+                                // Hanya berikan Alpa jika dia terjadwal namun tidak ada data absen sama sekali
+                                if (isScheduled) gr.alpa++; 
                             }
                         }
-                    }
+                    });
                 });
             });
             
