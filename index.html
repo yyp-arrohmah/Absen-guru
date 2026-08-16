@@ -473,6 +473,7 @@
                                     <label class="flex items-center text-[10px] gap-1 bg-white p-1.5 rounded border border-gray-200 cursor-pointer"><input type="checkbox" id="akses-kalender" class="w-3 h-3"> Kalender</label>
                                     <label class="flex items-center text-[10px] gap-1 bg-white p-1.5 rounded border border-gray-200 cursor-pointer"><input type="checkbox" id="akses-surat" class="w-3 h-3"> Surat</label>
                                     <label class="flex items-center text-[10px] gap-1 bg-white p-1.5 rounded border border-gray-200 cursor-pointer"><input type="checkbox" id="akses-pengaturan" class="w-3 h-3"> Pengaturan</label>
+                                    <label class="flex items-center text-[10px] gap-1 bg-white p-1.5 rounded border border-gray-200 cursor-pointer"><input type="checkbox" id="akses-log-login" class="w-3 h-3"> Log Login</label>
                                 </div>
                                 <div class="flex gap-2">
                                     <button type="submit" class="flex-1 bg-blue-600 text-white font-bold py-2 rounded-lg text-xs shadow-sm">Simpan</button>
@@ -688,6 +689,7 @@
                             <button onclick="window.toggleSubmenu('submenu-khidmah', 'icon-khidmah')" class="w-full flex items-center justify-between px-4 py-3 text-left text-sm font-medium text-purple-700 hover:bg-purple-50 transition-colors outline-none rounded-xl"><div class="flex items-center gap-3"><i class="fa-solid fa-chalkboard-user w-5"></i> Data Guru</div><i id="icon-khidmah" class="fa-solid fa-chevron-down transition-transform duration-300 text-xs"></i></button>
                             <div id="submenu-khidmah" class="flex flex-col gap-1 mt-1 pl-4 border-l-2 border-purple-200 ml-2">
                                 <button id="nav-btn-guru" onclick="window.switchTab('guru', this)" class="nav-btn w-full flex items-center gap-3 px-4 py-2 rounded-xl text-left text-sm font-medium text-gray-500 hover:bg-purple-50 transition-colors"><i class="fa-solid fa-user-tie w-5"></i> Profil Guru</button>
+                                <button id="nav-btn-log-login" onclick="window.switchTab('log-login', this)" class="nav-btn w-full flex items-center gap-3 px-4 py-2 rounded-xl text-left text-sm font-medium text-gray-500 hover:bg-purple-50 transition-colors"><i class="fa-solid fa-right-to-bracket w-5"></i> Log Aktivitas Login</button>
                                 <button id="nav-btn-riwayat-guru" onclick="window.switchTab('riwayat-guru', this)" class="nav-btn w-full flex items-center gap-3 px-4 py-2 rounded-xl text-left text-sm font-medium text-gray-500 hover:bg-purple-50 transition-colors"><i class="fa-solid fa-clock-rotate-left w-5"></i> Portal Riwayat</button>
                                 <button id="nav-btn-absen-guru" onclick="window.switchTab('absen-guru', this)" class="nav-btn w-full flex items-center gap-3 px-4 py-2 rounded-xl text-left text-sm font-medium text-gray-500 hover:bg-purple-50 transition-colors"><i class="fa-solid fa-calendar-check w-5"></i> Absensi Guru</button>
                                 <button id="nav-btn-jadwal-guru" onclick="window.switchTab('jadwal-guru', this)" class="nav-btn w-full flex items-center gap-3 px-4 py-2 rounded-xl text-left text-sm font-medium text-gray-500 hover:bg-purple-50 transition-colors"><i class="fa-solid fa-calendar-days w-5"></i> Jadwal Guru</button>
@@ -735,6 +737,11 @@
                                 <h2 class="text-xl font-bold text-gray-800">Dashboard Kehadiran</h2>
                                 <p class="text-gray-500 text-xs">Statistik kehadiran harian (Model 2 Sesi).</p>
                             </div>
+                            <!-- Elemen Jam Digital Ditambahkan di Sini -->
+                            <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-200 mt-2 sm:mt-0 w-full sm:w-auto justify-center sm:justify-start">
+                                <i class="fa-solid fa-clock text-blue-600 text-xl animate-pulse"></i>
+                                <span id="dashboard-digital-clock" class="text-xl font-black text-gray-800 tracking-wider font-mono">00:00:00 WIB</span>
+                            </div>
                         </div>
 
                         <div class="flex-1 flex flex-col gap-3 min-h-0">
@@ -775,6 +782,32 @@
                         <div class="mt-4"><label class="block text-sm font-medium mb-2">Foto Profil (Opsional)</label><div class="flex items-center gap-4"><div id="preview-foto-container" class="hidden w-16 h-16 rounded-full overflow-hidden border-2 border-purple-200 cursor-pointer hover:opacity-80 transition-opacity" onclick="window.reopenCropper('guru')"><img id="preview-foto-img" src="" class="w-full h-full object-cover" alt="Preview Foto"></div><button type="button" onclick="window.reopenCropper('guru')" class="bg-purple-50 text-purple-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-purple-100 border border-purple-200 flex items-center gap-2 shadow-sm transition-colors"><i class="fa-solid fa-camera"></i> Pilih Foto Baru</button><button type="button" id="btn-hapus-foto-guru" onclick="window.hapusFotoForm('guru')" class="hidden bg-red-50 text-red-600 px-3 py-2 rounded-lg text-sm font-bold hover:bg-red-100 border border-red-200 transition-colors shadow-sm"><i class="fa-solid fa-trash"></i></button></div></div>
                         <button type="submit" id="btn-submit-guru" class="w-full bg-purple-600 text-white rounded-lg p-2.5 font-bold hover:bg-purple-700 mt-2 shadow-md">Simpan Data Guru</button><button type="button" id="btn-cancel-guru" onclick="window.resetFormGuru()" class="w-full bg-gray-100 text-gray-700 rounded-lg p-2.5 font-bold hover:bg-gray-200 mt-2 hidden">Batal</button></form></div></div>
                         <div class="lg:col-span-2"><div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"><table class="w-full text-sm text-left"><thead class="bg-purple-50 text-xs text-purple-900 font-bold uppercase border-b border-purple-100"><tr><th class="px-6 py-3">NIP</th><th class="px-6 py-3">Profil Guru</th><th class="px-6 py-3 text-right">Aksi</th></tr></thead><tbody id="table-guru" class="divide-y divide-gray-100 bg-white"></tbody></table></div></div>
+                    </div>
+                </div>
+
+                <!-- TAB LOG LOGIN -->
+                <div id="tab-log-login" class="tab-content max-w-6xl mx-auto scroll-mt-6">
+                    <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                        <div><h2 class="text-2xl font-bold text-gray-800">Log Aktivitas Login</h2><p class="text-gray-500 text-sm">Lacak riwayat masuk dan keluar akun Guru, Operator, & Admin.</p></div>
+                        <button onclick="window.bersihkanLogLogin()" class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border border-red-200 transition-colors shadow-sm"><i class="fa-solid fa-trash-can"></i> Bersihkan Log</button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="overflow-x-auto pb-4">
+                            <table class="w-full text-sm text-left">
+                                <thead class="bg-purple-50 text-xs text-purple-900 font-bold uppercase border-b border-purple-100">
+                                    <tr>
+                                        <th class="px-4 py-3.5 w-16 text-center">No</th>
+                                        <th class="px-4 py-3.5">Waktu Akses</th>
+                                        <th class="px-4 py-3.5">Nama Pengguna / ID</th>
+                                        <th class="px-4 py-3.5 text-center">Hak Akses (Role)</th>
+                                        <th class="px-4 py-3.5 text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-log-login" class="divide-y divide-gray-100 bg-white">
+                                    <tr><td colspan="5" class="text-center py-8 text-gray-500">Memuat log aktivitas...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
@@ -995,6 +1028,7 @@
                         <div class="flex items-center gap-3">
                             <button onclick="window.renderJadwalKelas()" class="bg-white text-gray-800 border border-gray-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-gray-50 transition-colors flex items-center gap-2"><i class="fa-solid fa-rotate-right"></i> Perbarui Tampilan</button>
                             <button onclick="window.cetakJadwalKelasExcel()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-emerald-700 transition-colors flex items-center gap-2"><i class="fa-solid fa-file-excel"></i> Cetak Excel</button>
+                            <button onclick="window.cetakJadwalKelasPDF()" class="bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-red-700 transition-colors flex items-center gap-2"><i class="fa-solid fa-file-pdf"></i> Cetak PDF (A4)</button>
                         </div>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden" id="cetak-area-jadwal-kelas">
@@ -1023,7 +1057,10 @@
                     <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                         <div><h2 class="text-2xl font-bold text-gray-800">Rekap Absensi Guru</h2><p class="text-gray-500 text-sm">Laporan bulanan akumulasi kehadiran guru (Bulan Hijriyah).</p></div>
                         <div class="flex flex-col sm:flex-row items-center gap-3">
-                            <button onclick="window.cetakRekapExcel()" class="w-full sm:w-auto bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold shadow-sm hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2"><i class="fa-solid fa-file-excel"></i> Cetak Excel</button>
+                            <div class="flex gap-2 w-full sm:w-auto">
+                                <button onclick="window.cetakRekapExcel()" class="flex-1 sm:flex-none bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold shadow-sm hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2"><i class="fa-solid fa-file-excel"></i> Excel</button>
+                                <button onclick="window.cetakRekapPDF()" class="flex-1 sm:flex-none bg-red-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold shadow-sm hover:bg-red-700 transition-colors flex items-center justify-center gap-2"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                            </div>
                             <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm w-full sm:w-auto"><label class="text-sm font-bold text-gray-700 whitespace-nowrap"><i class="fa-solid fa-calendar-days mr-1 text-purple-600"></i> Bulan Hijriyah:</label><select id="filter-bulan-hijri" class="outline-none text-sm font-medium bg-transparent cursor-pointer text-gray-700 w-full" onchange="window.renderRekapAbsenGuru()"><option value="1">Muharram</option><option value="2">Safar</option><option value="3">Rabi'ul Awal</option><option value="4">Rabi'ul Akhir</option><option value="5">Jumadil Awal</option><option value="6">Jumadil Akhir</option><option value="7">Rajab</option><option value="8">Sya'ban</option><option value="9">Ramadhan</option><option value="10">Syawal</option><option value="11">Dzulqa'dah</option><option value="12">Dzulhijjah</option></select><select id="filter-tahun-hijri" class="outline-none text-sm font-medium bg-transparent cursor-pointer text-gray-700 w-full" onchange="window.renderRekapAbsenGuru()"><option value="1445">1445 H</option><option value="1446">1446 H</option><option value="1447">1447 H</option><option value="1448">1448 H</option><option value="1449">1449 H</option><option value="1450">1450 H</option></select></div>
                         </div>
                     </div>
@@ -1054,6 +1091,7 @@
                     <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                         <div><h2 class="text-2xl font-bold text-gray-800">Honor Guru</h2><p class="text-gray-500 text-sm">Hitung dan cetak slip honorarium berdasarkan kehadiran (Bulan Hijriyah).</p></div>
                         <div class="flex flex-col sm:flex-row items-center gap-3">
+                            <button onclick="window.cetakHonorPDF()" class="w-full sm:w-auto bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-red-700 transition-colors flex items-center justify-center gap-2 shrink-0"><i class="fa-solid fa-file-pdf"></i> Rekap PDF (A4)</button>
                             <div class="flex flex-wrap items-center gap-2 bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm w-full sm:w-auto">
                                 <div class="flex items-center gap-1">
                                     <label class="text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap"><i class="fa-solid fa-rupiah-sign mr-1 text-green-600"></i> Honor/Hadir:</label>
@@ -1360,6 +1398,18 @@
         
         window.onload = () => { window.initCloudDatabase(); window.initHijriFilter(); };
 
+        // Memperbarui Jam Digital Dashboard Setiap Detik
+        setInterval(() => {
+            const clockEl = document.getElementById('dashboard-digital-clock');
+            if (clockEl) {
+                const now = new Date();
+                const h = String(now.getHours()).padStart(2, '0');
+                const m = String(now.getMinutes()).padStart(2, '0');
+                const s = String(now.getSeconds()).padStart(2, '0');
+                clockEl.innerText = `${h}:${m}:${s} WIB`;
+            }
+        }, 1000);
+
         window.getLokalGPS = () => {
             return new Promise((resolve, reject) => {
                 if (!navigator.geolocation) return reject({code: 0, message: "Browser tidak mendukung GPS."});
@@ -1470,6 +1520,20 @@
 
             if (isLoginSuccess) {
                 window.loginAttempts = 0; localStorage.setItem('loginAttempts', '0');
+                
+                // REKAM LOG AKTIVITAS LOGIN
+                if(!window.appState.log_login) window.appState.log_login = [];
+                window.appState.log_login.unshift({
+                    id: Date.now().toString(),
+                    waktu: window.getToday(),
+                    user: window.currentUser.user,
+                    userId: u,
+                    role: window.currentUser.role,
+                    status: 'Login'
+                });
+                if(window.appState.log_login.length > 200) window.appState.log_login.pop(); // Batasi 200 riwayat terbaru
+                window.saveState();
+                
                 return window.masukSistem();
             }
 
@@ -1510,6 +1574,7 @@
             const h_kalender = ad || ak.kalender;
             const h_surat = ad || ak.surat;
             const h_pengaturan = ad || ak.pengaturan;
+            const h_log_login = ad || ak.log_login;
             
             // Reset Sidebar & Hamburger
             const sidebarEl = document.getElementById('sidebar');
@@ -1526,7 +1591,7 @@
             }
 
             // Menyembunyikan parent menu (dropdown) jika semua sub-menunya disembunyikan
-            const anyKhidmah = h_guru || h_riwayat || h_absen || h_jadwal_guru || h_jadwal_kelas || h_rekap || h_honor || h_tabungan || h_idcard;
+            const anyKhidmah = h_guru || h_riwayat || h_absen || h_jadwal_guru || h_jadwal_kelas || h_rekap || h_honor || h_tabungan || h_idcard || h_log_login;
             const anyKesiswaan = h_murid || h_absen_murid || h_rekap_murid;
             const anySekretaris = h_kalender || h_surat || anyKhidmah || anyKesiswaan;
 
@@ -1535,6 +1600,7 @@
             t('menu-group-kesiswaan', !ig && anyKesiswaan);
             
             t('nav-btn-guru', !ig && h_guru);
+            t('nav-btn-log-login', !ig && h_log_login);
             t('nav-btn-murid', !ig && h_murid);
             t('nav-btn-absen-murid', !ig && h_absen_murid);
             t('nav-btn-rekap-murid', !ig && h_rekap_murid);
@@ -1563,6 +1629,7 @@
                     else if (h_absen_murid) { fT = 'absen-murid'; fB = 'nav-btn-absen-murid'; }
                     else if (h_rekap_murid) { fT = 'rekap-murid'; fB = 'nav-btn-rekap-murid'; }
                     else if (h_guru) { fT = 'guru'; fB = 'nav-btn-guru'; }
+                    else if (h_log_login) { fT = 'log-login'; fB = 'nav-btn-log-login'; }
                     else if (h_riwayat) { fT = 'riwayat-guru'; fB = 'nav-btn-riwayat-guru'; }
                     else if (h_absen) { fT = 'absen-guru'; fB = 'nav-btn-absen-guru'; }
                     else if (h_jadwal_guru) { fT = 'jadwal-guru'; fB = 'nav-btn-jadwal-guru'; }
@@ -1590,7 +1657,23 @@
                 const ds = document.getElementById('dash-stats-container'); if(ds) ds.classList.remove('hidden'); const dt = document.getElementById('dash-title-container'); if(dt) dt.classList.remove('hidden'); window.switchTab('dashboard',document.getElementById('nav-btn-dashboard')); 
             }
         };
-        window.prosesLogout = () => window.showConfirm("Keluar", "Keluar dari sistem?", () => { window.currentUser=null; document.getElementById('login-pass').value=''; document.getElementById('main-app').classList.add('hidden'); document.getElementById('modal-riwayat-guru').classList.remove('flex'); document.getElementById('modal-riwayat-guru').classList.add('hidden'); const mo=document.getElementById('modal-portal-operator'); if(mo){mo.classList.remove('flex');mo.classList.add('hidden');} document.getElementById('login-screen').classList.remove('hidden'); });
+        window.prosesLogout = () => window.showConfirm("Keluar", "Keluar dari sistem?", () => { 
+            // REKAM LOG AKTIVITAS LOGOUT
+            if(window.currentUser) {
+                if(!window.appState.log_login) window.appState.log_login = [];
+                window.appState.log_login.unshift({
+                    id: Date.now().toString(),
+                    waktu: window.getToday(),
+                    user: window.currentUser.user,
+                    userId: window.currentUser.id_guru || 'System',
+                    role: window.currentUser.role,
+                    status: 'Logout'
+                });
+                if(window.appState.log_login.length > 200) window.appState.log_login.pop();
+                window.saveState();
+            }
+            window.currentUser=null; document.getElementById('login-pass').value=''; document.getElementById('main-app').classList.add('hidden'); document.getElementById('modal-riwayat-guru').classList.remove('flex'); document.getElementById('modal-riwayat-guru').classList.add('hidden'); const mo=document.getElementById('modal-portal-operator'); if(mo){mo.classList.remove('flex');mo.classList.add('hidden');} document.getElementById('login-screen').classList.remove('hidden'); 
+        });
 
         window.getScheduledIds = (st, nh, sesi, apRapot, isRapat, isLibur) => {
             let ids = new Set();
@@ -1761,7 +1844,7 @@
             const sg=document.getElementById('select-guru-idcard'); if(sg){let o=`<option value="">-- Pilih Nama Guru --</option>`;if(st.guru)st.guru.forEach(g=>o+=`<option value="${g.id}">${g.nama} - ${g.jabatan}</option>`);sg.innerHTML=o;}
             const stG=document.getElementById('tabungan-guru-id'), sfG=document.getElementById('filter-guru-tabungan'); if(stG&&sfG){let os=`<option value="">-- Pilih Guru --</option>`, of=`<option value="">Semua Guru</option>`;if(st.guru)st.guru.forEach(g=>{os+=`<option value="${g.id}">${g.nama}</option>`;of+=`<option value="${g.id}">${g.nama}</option>`;});stG.innerHTML=os;sfG.innerHTML=of;}
             const er=document.getElementById('filter-riwayat-guru'); if(er){const cv=er.value;let o=`<option value="">-- Pilih Guru --</option>`;if(st.guru)st.guru.forEach(g=>o+=`<option value="${g.id}">${g.nama}</option>`);er.innerHTML=o;if(window.currentUser&&window.currentUser.role==='guru'){er.value=window.currentUser.id_guru;er.disabled=true;}else{er.value=cv;er.disabled=false;}}
-            ['renderAbsenGuru','renderJadwalGuru','renderJadwalKelas','renderRekapAbsenGuru','renderHonorGuru','renderTabungan','renderGridRiwayat', 'renderMurid', 'renderAbsenMurid', 'renderRekapMurid', 'renderAgendaRapatSelect'].forEach(f=>{if(typeof window[f]==='function')window[f]();});
+            ['renderAbsenGuru','renderJadwalGuru','renderJadwalKelas','renderRekapAbsenGuru','renderHonorGuru','renderTabungan','renderGridRiwayat', 'renderMurid', 'renderAbsenMurid', 'renderRekapMurid', 'renderAgendaRapatSelect', 'renderLogLogin'].forEach(f=>{if(typeof window[f]==='function')window[f]();});
         };
 
         window.resetFormGuru = () => { document.getElementById('guru-mode').value='add'; document.getElementById('guru-id').value=''; document.getElementById('guru-nip').value=''; document.getElementById('guru-nama').value=''; document.getElementById('guru-jabatan').value=''; document.getElementById('guru-hp').value=''; document.getElementById('guru-jarak').value=''; document.getElementById('guru-tunjangan').value=''; window.tempFotoGuru=''; document.getElementById('preview-foto-container').classList.add('hidden'); document.getElementById('preview-foto-img').src=''; document.getElementById('btn-hapus-foto-guru').classList.add('hidden'); document.getElementById('btn-submit-guru').innerText='Simpan Data Guru'; document.getElementById('btn-cancel-guru').classList.add('hidden'); };
@@ -2075,6 +2158,76 @@
             } catch(err) {
                 window.showAlert('Gagal', 'Terjadi kesalahan saat mencetak Excel.', 'error');
             }
+        };
+
+        window.cetakJadwalKelasPDF = () => {
+            try {
+                const targetContainer = document.getElementById('cetak-area-jadwal-kelas'); 
+                if (!targetContainer) return;
+                
+                const table = targetContainer.querySelector('table');
+                if (!table || table.innerText.includes('Belum ada data')) return window.showAlert("Gagal", "Tidak ada data untuk dicetak", "error");
+
+                window.showAlert('Memproses', 'Menyiapkan dokumen PDF Jadwal Kelas (A4 Portrait)...', 'info');
+                
+                // Kloning container untuk dirender tanpa batas ukuran layar & overflow (Mencegah Error/Terpotong)
+                const clone = targetContainer.cloneNode(true);
+                clone.style.position = 'absolute';
+                clone.style.top = '-9999px';
+                clone.style.left = '0';
+                clone.style.width = '1200px'; // Paksa lebar layout Desktop agar tabel presisi
+                clone.style.height = 'auto';
+                clone.classList.remove('overflow-hidden', 'shadow-sm', 'rounded-2xl');
+                
+                // Hapus batasan scroll di div bagian dalam
+                const innerDiv = clone.querySelector('div');
+                if (innerDiv) {
+                    innerDiv.classList.remove('overflow-hidden');
+                    innerDiv.style.width = '100%';
+                }
+
+                document.body.appendChild(clone);
+                
+                html2canvas(clone, {scale: 2, useCORS: true, backgroundColor: '#ffffff'}).then(canvas => {
+                    // Hapus kloning setelah berhasil dirender
+                    document.body.removeChild(clone);
+                    
+                    const imgData = canvas.toDataURL('image/png');
+                    const { jsPDF } = window.jspdf;
+                    
+                    // Inisialisasi JS PDF A4 Portrait
+                    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' }); 
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = pdf.internal.pageSize.getHeight();
+                    
+                    // Header Judul PDF
+                    pdf.setFont("helvetica", "bold");
+                    pdf.setFontSize(14);
+                    pdf.text(`JADWAL KELAS MADRASAH`, pdfWidth/2, 15, {align: 'center'});
+                    
+                    // Kalkulasi ukuran agar fit 100% di kertas (Tidak terpotong ke bawah/samping)
+                    const marginX = 10; 
+                    const startY = 22;
+                    const marginYBottom = 10;
+                    
+                    const availableWidth = pdfWidth - (marginX * 2);
+                    const availableHeight = pdfHeight - startY - marginYBottom;
+                    
+                    const ratio = Math.min(availableWidth / canvas.width, availableHeight / canvas.height);
+                    
+                    const finalWidth = canvas.width * ratio;
+                    const finalHeight = canvas.height * ratio;
+                    const xPos = (pdfWidth - finalWidth) / 2;
+                    
+                    pdf.addImage(imgData, 'PNG', xPos, startY, finalWidth, finalHeight);
+                    pdf.save(`Jadwal_Kelas_Madrasah.pdf`);
+                    
+                    setTimeout(() => window.showAlert('Berhasil', 'Jadwal Kelas PDF berhasil diunduh.', 'success'), 500);
+                }).catch(e => {
+                    if (document.body.contains(clone)) document.body.removeChild(clone);
+                    window.showAlert('Gagal', 'Terjadi kesalahan saat merender gambar tabel ke PDF.', 'error');
+                });
+            } catch(err) { window.showAlert("Gagal", "Terjadi kesalahan sistem saat inisialisasi cetak.", "error"); }
         };
 
         window.checkWaktuAbsenGuru = (guru, tgl, statusScan) => {
@@ -3068,7 +3221,8 @@
                 idcard: document.getElementById('akses-idcard').checked,
                 kalender: document.getElementById('akses-kalender').checked,
                 surat: document.getElementById('akses-surat').checked,
-                pengaturan: document.getElementById('akses-pengaturan').checked
+                pengaturan: document.getElementById('akses-pengaturan').checked,
+                log_login: document.getElementById('akses-log-login').checked
             };
             
             if(!window.appState.pengaturan) window.appState.pengaturan = {};
@@ -3123,12 +3277,13 @@
             document.getElementById('akses-kalender').checked = ak.kalender || false;
             document.getElementById('akses-surat').checked = ak.surat || false;
             document.getElementById('akses-pengaturan').checked = ak.pengaturan || false;
+            document.getElementById('akses-log-login').checked = ak.log_login || false;
             
             document.getElementById('form-operator-title').innerText = 'Edit Operator';
         };
 
         window.setSemuaAkses = (isCheck) => {
-            ['dashboard', 'guru', 'murid', 'absen-murid', 'rekap-murid', 'riwayat', 'absen', 'jadwal-guru', 'jadwal-kelas', 'rekap', 'honor', 'tabungan', 'idcard', 'kalender', 'surat', 'pengaturan'].forEach(id => {
+            ['dashboard', 'guru', 'murid', 'absen-murid', 'rekap-murid', 'riwayat', 'absen', 'jadwal-guru', 'jadwal-kelas', 'rekap', 'honor', 'tabungan', 'idcard', 'kalender', 'surat', 'pengaturan', 'log-login'].forEach(id => {
                 const el = document.getElementById(`akses-${id}`); if (el) el.checked = isCheck;
             });
         };
@@ -3138,7 +3293,7 @@
             document.getElementById('op-user').value = '';
             document.getElementById('op-pass').value = '';
             
-            ['dashboard', 'guru', 'murid', 'absen-murid', 'rekap-murid', 'riwayat', 'absen', 'jadwal-guru', 'jadwal-kelas', 'rekap', 'honor', 'tabungan', 'idcard', 'kalender', 'surat', 'pengaturan'].forEach(id => {
+            ['dashboard', 'guru', 'murid', 'absen-murid', 'rekap-murid', 'riwayat', 'absen', 'jadwal-guru', 'jadwal-kelas', 'rekap', 'honor', 'tabungan', 'idcard', 'kalender', 'surat', 'pengaturan', 'log-login'].forEach(id => {
                 const el = document.getElementById(`akses-${id}`); if (el) el.checked = false;
             });
             
@@ -3164,6 +3319,54 @@
                 const sm = document.getElementById('filter-bulan-hijri').options[document.getElementById('filter-bulan-hijri').selectedIndex].text;
                 XLSX.writeFile(wb, `Rekap_Absen_Guru_${sm}_${sy}.xlsx`);
             } catch(err) { window.showAlert("Gagal", "Terjadi kesalahan saat memproses Excel", "error"); }
+        };
+
+        window.cetakRekapPDF = () => {
+            try {
+                const tbody = document.getElementById('table-rekap-absen-guru');
+                const tableEl = tbody.closest('table');
+                if(!tableEl || tbody.innerHTML.includes('Belum ada data')) return window.showAlert("Gagal", "Tidak ada data untuk dicetak", "error");
+                
+                window.showAlert('Memproses', 'Menyiapkan dokumen PDF...', 'info');
+                
+                // Menghilangkan batasan scroll sementara saat foto tabel (agar full)
+                const tableContainer = tableEl.parentElement;
+                const originalOverflow = tableContainer.style.overflow;
+                tableContainer.style.overflow = 'visible';
+                
+                html2canvas(tableEl, {scale: 2, useCORS: true}).then(canvas => {
+                    tableContainer.style.overflow = originalOverflow; // Kembalikan efek scroll
+                    
+                    const imgData = canvas.toDataURL('image/png');
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('p', 'mm', 'a4'); // Format A4 Portrait
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    
+                    const sy = document.getElementById('filter-tahun-hijri').value;
+                    const sm = document.getElementById('filter-bulan-hijri').options[document.getElementById('filter-bulan-hijri').selectedIndex].text;
+                    
+                    // Menambahkan Judul Laporan ke PDF
+                    pdf.setFont("helvetica", "bold");
+                    pdf.setFontSize(14);
+                    pdf.text(`REKAP ABSENSI GURU`, pdfWidth/2, 15, {align: 'center'});
+                    pdf.setFontSize(11);
+                    pdf.setFont("helvetica", "normal");
+                    pdf.text(`Bulan: ${sm} ${sy}`, pdfWidth/2, 22, {align: 'center'});
+                    
+                    // Menyesuaikan ukuran gambar tabel agar pas di kertas A4
+                    const margin = 10; // Jarak tepi kanan-kiri
+                    const availableWidth = pdfWidth - (margin * 2);
+                    const imgHeight = (canvas.height * availableWidth) / canvas.width;
+                    
+                    pdf.addImage(imgData, 'PNG', margin, 30, availableWidth, imgHeight);
+                    pdf.save(`Rekap_Absen_Guru_${sm}_${sy}.pdf`);
+                    
+                    setTimeout(() => window.showAlert('Berhasil', 'Rekap PDF berhasil diunduh.', 'success'), 500);
+                }).catch(e => {
+                    tableContainer.style.overflow = originalOverflow;
+                    window.showAlert('Gagal', 'Terjadi kesalahan saat memproses PDF.', 'error');
+                });
+            } catch(err) { window.showAlert("Gagal", "Terjadi kesalahan sistem", "error"); }
         };
 
         // RENDER HONOR GURU
@@ -3347,6 +3550,56 @@
                 a.href = canvas.toDataURL('image/png'); 
                 a.click();
             });
+        };
+
+        window.cetakHonorPDF = () => {
+            try {
+                const tbody = document.getElementById('table-honor-guru');
+                const tableEl = tbody.closest('table');
+                if(!tableEl || tbody.innerHTML.includes('Belum ada data')) return window.showAlert("Gagal", "Tidak ada data untuk dicetak", "error");
+                
+                window.showAlert('Memproses', 'Menyiapkan dokumen PDF Rekap Honor (A4 Landscape)...', 'info');
+                
+                // Menghilangkan batasan scroll sementara saat foto tabel agar seluruh data tercetak
+                const tableContainer = tableEl.parentElement;
+                const originalOverflow = tableContainer.style.overflow;
+                tableContainer.style.overflow = 'visible';
+                
+                html2canvas(tableEl, {scale: 2, useCORS: true}).then(canvas => {
+                    tableContainer.style.overflow = originalOverflow; // Kembalikan efek scroll
+                    
+                    const imgData = canvas.toDataURL('image/png');
+                    const { jsPDF } = window.jspdf;
+                    
+                    // Menggunakan A4 Landscape ('l') karena kolom tabel honor sangat banyak (12 Kolom)
+                    const pdf = new jsPDF('l', 'mm', 'a4'); 
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    
+                    const sy = document.getElementById('filter-tahun-hijri-honor').value;
+                    const sm = document.getElementById('filter-bulan-hijri-honor').options[document.getElementById('filter-bulan-hijri-honor').selectedIndex].text;
+                    
+                    // Menambahkan Judul Laporan ke PDF
+                    pdf.setFont("helvetica", "bold");
+                    pdf.setFontSize(14);
+                    pdf.text(`REKAP HONORARIUM GURU`, pdfWidth/2, 15, {align: 'center'});
+                    pdf.setFontSize(11);
+                    pdf.setFont("helvetica", "normal");
+                    pdf.text(`Bulan: ${sm} ${sy}`, pdfWidth/2, 22, {align: 'center'});
+                    
+                    // Menyesuaikan ukuran gambar tabel agar pas di kertas A4
+                    const margin = 10; // Jarak tepi kanan-kiri
+                    const availableWidth = pdfWidth - (margin * 2);
+                    const imgHeight = (canvas.height * availableWidth) / canvas.width;
+                    
+                    pdf.addImage(imgData, 'PNG', margin, 30, availableWidth, imgHeight);
+                    pdf.save(`Rekap_Honor_Guru_${sm}_${sy}.pdf`);
+                    
+                    setTimeout(() => window.showAlert('Berhasil', 'Rekap Honor PDF berhasil diunduh.', 'success'), 500);
+                }).catch(e => {
+                    tableContainer.style.overflow = originalOverflow;
+                    window.showAlert('Gagal', 'Terjadi kesalahan saat memproses PDF.', 'error');
+                });
+            } catch(err) { window.showAlert("Gagal", "Terjadi kesalahan sistem", "error"); }
         };
 
         // LOGIKA TABUNGAN GURU
@@ -3606,6 +3859,7 @@
                 { id: 'dashboard', icon: 'fa-chart-pie', text: 'Beranda', color: 'blue', tab: 'dashboard', btn: 'nav-btn-dashboard' },
                 { id: 'kalender', icon: 'fa-calendar-moon', text: 'Kalender', color: 'emerald', tab: 'kalender', btn: 'nav-btn-kalender' },
                 { id: 'guru', icon: 'fa-user-tie', text: 'Data Guru', color: 'purple', tab: 'guru', btn: 'nav-btn-guru' },
+                { id: 'log_login', icon: 'fa-right-to-bracket', text: 'Log Akses', color: 'purple', tab: 'log-login', btn: 'nav-btn-log-login' },
                 { id: 'riwayat', icon: 'fa-clock-rotate-left', text: 'Riwayat Guru', color: 'purple', tab: 'riwayat-guru', btn: 'nav-btn-riwayat-guru' },
                 { id: 'absen', icon: 'fa-calendar-check', text: 'Absen Guru', color: 'purple', tab: 'absen-guru', btn: 'nav-btn-absen-guru' },
                 { id: 'jadwal_guru', icon: 'fa-calendar-days', text: 'Jadwal Guru', color: 'purple', tab: 'jadwal-guru', btn: 'nav-btn-jadwal-guru' },
@@ -3626,6 +3880,36 @@
                 return `<div onclick="${action}" class="bg-${m.color}-50 border border-${m.color}-100 hover:bg-${m.color}-100 p-4 rounded-xl cursor-pointer transition-colors flex flex-col items-center justify-center gap-2 group"><i class="fa-solid ${m.icon} text-2xl text-${m.color}-600 group-hover:scale-110 transition-transform"></i><span class="text-xs font-bold text-${m.color}-900">${m.text}</span></div>`;
             }).join('');
             if(c.innerHTML === '') c.innerHTML = '<div class="col-span-full text-gray-500 text-sm">Tidak ada akses menu.</div>';
+        };
+
+        window.renderLogLogin = () => {
+            const tbody = document.getElementById('table-log-login');
+            if(!tbody) return;
+            const logs = window.appState.log_login || [];
+            if(logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">Belum ada riwayat aktivitas.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = logs.map((log, i) => {
+                const statBadge = log.status === 'Login' ? '<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold text-[10px]"><i class="fa-solid fa-arrow-right-to-bracket mr-1"></i>LOGIN</span>' : '<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold text-[10px]"><i class="fa-solid fa-arrow-right-from-bracket mr-1"></i>LOGOUT</span>';
+                const roleBadge = log.role === 'admin' ? '<span class="text-blue-600 font-bold uppercase tracking-wider">Admin</span>' : (log.role === 'operator' ? '<span class="text-emerald-600 font-bold uppercase tracking-wider">Operator</span>' : '<span class="text-purple-600 font-bold uppercase tracking-wider">Guru</span>');
+                return `<tr class="hover:bg-gray-50 border-b border-gray-100">
+                    <td class="px-4 py-3 text-center align-middle">${i+1}</td>
+                    <td class="px-4 py-3 text-xs text-gray-600 font-bold align-middle">${log.waktu}</td>
+                    <td class="px-4 py-3 font-bold align-middle">${log.user} <br><span class="text-[10px] text-gray-400 font-normal">ID: ${log.userId}</span></td>
+                    <td class="px-4 py-3 text-center text-[10px] align-middle">${roleBadge}</td>
+                    <td class="px-4 py-3 text-center align-middle">${statBadge}</td>
+                </tr>`;
+            }).join('');
+        };
+        
+        window.bersihkanLogLogin = () => {
+            window.showConfirm("Bersihkan Log", "Yakin ingin menghapus semua riwayat aktivitas masuk & keluar?", () => {
+                window.appState.log_login = [];
+                window.saveState();
+                window.renderLogLogin();
+                window.showToast('Berhasil', 'Log aktivitas telah dibersihkan', 'success');
+            });
         };
 
         // FUNGSI SURAT MENYURAT
