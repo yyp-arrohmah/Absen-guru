@@ -1033,20 +1033,20 @@
                     </div>
                     <div class="bg-white rounded-xl shadow-sm border border-gray-300 overflow-hidden" id="cetak-area-jadwal-kelas">
                         <div class="w-full overflow-x-auto hide-scrollbar">
-                            <table class="w-full text-sm text-left border-collapse table-fixed min-w-[800px]">
-                                <thead class="bg-gray-100 text-xs text-gray-800 font-bold uppercase border-b border-gray-300">
+                            <table class="w-full text-sm text-left border-collapse table-fixed min-w-[800px] border-2 border-gray-600">
+                                <thead class="bg-gray-100 text-xs text-gray-800 font-bold uppercase">
                                     <tr>
-                                        <th class="p-2 sm:p-3 w-[14%] sticky left-0 bg-gray-200 z-30 border-r border-gray-300 text-center">Kelas</th>
-                                        <th class="p-2 sm:p-3 w-[8%] text-center border-r border-gray-300 bg-gray-100">Jam</th>
-                                        <th class="p-2 sm:p-3 text-center w-[13%] border-r border-gray-300 bg-gray-100">Sabtu</th>
-                                        <th class="p-2 sm:p-3 text-center w-[13%] border-r border-gray-300 bg-gray-100">Ahad</th>
-                                        <th class="p-2 sm:p-3 text-center w-[13%] border-r border-gray-300 bg-gray-100">Senin</th>
-                                        <th class="p-2 sm:p-3 text-center w-[13%] border-r border-gray-300 bg-gray-100">Selasa</th>
-                                        <th class="p-2 sm:p-3 text-center w-[13%] border-r border-gray-300 bg-gray-100">Rabu</th>
-                                        <th class="p-2 sm:p-3 text-center w-[13%] border-gray-300 bg-gray-100">Kamis</th>
+                                        <th class="p-2 sm:p-3 w-[14%] sticky left-0 bg-gray-200 z-30 border border-gray-400 text-center">Kelas</th>
+                                        <th class="p-2 sm:p-3 w-[8%] text-center border border-gray-400 bg-gray-100">Jam</th>
+                                        <th class="p-2 sm:p-3 text-center w-[13%] border border-gray-400 bg-gray-100">Sabtu</th>
+                                        <th class="p-2 sm:p-3 text-center w-[13%] border border-gray-400 bg-gray-100">Ahad</th>
+                                        <th class="p-2 sm:p-3 text-center w-[13%] border border-gray-400 bg-gray-100">Senin</th>
+                                        <th class="p-2 sm:p-3 text-center w-[13%] border border-gray-400 bg-gray-100">Selasa</th>
+                                        <th class="p-2 sm:p-3 text-center w-[13%] border border-gray-400 bg-gray-100">Rabu</th>
+                                        <th class="p-2 sm:p-3 text-center w-[13%] border border-gray-400 bg-gray-100">Kamis</th>
                                     </tr>
                                 </thead>
-                                <tbody id="table-jadwal-kelas" class="divide-y divide-gray-300 bg-white relative z-0"></tbody>
+                                <tbody id="table-jadwal-kelas" class="bg-white relative z-0"></tbody>
                             </table>
                         </div>
                     </div>
@@ -2088,9 +2088,10 @@
                     
                     let entryText = '';
                     if (ext.pelajaran) {
-                        entryText = `<div class="flex flex-col py-0.5"><span class="text-[10px] sm:text-[11px] font-bold text-gray-900 leading-tight line-clamp-2">${ext.pelajaran}</span><span class="text-[9px] sm:text-[10px] text-gray-600 mt-0.5 truncate" title="${namaGuru}">${namaGuru}</span></div>`;
+                        // Menghapus line-clamp-2 dan truncate agar render PDF (html2canvas) tidak error/hilang
+                        entryText = `<div class="flex flex-col py-0.5"><span class="text-[10px] sm:text-[11px] font-bold text-gray-900 leading-tight break-words whitespace-normal">${ext.pelajaran}</span><span class="text-[9px] sm:text-[10px] text-gray-600 mt-0.5 break-words whitespace-normal" title="${namaGuru}">${namaGuru}</span></div>`;
                     } else {
-                        entryText = `<div class="flex flex-col py-0.5"><span class="text-[10px] sm:text-[11px] font-bold text-gray-900 leading-tight line-clamp-2" title="${namaGuru}">${namaGuru}</span></div>`;
+                        entryText = `<div class="flex flex-col py-0.5"><span class="text-[10px] sm:text-[11px] font-bold text-gray-900 leading-tight break-words whitespace-normal" title="${namaGuru}">${namaGuru}</span></div>`;
                     }
                     classData[ext.kelas][j.hari][jamStr].push(entryText);
                 };
@@ -2107,19 +2108,18 @@
                 ['Jam 1', 'Jam 2', 'Jam 3'].forEach((jam, idx) => {
                     rows += `<tr class="hover:bg-blue-50/20 transition-colors">`;
                     if (idx === 0) {
-                        rows += `<td rowspan="3" class="p-2 sm:px-3 sm:py-2 font-bold text-[11px] sm:text-[13px] text-gray-900 sticky left-0 bg-white z-20 align-middle border-r border-gray-300 break-words text-center shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">${cls}</td>`;
+                        rows += `<td rowspan="3" class="p-2 sm:px-3 sm:py-2 font-bold text-[11px] sm:text-[13px] text-gray-900 sticky left-0 bg-white z-20 align-middle border border-gray-400 break-words text-center shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">${cls}</td>`;
                     }
-                    rows += `<td class="p-1 sm:px-2 sm:py-2 align-middle border-r border-gray-300 text-center font-bold text-[9px] sm:text-[10px] text-gray-600 bg-gray-50 whitespace-nowrap">${jam.replace('Jam ', 'Ke-')}</td>`;
+                    rows += `<td class="p-1 sm:px-2 sm:py-2 align-middle border border-gray-400 text-center font-bold text-[9px] sm:text-[10px] text-gray-600 bg-gray-50 whitespace-nowrap">${jam.replace('Jam ', 'Ke-')}</td>`;
                     
                     days.forEach((d, didx) => {
-                        const isLastCol = didx === days.length - 1;
                         const dd = classData[cls]?.[d];
                         if (dd && dd[jam]) {
-                            rows += `<td class="p-1 sm:px-2 sm:py-1 align-middle ${isLastCol ? '' : 'border-r'} border-gray-300 text-center bg-white">
-                                ${dd[jam].join('<hr class="my-1 border-gray-200">')}
+                            rows += `<td class="p-1 sm:px-2 sm:py-1 align-middle border border-gray-400 text-center bg-white">
+                                ${dd[jam].join('<hr class="my-1 border-gray-300">')}
                             </td>`;
                         } else {
-                            rows += `<td class="p-1 sm:px-2 sm:py-1 align-middle ${isLastCol ? '' : 'border-r'} border-gray-300 text-center bg-gray-50/30"><span class="text-gray-300 font-light">-</span></td>`;
+                            rows += `<td class="p-1 sm:px-2 sm:py-1 align-middle border border-gray-400 text-center bg-gray-50/30"><span class="text-gray-300 font-light">-</span></td>`;
                         }
                     });
                     rows += `</tr>`;
@@ -2198,7 +2198,7 @@
                     // Header Judul PDF
                     pdf.setFont("helvetica", "bold");
                     pdf.setFontSize(14);
-                    pdf.text(`JADWAL KELAS MADRASAH`, pdfWidth/2, 15, {align: 'center'});
+                    pdf.text(`JADWAL KEGIATAN BELAJAR MAD`, pdfWidth/2, 15, {align: 'center'});
                     
                     // Kalkulasi ukuran agar fit 100% di kertas (Tidak terpotong ke bawah/samping)
                     const marginX = 10; 
