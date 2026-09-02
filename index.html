@@ -2957,6 +2957,21 @@
                         return;
                     }
                     
+                    if (sesiAktif && td && td[`status_${sesiAktif}`]) {
+                        if (td[`status_${sesiAktif}`] !== 'Hadir' && fs === 'Hadir') {
+                            // Loloskan untuk menimpa
+                        } else {
+                            if(!silent) { window.showToast('Sudah Tercatat', `Guru: ${g.nama} sudah tercatat ${td[`status_${sesiAktif}`]} di Sesi Ke-${sesiAktif}`, 'error'); return; }
+                            return;
+                        }
+                    } else if (!sesiAktif && td && td['status_1']) {
+                        if (td['status_1'] !== 'Hadir' && fs === 'Hadir') {
+                            // Loloskan untuk menimpa
+                        } else {
+                            if(!silent) { window.showToast('Sudah Tercatat', `Guru: ${g.nama} sudah tercatat ${td['status_1']} hari ini`, 'error'); return; }
+                            return;
+                        }
+                    }
                     if(!td){ td={id_guru:parseInt(g.id)}; r.data.push(td); }
                     
                     if (sesiAktif) { td[`status_${sesiAktif}`]=fs; td[`info_${sesiAktif}`]=finalInfoWaktu; } 
