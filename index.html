@@ -2739,205 +2739,48 @@
         window.showLuarRadiusModal = (rawText, dist, max, nama, mode) => { window.tempScanText = rawText; activeScannerMode = mode; window.tempSuratSesi = "all"; document.getElementById('teks-luar-radius').innerHTML = `Halo <b class="text-gray-800">${nama}</b>,<br>Anjeun aya di <b class="text-red-500">${Math.round(dist)} meter</b> ti Madrasah (Bates: ${max}m).<br>Absen HADIR ditolak ku sistem.<br><br><span class="text-xs text-gray-500">Upami anjeun teu tiasa sumping ka Madrasah dinten ieu, mangga pilih pengajuan serat di handap ieu:</span>`; document.getElementById('modal-luar-radius').classList.replace('hidden', 'flex'); };
         window.tutupLuarRadiusModal = () => document.getElementById('modal-luar-radius').classList.replace('flex','hidden');
 
+        // ===============================================================
+        // LOGIKA ABSENSI FLEKSIBEL (LOMPAT SESI & TIMPA STATUS IZIN)
+        // ===============================================================
         window.executeAbsensiData = (rawText, forceStatus = null, silent = false, passedCekWaktu = null) => {
-            let idLokal = rawText.trim(); if(rawText.includes('mmuibt.net')) { try { idLokal = atob(rawText.split('id=')[1]).split('#')[0]; } catch(e){} }
-            const infoJarak = window.tempInfoJarak || '';
-            if (activeScannerMode === 'absen-cepat' || activeScannerMode === 'absen-guru-tab') {
-                const tEl=document.getElementById('tgl-absen-guru'), t=(activeScannerMode==='absen-guru-tab'&&tEl&&tEl.value)?tEl.value:window.getTodayInputFormat();
-                const ms=document.getElementById('mode-scan-guru'), fs=forceStatus||(ms?ms.value:'Hadir');
-                const g = window.appState.guru.find(x => String(x.nip)===idLokal||String(x.id)===idLokal);
-                if (g) {
-                    const cw = passedCekWaktu || window.checkWaktuAbsenGuru(g, t, fs);
-                    if (!cw.allowed) { if(!silent)return window.showAlert('Ditolak', cw.errorMsg, 'error'); return; }
-                    
-                    if(!window.appState.absensi_guru)window.appState.absensi_guru=[]; 
-                    let r=window.appState.absensi_guru.find(a=>a.tanggal===t); if(!r){r={tanggal:t,data:[]};window.appState.absensi_guru.push(r);}
-                    const i=r.data.findIndex(d=>String(d.id_guru)===String(g.id)); let td=i>-1?r.data[i]:null;
-                    
-                    // 1. Tentukan sesi mana yang sedang di-absen saat ini
-                    let sesiAktif = null;
-                    let finalInfoWaktu = cw.infoWaktu;
-
-                    if (cw.validSessions && cw.validSessions.length > 0) {
-                        // Cari sesi pertama yang BELUM diabsen jika ada jam tumpang tindih (misal Jam 1 dan Jam 2)
-                        const unrecorded = cw.validSessions.find(s => !td || !td[`status_${s.jamKe}`]);
-                        if (unrecorded) {
-                            sesiAktif = unrecorded.jamKe;
-                            finalInfoWaktu = unrecorded.iw;
-                        } else {
-                            // Jika semua sesi di rentang waktu sekarang sudah diabsen, trigger pesan duplikat ke sesi pertama
-                            sesiAktif = cw.validSessions[0].jamKe;
-                        }
-                    } else if (cw.targetJam) {
-                        sesiAktif = cw.targetJam;
-                    }
-
-                    // 2. CEK DUPLIKAT: Tolak jika status untuk sesi tersebut sudah ada
-                    if (sesiAktif && td && td[`status_${sesiAktif}`]) {
-                        if(!silent) { window.showToast('Sudah Tercatat', `Guru: ${g.nama} sudah absen Sesi Ke-${sesiAktif}`, 'error'); return; }
-                        return;
-                    } else if (!sesiAktif && td && td['status_1']) {
-                        if(!silent) { window.showToast('Sudah Tercatat', `Guru: ${g.nama} sudah absen hari ini`, 'error'); return; }
-                        return;
-                    }
-                    
-                    // 3. Lanjutkan simpan jika belum pernah absen di jam tersebut
-                    if(!td){ td={id_guru:parseInt(g.id)}; r.data.push(td); }
-                    
-                    if (sesiAktif) { td[`status_${sesiAktif}`]=fs; td[`info_${sesiAktif}`]=finalInfoWaktu; } 
-                    else { td['status_1']=fs; td['info_1']=finalInfoWaktu; if(cw.hasJam2){td['status_2']=fs;td['info_2']=finalInfoWaktu;} if(cw.hasJam3){td['status_3']=fs;td['info_3']=finalInfoWaktu;} }
-                    
-                    window.saveState(); window.renderAbsenGuru(); window.updateDashboardStats(); if(fs==='Hadir')window.playHadirSound(); else window.playBeep();
-                    if(!silent) { window.showToast('Berhasil', `${g.nama} - ${fs.toUpperCase()}`, 'success'); return cw; }
-                    return cw;
-                }
-                if(!silent) { window.showToast('Gagal', 'Barcode tidak terdaftar', 'error'); return; }
-            }
-        };
-
-        // ===============================================================
-        // PERBAIKAN LOGIKA WAKTU ABSENSI (SUSULAN / LUPA ABSEN)
-        // ===============================================================
-        window.prosesAbsenManual = (e) => { e.preventDefault(); const v=document.getElementById('input-absen-manual').value; if(v){activeScannerMode='absen-cepat';window.processScanResult(v);document.getElementById('input-absen-manual').value='';} };
-        
-        window.checkWaktuAbsenGuru = (guru, tgl, statusScan) => {
-            const p=tgl.split('-'), d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2])), nh=['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][d.getDay()];
-            const ah=(window.appState.agenda||[]).filter(a=>a.tgl===tgl);
-            const ar=ah.find(a=>a.tipe==='Rapat'||a.ket.toLowerCase().includes('rapat'));
-            const apRapot=ah.find(a=>a.ket.toLowerCase().includes('pembagian rapot') || a.ket.toLowerCase().includes('pembagian rapor'));
-            const il=ah.find(a=>a.tipe==='Libur');
+            // Proses ID dari Barcode Scanner atau Input Manual
+            let idLokal = rawText.trim(); 
+            if(rawText.includes('mmuibt.net')) { try { idLokal = atob(rawText.split('id=')[1]).split('#')[0]; } catch(e){} }
             
-            if(il && !ar && !apRapot) return {allowed:false, errorMsg:`Guru: ${guru.nama}\nHari ini ditetapkan sebagai Libur (${il.ket}).`};
-
-            if (apRapot) {
-                const ct=new Date();
-                const startRapot=new Date(ct); startRapot.setHours(13,0,0,0);
-                const endRapot=new Date(ct); endRapot.setHours(16,0,0,0);
-                const ts=window.getTodayInputFormat();
-                
-                if (tgl===ts && statusScan==='Hadir') {
-                    if (ct >= startRapot && ct <= endRapot) {
-                        return {allowed:true, infoWaktu:`Hadir (Rapot)`, targetJam:null, hasJam2:true, hasJam3:false, validSessions:[]};
-                    } else {
-                        return {allowed:false, errorMsg:`Waktu absen Pembagian Rapot adalah pukul 13:00 s/d 16:00 WIB.`};
-                    }
-                } else {
-                    return {allowed:true, infoWaktu:`Hadir (Rapot)`, targetJam:null, hasJam2:true, hasJam3:false};
-                }
-            }
-
-            if (ar) {
-                const ct=new Date();
-                const startRapat=new Date(ct); startRapat.setHours(14,30,0,0);
-                const endRapat=new Date(ct); endRapat.setHours(17,0,0,0);
-                const stRapat=new Date(ct); stRapat.setHours(15,0,0,0);
-                const ts=window.getTodayInputFormat();
-                
-                const jh=(window.appState.jadwal_guru||[]).filter(j=>j.hari===nh&&String(j.id_guru)===String(guru.id));
-                const j = jh[0];
-                let hj1 = j ? j.jam.includes('Jam 1') : false;
-                
-                if (tgl===ts && statusScan==='Hadir') {
-                    let validSessions = [];
-                    
-                    if (hj1) {
-                        const m1 = j.jam.match(/Jam 1:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/);
-                        if (m1) {
-                            const [sh,sm] = m1[1].split(':').map(Number);
-                            const st = new Date(ct); st.setHours(sh,sm,0,0);
-                            const ws = new Date(st.getTime() - 60*60000);
-                            const [eh,em] = m1[2].split(':').map(Number);
-                            const et = new Date(ct); et.setHours(eh,em,0,0);
-                            if (ct >= ws && ct <= et) {
-                                let curIw = `Tepat Waktu`;
-                                if (ct > st) curIw = `Terlambat ${Math.floor((ct - st)/60000)} mnt`;
-                                validSessions.push({jamKe: 1, iw: curIw});
-                            }
-                        }
-                    }
-
-                    if (ct >= startRapat && ct <= endRapat) {
-                        let curIw = `Tepat Waktu`;
-                        if (ct > stRapat) curIw = `Terlambat ${Math.floor((ct - stRapat)/60000)} mnt`;
-                        validSessions.push({jamKe: 2, iw: `${curIw} (${ar.ket})`});
-                    }
-
-                    if (validSessions.length === 0) {
-                        // Fitur Lupa Absen / Susulan
-                        return {allowed:true, infoWaktu:"Hadir (Susulan Rapat)", targetJam:null, validSessions:[], hasJam2:true, hasJam3:false, isSusulan:true, scheduleList: [{jamKe: hj1?1:2}]};
-                    }
-
-                    return {allowed:true, infoWaktu:validSessions[0].iw, targetJam:validSessions[0].jamKe, validSessions:validSessions, hasJam2:true, hasJam3:false};
-                } else {
-                    return {allowed:true, infoWaktu:`Hadir (${ar.ket})`, targetJam:null, hasJam2:true, hasJam3:false};
-                }
-            }
-
-            const jh=(window.appState.jadwal_guru||[]).filter(j=>j.hari===nh&&String(j.id_guru)===String(guru.id));
-            if(jh.length===0) return {allowed:false,errorMsg:`Guru: ${guru.nama}\nTidak ada jadwal mengajar pada hari ini.`};
-            let hj2=false, hj3=false, ts=window.getTodayInputFormat();
-            let scheduleList = [];
-            jh.forEach(j=>{
-                const m1=j.jam.match(/Jam 1:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/); if(m1){scheduleList.push({jamKe: 1, start: m1[1], end: m1[2]});}
-                const m2=j.jam.match(/Jam 2:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/); if(m2){hj2=true; scheduleList.push({jamKe: 2, start: m2[1], end: m2[2]});}
-                const m3=j.jam.match(/Jam 3:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/); if(m3){hj3=true; scheduleList.push({jamKe: 3, start: m3[1], end: m3[2]});}
-            });
-            scheduleList.sort((a,b)=>a.jamKe - b.jamKe);
-
-            if(tgl===ts && statusScan==='Hadir') {
-                const ct=new Date();
-                let validSessions = [];
-                for(let i=0; i<scheduleList.length; i++) {
-                    const s = scheduleList[i];
-                    const [sh,sm] = s.start.split(':').map(Number);
-                    const st = new Date(); st.setHours(sh,sm,0,0);
-                    const ws = new Date(st.getTime() - 60*60000); // LONGGARKAN 1 Jam sebelumnya
-                    const [eh,em] = s.end.split(':').map(Number);
-                    const et = new Date(); et.setHours(eh,em,0,0);
-                    
-                    if(ct >= ws && ct <= et) {
-                        let curIw = `Tepat Waktu`;
-                        if (ct > st) {
-                            curIw = `Terlambat ${Math.floor((ct - st)/60000)} mnt`;
-                        }
-                        validSessions.push({ jamKe: s.jamKe, iw: curIw });
-                    }
-                }
-                
-                if (validSessions.length === 0) {
-                    // JIKA DILUAR JAM NORMAL (Lupa absen/Telat)
-                    return {allowed:true, infoWaktu:"Hadir (Susulan)", targetJam:null, validSessions:[], hasJam2:hj2, hasJam3:hj3, isSusulan:true, scheduleList:scheduleList};
-                }
-                return {allowed:true, infoWaktu:validSessions[0].iw, targetJam:validSessions[0].jamKe, validSessions:validSessions, hasJam2:hj2, hasJam3:hj3, isSusulan:false, scheduleList:scheduleList};
-            }
-            return {allowed:true, infoWaktu:'Tepat Waktu', targetJam:null, hasJam2:hj2, hasJam3:hj3};
-        };
-
-        window.executeAbsensiData = (rawText, forceStatus = null, silent = false, passedCekWaktu = null) => {
-            let idLokal = rawText.trim(); if(rawText.includes('mmuibt.net')) { try { idLokal = atob(rawText.split('id=')[1]).split('#')[0]; } catch(e){} }
-            const infoJarak = window.tempInfoJarak || '';
             if (activeScannerMode === 'absen-cepat' || activeScannerMode === 'absen-guru-tab') {
-                const tEl=document.getElementById('tgl-absen-guru'), t=(activeScannerMode==='absen-guru-tab'&&tEl&&tEl.value)?tEl.value:window.getTodayInputFormat();
-                const ms=document.getElementById('mode-scan-guru'), fs=forceStatus||(ms?ms.value:'Hadir');
-                const g = window.appState.guru.find(x => String(x.nip)===idLokal||String(x.id)===idLokal);
+                const tEl = document.getElementById('tgl-absen-guru');
+                const t = (activeScannerMode==='absen-guru-tab' && tEl && tEl.value) ? tEl.value : window.getTodayInputFormat();
+                const ms = document.getElementById('mode-scan-guru');
+                const fs = forceStatus || (ms ? ms.value : 'Hadir');
+                const g = window.appState.guru.find(x => String(x.nip)===idLokal || String(x.id)===idLokal);
                 
                 if (g) {
                     const cw = passedCekWaktu || window.checkWaktuAbsenGuru(g, t, fs);
-                    if (!cw.allowed) { if(!silent)return window.showAlert('Ditolak', cw.errorMsg, 'error'); return; }
+                    if (!cw.allowed) { 
+                        if(!silent) return window.showAlert('Ditolak', cw.errorMsg, 'error'); 
+                        return; 
+                    }
                     
-                    if(!window.appState.absensi_guru)window.appState.absensi_guru=[]; 
-                    let r=window.appState.absensi_guru.find(a=>a.tanggal===t); if(!r){r={tanggal:t,data:[]};window.appState.absensi_guru.push(r);}
-                    const i=r.data.findIndex(d=>String(d.id_guru)===String(g.id)); let td=i>-1?r.data[i]:null;
+                    if(!window.appState.absensi_guru) window.appState.absensi_guru = []; 
+                    let r = window.appState.absensi_guru.find(a => a.tanggal === t); 
+                    if(!r) { r = {tanggal:t, data:[]}; window.appState.absensi_guru.push(r); }
+                    
+                    const i = r.data.findIndex(d => String(d.id_guru) === String(g.id)); 
+                    let td = i > -1 ? r.data[i] : null;
                     
                     let sesiAktif = null;
                     let finalInfoWaktu = cw.infoWaktu;
 
-                    // MENCARI SESI KOSONG SECARA BERURUTAN (Bahkan jika lupa Jam 1)
+                    // 1. CARI SESI: Cari Sesi Kosong ATAU Sesi yang BISA DITIMPA (Izin/Sakit -> Hadir)
                     if (cw.scheduleList && cw.scheduleList.length > 0) {
-                        const unrecorded = cw.scheduleList.find(s => !td || !td[`status_${s.jamKe}`]);
+                        const unrecorded = cw.scheduleList.find(s => 
+                            !td || 
+                            !td[`status_${s.jamKe}`] || 
+                            (td[`status_${s.jamKe}`] !== 'Hadir' && fs === 'Hadir')
+                        );
+                        
                         if (unrecorded) {
-                            sesiAktif = unrecorded.jamKe;
-                            // Tentukan apakah dia tepat waktu atau susulan
+                            sesiAktif = unrecorded.jamKe; // Ketemu sesi yang akan diisi (Jam 1, 2, atau 3)
                             const isExactTime = cw.validSessions && cw.validSessions.find(vs => vs.jamKe === sesiAktif);
                             finalInfoWaktu = isExactTime ? isExactTime.iw : "Hadir (Susulan)";
                         } else {
@@ -2948,37 +2791,42 @@
                         sesiAktif = cw.targetJam;
                     }
 
-                    // CEK DUPLIKAT (Double Check)
-                    if (sesiAktif && td && td[`status_${sesiAktif}`]) {
-                        if(!silent) { window.showToast('Sudah Tercatat', `Guru: ${g.nama} sudah absen Sesi Ke-${sesiAktif}`, 'error'); return; }
-                        return;
-                    } else if (!sesiAktif && td && td['status_1']) {
-                        if(!silent) { window.showToast('Sudah Tercatat', `Guru: ${g.nama} sudah absen hari ini`, 'error'); return; }
-                        return;
-                    }
-                    
+                    // 2. VALIDASI AKHIR & TIMPA STATUS
                     if (sesiAktif && td && td[`status_${sesiAktif}`]) {
                         if (td[`status_${sesiAktif}`] !== 'Hadir' && fs === 'Hadir') {
-                            // Loloskan untuk menimpa
+                            // Izinkan (Status lama akan ditimpa)
                         } else {
                             if(!silent) { window.showToast('Sudah Tercatat', `Guru: ${g.nama} sudah tercatat ${td[`status_${sesiAktif}`]} di Sesi Ke-${sesiAktif}`, 'error'); return; }
                             return;
                         }
                     } else if (!sesiAktif && td && td['status_1']) {
                         if (td['status_1'] !== 'Hadir' && fs === 'Hadir') {
-                            // Loloskan untuk menimpa
+                            // Izinkan (Status lama akan ditimpa)
                         } else {
                             if(!silent) { window.showToast('Sudah Tercatat', `Guru: ${g.nama} sudah tercatat ${td['status_1']} hari ini`, 'error'); return; }
                             return;
                         }
                     }
-                    if(!td){ td={id_guru:parseInt(g.id)}; r.data.push(td); }
                     
-                    if (sesiAktif) { td[`status_${sesiAktif}`]=fs; td[`info_${sesiAktif}`]=finalInfoWaktu; } 
-                    else { td['status_1']=fs; td['info_1']=finalInfoWaktu; if(cw.hasJam2){td['status_2']=fs;td['info_2']=finalInfoWaktu;} if(cw.hasJam3){td['status_3']=fs;td['info_3']=finalInfoWaktu;} }
+                    // 3. EKSEKUSI PENYIMPANAN
+                    if(!td){ td = {id_guru: parseInt(g.id)}; r.data.push(td); }
                     
-                    window.saveState(); window.renderAbsenGuru(); window.updateDashboardStats(); if(fs==='Hadir')window.playHadirSound(); else window.playBeep();
+                    if (sesiAktif) { 
+                        td[`status_${sesiAktif}`] = fs; 
+                        td[`info_${sesiAktif}`] = finalInfoWaktu; 
+                    } else { 
+                        td['status_1'] = fs; td['info_1'] = finalInfoWaktu; 
+                        if(cw.hasJam2) { td['status_2'] = fs; td['info_2'] = finalInfoWaktu; } 
+                        if(cw.hasJam3) { td['status_3'] = fs; td['info_3'] = finalInfoWaktu; } 
+                    }
+                    
+                    window.saveState(); 
+                    window.renderAbsenGuru(); 
+                    window.updateDashboardStats(); 
+                    
+                    if(fs === 'Hadir') window.playHadirSound(); else window.playBeep();
                     if(!silent) { window.showToast('Berhasil', `${g.nama} - Sesi ${sesiAktif || 1} ${fs.toUpperCase()}`, 'success'); return cw; }
+                    
                     return cw;
                 }
                 if(!silent) { window.showToast('Gagal', 'Barcode tidak terdaftar', 'error'); return; }
