@@ -2225,32 +2225,58 @@
             } catch(err) { window.showAlert("Gagal", "Terjadi kesalahan sistem saat inisialisasi cetak.", "error"); }
         };
 
+        // ===============================================================
+        // LOGIKA WAKTU ABSENSI (DENGAN DUKUNGAN ACARA MADRASAH)
+        // ===============================================================
         window.checkWaktuAbsenGuru = (guru, tgl, statusScan) => {
-            const p=tgl.split('-'), d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2])), nh=['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][d.getDay()];
-            const ah=(window.appState.agenda||[]).filter(a=>a.tgl===tgl);
-            const ar=ah.find(a=>a.tipe==='Rapat'||a.ket.toLowerCase().includes('rapat'));
-            const apRapot=ah.find(a=>a.ket.toLowerCase().includes('pembagian rapot') || a.ket.toLowerCase().includes('pembagian rapor'));
-            const il=ah.find(a=>a.tipe==='Libur');
+            const p = tgl.split('-');
+            const d = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2]));
+            const nh = ['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][d.getDay()];
             
-            if(il && !ar && !apRapot) return {allowed:false, errorMsg:`Guru: ${guru.nama}\nHari ini ditetapkan sebagai Libur (${il.ket}).`};
+            // Periksa Agenda Hari Ini
+            const ah = (window.appState.agenda || []).filter(a => a.tgl === tgl);
+            const ar = ah.find(a => a.tipe === 'Rapat' || (a.ket || '').toLowerCase().includes('rapat'));
+            const apRapot = ah.find(a => (a.ket || '').toLowerCase().includes('pembagian rapot') || (a.ket || '').toLowerCase().includes('pembagian rapor'));
+            const il = ah.find(a => a.tipe === 'Libur');
+            const ac = ah.find(a => a.tipe === 'Acara' || (a.ket || '').toLowerCase().includes('acara')); 
 
+            // 1. CEK ACARA MADRASAH (SEMUA GURU BISA ABSEN)
+            if (ac) {
+                return {
+                    allowed: true,
+                    infoWaktu: `Hadir (${ac.ket})`,
+                    targetJam: 1, // Masuk ke Sesi 1 secara otomatis
+                    hasJam2: false, 
+                    hasJam3: false,
+                    validSessions: [{ jamKe: 1, iw: `Hadir (${ac.ket})` }],
+                    scheduleList: [{ jamKe: 1, start: '00:00', end: '23:59' }] // Waktu scan bebas seharian
+                };
+            }
+
+            // 2. CEK LIBUR NORMAL
+            if (il && !ar && !apRapot) {
+                return { allowed: false, errorMsg: `Guru: ${guru.nama}\nHari ini ditetapkan sebagai Libur (${il.ket}).` };
+            }
+
+            // 3. CEK PEMBAGIAN RAPOT
             if (apRapot) {
-                const ct=new Date();
-                const startRapot=new Date(ct); startRapot.setHours(13,0,0,0);
-                const endRapot=new Date(ct); endRapot.setHours(16,0,0,0);
-                const ts=window.getTodayInputFormat();
+                const ct = new Date();
+                const startRapot = new Date(ct); startRapot.setHours(13, 0, 0, 0);
+                const endRapot = new Date(ct); endRapot.setHours(16, 0, 0, 0);
+                const ts = window.getTodayInputFormat();
                 
-                if (tgl===ts && statusScan==='Hadir') {
+                if (tgl === ts && statusScan === 'Hadir') {
                     if (ct >= startRapot && ct <= endRapot) {
-                        return {allowed:true, infoWaktu:`Hadir (Rapot)`, targetJam:null, hasJam2:true, hasJam3:false, validSessions:[]};
+                        return { allowed: true, infoWaktu: `Hadir (Rapot)`, targetJam: null, hasJam2: true, hasJam3: false, validSessions: [] };
                     } else {
-                        return {allowed:false, errorMsg:`Waktu absen Pembagian Rapot adalah pukul 13:00 s/d 16:00 WIB.`};
+                        return { allowed: false, errorMsg: `Waktu absen Pembagian Rapot adalah pukul 13:00 s/d 16:00 WIB.` };
                     }
                 } else {
-                    return {allowed:true, infoWaktu:`Hadir (Rapot)`, targetJam:null, hasJam2:true, hasJam3:false};
+                    return { allowed: true, infoWaktu: `Hadir (Rapot)`, targetJam: null, hasJam2: true, hasJam3: false };
                 }
             }
 
+            // 4. CEK RAPAT
             if (ar) {
                 const ct=new Date();
                 const startRapat=new Date(ct); startRapat.setHours(14,30,0,0);
@@ -2264,13 +2290,12 @@
                 
                 if (tgl===ts && statusScan==='Hadir') {
                     let validSessions = [];
-                    
                     if (hj1) {
                         const m1 = j.jam.match(/Jam 1:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/);
                         if (m1) {
                             const [sh,sm] = m1[1].split(':').map(Number);
                             const st = new Date(ct); st.setHours(sh,sm,0,0);
-                            const ws = new Date(st.getTime() - 30*60000);
+                            const ws = new Date(st.getTime() - 60*60000);
                             const [eh,em] = m1[2].split(':').map(Number);
                             const et = new Date(ct); et.setHours(eh,em,0,0);
                             if (ct >= ws && ct <= et) {
@@ -2288,51 +2313,51 @@
                     }
 
                     if (validSessions.length === 0) {
-                        return {allowed:false, errorMsg:`Bukan waktu absen untuk Anda.\nWaktu Rapat: 15:00 - 17:00 (Sistem scan dibuka 14:30).${hj1?'\nSerta ikuti jadwal Jam ke-1 Anda.':''}`};
+                        return {allowed:true, infoWaktu:"Hadir (Susulan Rapat)", targetJam:null, validSessions:[], hasJam2:true, hasJam3:false, isSusulan:true, scheduleList: [{jamKe: hj1?1:2}]};
                     }
-
                     return {allowed:true, infoWaktu:validSessions[0].iw, targetJam:validSessions[0].jamKe, validSessions:validSessions, hasJam2:true, hasJam3:false};
                 } else {
                     return {allowed:true, infoWaktu:`Hadir (${ar.ket})`, targetJam:null, hasJam2:true, hasJam3:false};
                 }
             }
 
-            const jh=(window.appState.jadwal_guru||[]).filter(j=>j.hari===nh&&String(j.id_guru)===String(guru.id));
-            if(jh.length===0) return {allowed:false,errorMsg:`Guru: ${guru.nama}\nTidak ada jadwal mengajar pada hari ini.`};
-            let iw='Tepat Waktu', hj2=false, hj3=false, ts=window.getTodayInputFormat();
-            let activeJam = null;
+            // 5. JADWAL MENGAJAR REGULER HARI NORMAL
+            const jh = (window.appState.jadwal_guru||[]).filter(j => j.hari === nh && String(j.id_guru) === String(guru.id));
+            if(jh.length === 0) return {allowed:false, errorMsg:`Guru: ${guru.nama}\nTidak ada jadwal mengajar pada hari ini.`};
+            
+            let hj2=false, hj3=false, ts=window.getTodayInputFormat();
             let scheduleList = [];
             jh.forEach(j=>{
                 const m1=j.jam.match(/Jam 1:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/); if(m1){scheduleList.push({jamKe: 1, start: m1[1], end: m1[2]});}
                 const m2=j.jam.match(/Jam 2:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/); if(m2){hj2=true; scheduleList.push({jamKe: 2, start: m2[1], end: m2[2]});}
                 const m3=j.jam.match(/Jam 3:\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/); if(m3){hj3=true; scheduleList.push({jamKe: 3, start: m3[1], end: m3[2]});}
             });
-            if(tgl===ts && statusScan==='Hadir') {
-                const ct=new Date();
+            scheduleList.sort((a,b) => a.jamKe - b.jamKe);
+
+            if(tgl === ts && statusScan === 'Hadir') {
+                const ct = new Date();
                 let validSessions = [];
                 for(let i=0; i<scheduleList.length; i++) {
                     const s = scheduleList[i];
                     const [sh,sm] = s.start.split(':').map(Number);
                     const st = new Date(); st.setHours(sh,sm,0,0);
-                    const ws = new Date(st.getTime() - 30*60000); // 30 menit sebelum mulai
+                    const ws = new Date(st.getTime() - 60*60000); 
                     const [eh,em] = s.end.split(':').map(Number);
                     const et = new Date(); et.setHours(eh,em,0,0);
                     
                     if(ct >= ws && ct <= et) {
                         let curIw = `Tepat Waktu`;
-                        if (ct > st) {
-                            const diffMins = Math.floor((ct - st) / 60000);
-                            curIw = `Terlambat ${diffMins} mnt`;
-                        }
+                        if (ct > st) { curIw = `Terlambat ${Math.floor((ct - st)/60000)} mnt`; }
                         validSessions.push({ jamKe: s.jamKe, iw: curIw });
                     }
                 }
+                
                 if (validSessions.length === 0) {
-                    return {allowed:false, errorMsg:`Bukan waktu absen untuk Anda.\nSilakan absen pada 30 menit sebelum hingga akhir SETIAP sesi/jam masuk Anda.`};
+                    return {allowed:true, infoWaktu:"Hadir (Susulan)", targetJam:null, validSessions:[], hasJam2:hj2, hasJam3:hj3, isSusulan:true, scheduleList:scheduleList};
                 }
-                return {allowed:true, infoWaktu:validSessions[0].iw, targetJam:validSessions[0].jamKe, validSessions:validSessions, hasJam2:hj2, hasJam3:hj3};
+                return {allowed:true, infoWaktu:validSessions[0].iw, targetJam:validSessions[0].jamKe, validSessions:validSessions, hasJam2:hj2, hasJam3:hj3, isSusulan:false, scheduleList:scheduleList};
             }
-            return {allowed:true, infoWaktu:iw, targetJam:null, hasJam2:hj2, hasJam3:hj3};
+            return {allowed:true, infoWaktu:'Tepat Waktu', targetJam:null, hasJam2:hj2, hasJam3:hj3};
         };
 
         window.renderAbsenGuru = () => {
@@ -3338,6 +3363,115 @@
                 window.saveState(); window.renderOperator();
             });
         };
+
+        // ===============================================================
+        // SINKRONISASI KALENDER AGENDA DENGAN TARGET MENGAJAR
+        // ===============================================================
+        
+        // 1. Fungsi Pintar Penghitung Target Sesi Bebas Libur
+        window.hitungTargetSesiGuru = (guruId, yyyymm) => {
+            if(!yyyymm) return 0;
+            const [tahun, bulan] = yyyymm.split('-');
+            const jmlHari = new Date(tahun, parseInt(bulan), 0).getDate();
+            let totalTarget = 0;
+
+            for(let i=1; i<=jmlHari; i++) {
+                const tglDate = new Date(tahun, parseInt(bulan)-1, i);
+                const tglStr = `${tahun}-${bulan}-${String(i).padStart(2,'0')}`;
+                
+                // Sesuaikan nama hari dengan format aplikasi
+                let hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][tglDate.getDay()];
+                if (hari === 'Minggu') hari = 'Ahad'; 
+
+                // CEK AGENDA: Apakah ada agenda Libur atau Acara di tanggal ini?
+                const isLibur = (window.appState.agenda || []).some(a => 
+                    a.tgl === tglStr && 
+                    (a.tipe === 'Libur' || a.tipe === 'Acara' || (a.ket || '').toLowerCase().includes('libur'))
+                );
+
+                // Jika BUKAN Libur/Acara, tambahkan sesi ke target mengajar
+                if(!isLibur) {
+                    const jadwal = (window.appState.jadwal_guru || []).filter(j => String(j.id_guru) === String(guruId) && j.hari === hari);
+                    jadwal.forEach(j => {
+                        if((j.jam||'').includes('Jam 1')) totalTarget++;
+                        if((j.jam||'').includes('Jam 2')) totalTarget++;
+                        if((j.jam||'').includes('Jam 3')) totalTarget++;
+                    });
+                }
+            }
+            return totalTarget;
+        };
+
+        // 2. Terapkan pada Fitur Honor Guru
+        window.renderHonorGuru = () => {
+            const tbody = document.getElementById('tbody-honor-guru');
+            if(!tbody) return;
+            const bFilter = document.getElementById('filter-bulan-honor') ? document.getElementById('filter-bulan-honor').value : null;
+            if(!bFilter) return;
+
+            let html = '';
+            let totalSemuaHonor = 0;
+
+            window.appState.guru.forEach((g, index) => {
+                // Gunakan fungsi pintar pemotong libur yang baru dibuat di atas
+                const targetSesi = window.hitungTargetSesiGuru(g.id, bFilter);
+
+                // Hitung Kehadiran Real dari Data Absen
+                let hadir = 0, izin = 0, sakit = 0, cuti = 0;
+                const rekapBulanIni = (window.appState.absensi_guru || []).filter(a => a.tanggal.startsWith(bFilter));
+                
+                rekapBulanIni.forEach(r => {
+                    const dataGuru = r.data.find(d => String(d.id_guru) === String(g.id));
+                    if(dataGuru) {
+                        ['status_1', 'status_2', 'status_3'].forEach(st => {
+                            if(dataGuru[st] === 'Hadir') hadir++;
+                            else if(dataGuru[st] === 'Izin') izin++;
+                            else if(dataGuru[st] === 'Sakit') sakit++;
+                            else if(dataGuru[st] === 'Cuti') cuti++;
+                        });
+                    }
+                });
+
+                // Alpa = Target dikurangi yang memiliki kejelasan status (Jika minus jadi 0)
+                let alpa = targetSesi - (hadir + izin + sakit + cuti);
+                if(alpa < 0) alpa = 0; 
+
+                // Hitung Keuangan
+                const tarifHadir = parseFloat(g.tarifSesi || window.appState.pengaturan.tarifSesiDefault || 0);
+                const tarifPiket = parseFloat(g.tarifPiket || window.appState.pengaturan.tarifPiketDefault || 0);
+                const jmlPiket = parseInt(g.jmlPiket || 0);
+                
+                const totalHonorHadir = hadir * tarifHadir;
+                const totalHonorPiket = jmlPiket * tarifPiket;
+                const grandTotal = totalHonorHadir + totalHonorPiket;
+                
+                totalSemuaHonor += grandTotal;
+
+                html += `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-2 text-center">${index + 1}</td>
+                        <td class="p-2 font-semibold text-gray-800">${g.nama}</td>
+                        <td class="p-2 text-center font-bold text-blue-600">${targetSesi}</td>
+                        <td class="p-2 text-center text-green-600 font-bold">${hadir}</td>
+                        <td class="p-2 text-center text-orange-500">${izin+sakit+cuti}</td>
+                        <td class="p-2 text-center text-red-600 font-bold">${alpa}</td>
+                        <td class="p-2 text-right">Rp ${tarifHadir.toLocaleString('id-ID')}</td>
+                        <td class="p-2 text-right text-green-700 font-bold">Rp ${totalHonorHadir.toLocaleString('id-ID')}</td>
+                        <td class="p-2 text-center">
+                            <button onclick="window.cetakSlipHonor('${g.id}', '${bFilter}', ${targetSesi}, ${hadir}, ${alpa}, ${grandTotal})" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                <i class="fa-solid fa-receipt"></i> Slip
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+            
+            const totalEl = document.getElementById('total-keseluruhan-honor');
+            if(totalEl) totalEl.innerText = `Rp ${totalSemuaHonor.toLocaleString('id-ID')}`;
+        };
+        // ===============================================================
 
         // EXCEL EXPORT
         window.cetakRekapExcel = () => {
