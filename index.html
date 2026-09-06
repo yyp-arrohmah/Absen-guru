@@ -168,7 +168,7 @@
     <div id="modal-popup-portal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100010] hidden items-center justify-center p-0 sm:p-4 transition-opacity">
         <div class="bg-white rounded-none sm:rounded-3xl shadow-2xl overflow-hidden max-w-5xl w-full h-full sm:h-auto sm:max-h-[95vh] flex flex-col relative">
             <div id="popup-portal-header" class="bg-purple-600 p-4 text-white flex justify-between items-center shrink-0">
-                <h3 class="font-bold flex items-center text-sm" id="popup-portal-title"><i class="fa-solid fa-folder-open mr-2"></i>Detail</h3>
+                <h3 class="font-bold flex items-center text-sm" id=0"popup-portal-title"><i class="fa-solid fa-folder-open mr-2"></i>Detail</h3>
                 <button onclick="window.tutupPopupPortal()" id="popup-portal-close" class="text-white/70 hover:text-white bg-purple-700 w-8 h-8 flex justify-center items-center rounded-full transition-colors"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-4 lg:p-6 overflow-y-auto flex-1 bg-gray-50">
@@ -736,6 +736,10 @@
                             <div>
                                 <h2 class="text-xl font-bold text-gray-800">Dashboard Kehadiran</h2>
                                 <p class="text-gray-500 text-xs">Statistik kehadiran harian (Model 2 Sesi).</p>
+                                <!-- Tombol Aktifkan Notifikasi Browser -->
+        <button onclick="window.aktifkanNotifikasiBrowser()" class="mb-4 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded shadow text-sm font-semibold transition-colors flex items-center gap-2">
+            <i class="fa-solid fa-bell"></i> Aktifkan Notifikasi Browser
+        </button>
                             </div>
                             <!-- Elemen Jam Digital Ditambahkan di Sini -->
                             <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-200 mt-2 sm:mt-0 w-full sm:w-auto justify-center sm:justify-start">
@@ -4236,10 +4240,40 @@
                 pdf.save(`Surat_${hal.replace(/\s+/g,'_')}.pdf`);
             });
         };
+       // ===============================================================
+        // PASTE KODE JAVASCRIPT FITUR PENGINGAT DI SINI
         // ===============================================================
-        // FITUR PENGINGAT ABSENSI (15 MENIT SEBELUM SESI DIMULAI)
-        // ===============================================================
-        window.notifiedReminders = {}; // Menyimpan riwayat notifikasi agar tidak muncul berulang-ulang
+        window.notifiedReminders = {}; 
+
+        window.aktifkanNotifikasiBrowser = () => {
+            if (!("Notification" in window)) {
+                alert("Maaf, browser Anda tidak mendukung fitur notifikasi desktop.");
+                return;
+            }
+            if (Notification.permission === "granted") {
+                alert("Notifikasi browser sudah aktif!");
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification("Berhasil!", { 
+                            body: "Sistem absensi kini dapat mengirimkan pengingat ke layar Anda.",
+                            icon: "https://cdn-icons-png.flaticon.com/512/3063/3063822.png" 
+                        });
+                    }
+                });
+            } else {
+                alert("Anda telah memblokir notifikasi. Silakan izinkan melalui pengaturan gembok di URL bar browser Anda.");
+            }
+        };
+
+        window.kirimNotifikasiBrowser = (pesan) => {
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification("Pengingat Absensi Madrasah", { 
+                    body: pesan,
+                    icon: "https://cdn-icons-png.flaticon.com/512/3063/3063822.png" 
+                });
+            }
+        };
 
         window.cekPengingatAbsen = () => {
             if (!window.appState || !window.appState.jadwal_guru) return;
@@ -4249,7 +4283,6 @@
             const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][now.getDay()];
             const namaHari = hari === 'Minggu' ? 'Ahad' : hari;
 
-            // Kumpulkan semua jam mulai sesi pada hari ini untuk seluruh jadwal guru
             let sessionTimes = new Set();
             const jadwalHariIni = window.appState.jadwal_guru.filter(j => j.hari === namaHari);
             
@@ -4263,43 +4296,30 @@
                 if (match3) sessionTimes.add(match3[1]);
             });
 
-            // Periksa setiap waktu mulai sesi
             sessionTimes.forEach(timeStr => {
                 const [sh, sm] = timeStr.split(':').map(Number);
                 const startTime = new Date();
                 startTime.setHours(sh, sm, 0, 0);
 
-                // Hitung selisih waktu sekarang dengan waktu mulai sesi (dalam menit)
                 const diffMinutes = Math.floor((startTime - now) / 60000);
 
-                // Jika waktu tersisa 15 menit (atau kurang, jika sistem baru direfresh)
                 if (diffMinutes <= 15 && diffMinutes > 0) {
                     const notifKey = `${tglStr}-${timeStr}`;
                     
-                    // Cek apakah notifikasi untuk sesi ini sudah pernah ditampilkan hari ini
                     if (!window.notifiedReminders[notifKey]) {
-                        
-                        // Tampilkan Notifikasi Toast
-                        if(window.showToast) {
-                            window.showToast('Pengingat Absen', `Sesi absen (${timeStr}) akan dimulai dalam ${diffMinutes} menit. Jangan sampai telat ya!`, 'info');
-                        } else if (window.showAlert) {
-                            window.showAlert('Pengingat', `Sesi absen (${timeStr}) akan dimulai dalam ${diffMinutes} menit. Jangan sampai telat ya!`, 'info');
-                        }
+                        const pesanPengingat = `Sesi absen (${timeStr}) akan dimulai dalam ${diffMinutes} menit. Jangan sampai telat ya!`;
 
-                        // Bunyikan suara peringatan (beep)
+                        if(window.showToast) window.showToast('Pengingat Absen', pesanPengingat, 'info');
                         if(window.playBeep) window.playBeep();
+                        window.kirimNotifikasiBrowser(pesanPengingat);
                         
-                        // Tandai bahwa notifikasi sudah dikirim agar tidak spam
                         window.notifiedReminders[notifKey] = true;
                     }
                 }
             });
         };
 
-        // Jalankan pengecekan setiap 1 menit (60000 milidetik)
         setInterval(window.cekPengingatAbsen, 60000);
-        
-        // Pancing jalan pertama kali 5 detik setelah aplikasi dimuat
         setTimeout(window.cekPengingatAbsen, 5000);
         // ===============================================================
 
