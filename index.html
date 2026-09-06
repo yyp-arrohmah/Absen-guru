@@ -791,6 +791,26 @@
                         <div><h2 class="text-2xl font-bold text-gray-800">Log Aktivitas Login</h2><p class="text-gray-500 text-sm">Lacak riwayat masuk dan keluar akun Guru, Operator, & Admin.</p></div>
                         <button onclick="window.bersihkanLogLogin()" class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border border-red-200 transition-colors shadow-sm"><i class="fa-solid fa-trash-can"></i> Bersihkan Log</button>
                     </div>
+                    
+                    <div class="flex flex-col md:flex-row gap-3 mb-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                        <div class="flex flex-col">
+                            <label class="text-xs text-gray-600 font-bold mb-1.5">Filter Tanggal</label>
+                            <input type="date" id="filter-tgl-log" onchange="window.renderLogLogin()" class="border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none text-sm bg-gray-50">
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="text-xs text-gray-600 font-bold mb-1.5">Urutan Waktu</label>
+                            <select id="sort-order-log" onchange="window.renderLogLogin()" class="border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none text-sm bg-gray-50 cursor-pointer">
+                                <option value="desc">Terbaru ke Terlama</option>
+                                <option value="asc">Terlama ke Terbaru</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col justify-end">
+                            <button onclick="document.getElementById('filter-tgl-log').value=''; window.renderLogLogin()" class="bg-purple-100 text-purple-700 font-bold px-4 py-2 rounded-lg hover:bg-purple-200 transition-colors text-sm border border-purple-200 flex items-center gap-2">
+                                <i class="fa-solid fa-rotate-left"></i> Reset Filter
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                         <div class="overflow-x-auto pb-4">
                             <table class="w-full text-sm text-left">
@@ -1281,8 +1301,8 @@
         window.closeConfirm = () => { document.getElementById('confirm-modal').classList.replace('flex', 'hidden'); };
         
         // Memodifikasi switchTab agar sidebar otomatis tertutup setelah memilih menu
-        window.switchTab = (tabId, btn) => { document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active')); const tgt=document.getElementById('tab-'+tabId); if(tgt)tgt.classList.add('active'); document.querySelectorAll('.nav-btn').forEach(el=>{el.classList.remove('bg-blue-50','text-blue-700','active','bg-purple-50','text-purple-700','bg-orange-50','text-orange-700','bg-emerald-50','text-emerald-700');el.classList.add('text-gray-500');}); if(btn){ let bg='bg-blue-50',tc='text-blue-700'; if(btn.id.includes('guru')||btn.id==='nav-btn-idcard'){bg='bg-purple-50';tc='text-purple-700';} else if(btn.id.includes('murid')){bg='bg-orange-50';tc='text-orange-700';} else if(btn.id.includes('kalender')||btn.id.includes('jadwal-kelas')||btn.id==='nav-btn-surat'){bg='bg-emerald-50';tc='text-emerald-700';} btn.classList.add(bg,tc,'active'); btn.classList.remove('text-gray-500'); const sb=document.getElementById('sidebar'); const ov=document.getElementById('sidebar-overlay'); if(window.innerWidth>=1024) sb.classList.add('lg:-ml-64'); else { sb.classList.add('-translate-x-full'); ov.classList.add('hidden'); } } window.updateAllViews(); };
-        
+        window.switchTab = (tabId, btn) => { document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active')); const tgt=document.getElementById('tab-'+tabId); if(tgt)tgt.classList.add('active'); document.querySelectorAll('.nav-btn').forEach(el=>{el.classList.remove('bg-blue-50','text-blue-700','active','bg-purple-50','text-purple-700','bg-orange-50','text-orange-700','bg-emerald-50','text-emerald-700');el.classList.add('text-gray-500');}); if(btn){ let bg='bg-blue-50',tc='text-blue-700'; if(btn.id.includes('guru')||btn.id==='nav-btn-idcard'||btn.id.includes('log')){bg='bg-purple-50';tc='text-purple-700';} else if(btn.id.includes('murid')){bg='bg-orange-50';tc='text-orange-700';} else if(btn.id.includes('kalender')||btn.id.includes('jadwal-kelas')||btn.id==='nav-btn-surat'){bg='bg-emerald-50';tc='text-emerald-700';} btn.classList.add(bg,tc,'active'); btn.classList.remove('text-gray-500'); const sb=document.getElementById('sidebar'); const ov=document.getElementById('sidebar-overlay'); if(window.innerWidth>=1024) sb.classList.add('lg:-ml-64'); else { sb.classList.add('-translate-x-full'); ov.classList.add('hidden'); } } window.updateAllViews(); };
+
         window.toggleSidebar = () => { 
             const sb = document.getElementById('sidebar');
             const ov = document.getElementById('sidebar-overlay'); 
@@ -1375,6 +1395,7 @@
             }
         };
 
+        
         window.perbaruiDataDashboard = async () => {
             const icon = document.getElementById('icon-refresh-dash');
             if(icon) icon.classList.add('fa-spin'); 
@@ -4051,11 +4072,44 @@
         window.renderLogLogin = () => {
             const tbody = document.getElementById('table-log-login');
             if(!tbody) return;
-            const logs = window.appState.log_login || [];
+            
+            // Mengambil filter dari HTML
+            const filterTglEl = document.getElementById('filter-tgl-log');
+            const sortOrderEl = document.getElementById('sort-order-log');
+            
+            const filterTgl = filterTglEl ? filterTglEl.value : '';
+            const sortOrder = sortOrderEl ? sortOrderEl.value : 'desc';
+
+            // Klon data agar tidak merubah source asli
+            let logs = window.appState.log_login ? [...window.appState.log_login] : [];
+
+            // Proses Filter Berdasarkan Tanggal
+            if (filterTgl) {
+                logs = logs.filter(log => {
+                    const logWaktu = log.waktu || ''; 
+                    // Bandingkan prefix (format tanggal sama, misalnya 2026-09-06)
+                    return logWaktu.startsWith(filterTgl); 
+                });
+            }
+
+            // Proses Urutan Sortir
+            logs.sort((a, b) => {
+                let waktuA = new Date(a.waktu || 0).getTime();
+                let waktuB = new Date(b.waktu || 0).getTime();
+                
+                if (sortOrder === 'desc') {
+                    return waktuB - waktuA; // Terbaru (Desc)
+                } else {
+                    return waktuA - waktuB; // Terlama (Asc)
+                }
+            });
+
             if(logs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">Belum ada riwayat aktivitas.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">Belum ada riwayat aktivitas pada filter yang dipilih.</td></tr>';
                 return;
             }
+            
+            // Render hasil akhir ke Tabel
             tbody.innerHTML = logs.map((log, i) => {
                 const statBadge = log.status === 'Login' ? '<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold text-[10px]"><i class="fa-solid fa-arrow-right-to-bracket mr-1"></i>LOGIN</span>' : '<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold text-[10px]"><i class="fa-solid fa-arrow-right-from-bracket mr-1"></i>LOGOUT</span>';
                 const roleBadge = log.role === 'admin' ? '<span class="text-blue-600 font-bold uppercase tracking-wider">Admin</span>' : (log.role === 'operator' ? '<span class="text-emerald-600 font-bold uppercase tracking-wider">Operator</span>' : '<span class="text-purple-600 font-bold uppercase tracking-wider">Guru</span>');
@@ -4182,6 +4236,72 @@
                 pdf.save(`Surat_${hal.replace(/\s+/g,'_')}.pdf`);
             });
         };
+        // ===============================================================
+        // FITUR PENGINGAT ABSENSI (15 MENIT SEBELUM SESI DIMULAI)
+        // ===============================================================
+        window.notifiedReminders = {}; // Menyimpan riwayat notifikasi agar tidak muncul berulang-ulang
+
+        window.cekPengingatAbsen = () => {
+            if (!window.appState || !window.appState.jadwal_guru) return;
+
+            const now = new Date();
+            const tglStr = window.getTodayInputFormat();
+            const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][now.getDay()];
+            const namaHari = hari === 'Minggu' ? 'Ahad' : hari;
+
+            // Kumpulkan semua jam mulai sesi pada hari ini untuk seluruh jadwal guru
+            let sessionTimes = new Set();
+            const jadwalHariIni = window.appState.jadwal_guru.filter(j => j.hari === namaHari);
+            
+            jadwalHariIni.forEach(j => {
+                const match1 = j.jam.match(/Jam 1:\s*(\d{2}:\d{2})/);
+                const match2 = j.jam.match(/Jam 2:\s*(\d{2}:\d{2})/);
+                const match3 = j.jam.match(/Jam 3:\s*(\d{2}:\d{2})/);
+                
+                if (match1) sessionTimes.add(match1[1]);
+                if (match2) sessionTimes.add(match2[1]);
+                if (match3) sessionTimes.add(match3[1]);
+            });
+
+            // Periksa setiap waktu mulai sesi
+            sessionTimes.forEach(timeStr => {
+                const [sh, sm] = timeStr.split(':').map(Number);
+                const startTime = new Date();
+                startTime.setHours(sh, sm, 0, 0);
+
+                // Hitung selisih waktu sekarang dengan waktu mulai sesi (dalam menit)
+                const diffMinutes = Math.floor((startTime - now) / 60000);
+
+                // Jika waktu tersisa 15 menit (atau kurang, jika sistem baru direfresh)
+                if (diffMinutes <= 15 && diffMinutes > 0) {
+                    const notifKey = `${tglStr}-${timeStr}`;
+                    
+                    // Cek apakah notifikasi untuk sesi ini sudah pernah ditampilkan hari ini
+                    if (!window.notifiedReminders[notifKey]) {
+                        
+                        // Tampilkan Notifikasi Toast
+                        if(window.showToast) {
+                            window.showToast('Pengingat Absen', `Sesi absen (${timeStr}) akan dimulai dalam ${diffMinutes} menit. Jangan sampai telat ya!`, 'info');
+                        } else if (window.showAlert) {
+                            window.showAlert('Pengingat', `Sesi absen (${timeStr}) akan dimulai dalam ${diffMinutes} menit. Jangan sampai telat ya!`, 'info');
+                        }
+
+                        // Bunyikan suara peringatan (beep)
+                        if(window.playBeep) window.playBeep();
+                        
+                        // Tandai bahwa notifikasi sudah dikirim agar tidak spam
+                        window.notifiedReminders[notifKey] = true;
+                    }
+                }
+            });
+        };
+
+        // Jalankan pengecekan setiap 1 menit (60000 milidetik)
+        setInterval(window.cekPengingatAbsen, 60000);
+        
+        // Pancing jalan pertama kali 5 detik setelah aplikasi dimuat
+        setTimeout(window.cekPengingatAbsen, 5000);
+        // ===============================================================
 
     </script>
 </body>
