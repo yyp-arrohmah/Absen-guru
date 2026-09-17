@@ -782,7 +782,7 @@
                 <div id="tab-guru" class="tab-content max-w-6xl mx-auto scroll-mt-6">
                     <div class="mb-8 flex flex-col md:flex-row md:justify-between md:items-center gap-4"><div><h2 class="text-2xl font-bold text-gray-800">Data Guru</h2></div></div>
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="lg:col-span-1"><div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6"><h3 class="font-bold mb-4"><i class="fa-solid fa-user-plus text-purple-500 mr-2"></i>Tambah Guru</h3><form onsubmit="window.simpanGuru(event)" class="space-y-4"><input type="hidden" id="guru-mode" value="add"><input type="hidden" id="guru-id" value=""><div><label class="block text-sm font-medium mb-1">NIP/ID Khusus</label><input type="text" id="guru-nip" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500" required></div><div><label class="block text-sm font-medium mb-1">Nama Lengkap</label><input type="text" id="guru-nama" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500" required></div><div><label class="block text-sm font-medium mb-1">Jabatan</label><select id="guru-jabatan" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer bg-white"><option value="">-- Pilih Jabatan --</option><option value="Kepala Sekolah">Kepala Sekolah</option><option value="Tata Usaha">Tata Usaha</option><option value="Bendahara">Bendahara</option><option value="Wali Kelas Shifir">Wali Kelas Shifir</option><option value="Wali Kelas 1A">Wali Kelas 1A</option><option value="Wali Kelas 1B">Wali Kelas 1B</option><option value="Wali Kelas 1C">Wali Kelas 1C</option><option value="Wali Kelas 1D">Wali Kelas 1D</option><option value="Wali Kelas 2">Wali Kelas 2</option><option value="Wali Kelas 3">Wali Kelas 3</option><option value="Wali Kelas 4">Wali Kelas 4</option><option value="Wali Kelas 5">Wali Kelas 5</option><option value="Wali Kelas 6">Wali Kelas 6</option><option value="Guru / Staf Biasa">Guru / Staf Biasa</option></select></div><div><label class="block text-sm font-medium mb-1">No. HP</label><input type="text" id="guru-hp" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500"></div><div><label class="block text-sm font-medium mb-1">Jarak ke Madrasah (km)</label><input type="number" step="0.1" id="guru-jarak" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500" placeholder="Cth: 2.5"></div><div><label class="block text-sm font-medium mb-1">Tunjangan Jabatan (Rp/Bln)</label><input type="number" id="guru-tunjangan" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500" placeholder="Opsional (Cth: 150000)"></div>
+                        <div class="lg:col-span-1"><div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6"><h3 class="font-bold mb-4"><i class="fa-solid fa-user-plus text-purple-500 mr-2"></i>Tambah Guru</h3><form onsubmit="window.simpanGuru(event)" class="space-y-4"><input type="hidden" id="guru-mode" value="add"><input type="hidden" id="guru-id" value=""><div><label class="block text-sm font-medium mb-1">NIP/ID Khusus</label><input type="text" id="guru-nip" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500" required></div><div><label class="block text-sm font-medium mb-1">Nama Lengkap</label><input type="text" id="guru-nama" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500" required></div><div><label class="block text-sm font-medium mb-1">Kode Inisial Nama</label><input type="text" id="guru-inisial" maxlength="5" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 uppercase" placeholder="Cth: AB" required><p class="text-[10px] text-gray-500 mt-1">Muncul di tabel jadwal agar lebih ringkas.</p></div><div><label class="block text-sm font-medium mb-1">Jabatan</label><select id="guru-jabatan" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer bg-white"><option value="">-- Pilih Jabatan --</option><option value="Kepala Sekolah">Kepala Sekolah</option><option value="Tata Usaha">Tata Usaha</option><option value="Bendahara">Bendahara</option><option value="Wali Kelas Shifir">Wali Kelas Shifir</option><option value="Wali Kelas 1A">Wali Kelas 1A</option><option value="Wali Kelas 1B">Wali Kelas 1B</option><option value="Wali Kelas 1C">Wali Kelas 1C</option><option value="Wali Kelas 1D">Wali Kelas 1D</option><option value="Wali Kelas 2">Wali Kelas 2</option><option value="Wali Kelas 3">Wali Kelas 3</option><option value="Wali Kelas 4">Wali Kelas 4</option><option value="Wali Kelas 5">Wali Kelas 5</option><option value="Wali Kelas 6">Wali Kelas 6</option><option value="Guru / Staf Biasa">Guru / Staf Biasa</option></select></div><div><label class="block text-sm font-medium mb-1">No. HP</label><input type="text" id="guru-hp" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500"></div><div><label class="block text-sm font-medium mb-1">Jarak ke Madrasah (km)</label><input type="number" step="0.1" id="guru-jarak" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500" placeholder="Cth: 2.5"></div><div><label class="block text-sm font-medium mb-1">Tunjangan Jabatan (Rp/Bln)</label><input type="number" id="guru-tunjangan" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-500" placeholder="Opsional (Cth: 150000)"></div>
                         <div class="mt-4"><label class="block text-sm font-medium mb-2">Foto Profil (Opsional)</label><div class="flex items-center gap-4"><div id="preview-foto-container" class="hidden w-16 h-16 rounded-full overflow-hidden border-2 border-purple-200 cursor-pointer hover:opacity-80 transition-opacity" onclick="window.reopenCropper('guru')"><img id="preview-foto-img" src="" class="w-full h-full object-cover" alt="Preview Foto"></div><button type="button" onclick="window.reopenCropper('guru')" class="bg-purple-50 text-purple-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-purple-100 border border-purple-200 flex items-center gap-2 shadow-sm transition-colors"><i class="fa-solid fa-camera"></i> Pilih Foto Baru</button><button type="button" id="btn-hapus-foto-guru" onclick="window.hapusFotoForm('guru')" class="hidden bg-red-50 text-red-600 px-3 py-2 rounded-lg text-sm font-bold hover:bg-red-100 border border-red-200 transition-colors shadow-sm"><i class="fa-solid fa-trash"></i></button></div></div>
                         <button type="submit" id="btn-submit-guru" class="w-full bg-purple-600 text-white rounded-lg p-2.5 font-bold hover:bg-purple-700 mt-2 shadow-md">Simpan Data Guru</button><button type="button" id="btn-cancel-guru" onclick="window.resetFormGuru()" class="w-full bg-gray-100 text-gray-700 rounded-lg p-2.5 font-bold hover:bg-gray-200 mt-2 hidden">Batal</button></form></div></div>
                         <div class="lg:col-span-2"><div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"><table class="w-full text-sm text-left"><thead class="bg-purple-50 text-xs text-purple-900 font-bold uppercase border-b border-purple-100"><tr><th class="px-6 py-3">NIP</th><th class="px-6 py-3">Profil Guru</th><th class="px-6 py-3 text-right">Aksi</th></tr></thead><tbody id="table-guru" class="divide-y divide-gray-100 bg-white"></tbody></table></div></div>
@@ -1079,7 +1079,7 @@
                 <!-- TAB REKAP ABSENSI GURU -->
                 <div id="tab-rekap-absen-guru" class="tab-content max-w-6xl mx-auto scroll-mt-6">
                     <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-                        <div><h2 class="text-2xl font-bold text-gray-800">Rekap Absensi Guru</h2><p class="text-gray-500 text-sm">Laporan bulanan akumulasi kehadiran guru (Bulan Hijriyah).</p></div>
+                        <div><h2 class="text-2xl font-bold text-gray-800">Rekap Absensi Guru</h2><p class="text-gray-500 text-sm">Laporan bulanan rincian kehadiran guru (Bulan Hijriyah).</p></div>
                         <div class="flex flex-col sm:flex-row items-center gap-3">
                             <div class="flex gap-2 w-full sm:w-auto">
                                 <button onclick="window.cetakRekapExcel()" class="flex-1 sm:flex-none bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold shadow-sm hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2"><i class="fa-solid fa-file-excel"></i> Excel</button>
@@ -1088,26 +1088,31 @@
                             <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm w-full sm:w-auto"><label class="text-sm font-bold text-gray-700 whitespace-nowrap"><i class="fa-solid fa-calendar-days mr-1 text-purple-600"></i> Bulan Hijriyah:</label><select id="filter-bulan-hijri" class="outline-none text-sm font-medium bg-transparent cursor-pointer text-gray-700 w-full" onchange="window.renderRekapAbsenGuru()"><option value="1">Muharram</option><option value="2">Safar</option><option value="3">Rabi'ul Awal</option><option value="4">Rabi'ul Akhir</option><option value="5">Jumadil Awal</option><option value="6">Jumadil Akhir</option><option value="7">Rajab</option><option value="8">Sya'ban</option><option value="9">Ramadhan</option><option value="10">Syawal</option><option value="11">Dzulqa'dah</option><option value="12">Dzulhijjah</option></select><select id="filter-tahun-hijri" class="outline-none text-sm font-medium bg-transparent cursor-pointer text-gray-700 w-full" onchange="window.renderRekapAbsenGuru()"><option value="1445">1445 H</option><option value="1446">1446 H</option><option value="1447">1447 H</option><option value="1448">1448 H</option><option value="1449">1449 H</option><option value="1450">1450 H</option></select></div>
                         </div>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div class="overflow-x-auto pb-4">
-                            <table class="w-full text-sm text-left">
-                                <thead class="bg-purple-50 text-xs text-purple-900 font-bold uppercase border-b border-purple-100">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden" id="cetak-area-rekap-guru">
+                        <div class="overflow-x-auto pb-4 hide-scrollbar">
+                            <table class="w-full text-sm text-left border-collapse table-fixed min-w-[900px]">
+                                <thead class="bg-purple-50 text-xs text-purple-900 font-bold uppercase border-b border-purple-200">
                                     <tr>
-                                        <th class="px-4 py-3.5 w-16 text-center">No</th>
-                                        <th class="px-4 py-3.5">Nama Guru</th>
-                                        <th class="px-4 py-3.5 text-center">Target</th>
-                                        <th class="px-4 py-3.5 text-center">Izin</th>
-                                        <th class="px-4 py-3.5 text-center">Sakit</th>
-                                        <th class="px-4 py-3.5 text-center">Cuti</th>
-                                        <th class="px-4 py-3.5 text-center">Alpa</th>
-                                        <th class="px-4 py-3.5 text-center">Hadir</th>
+                                        <th rowspan="2" class="px-2 py-2 w-10 text-center border-r border-purple-200 sticky left-0 z-20 bg-purple-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">No</th>
+                                        <th rowspan="2" class="px-2 py-2 w-[160px] border-r border-purple-200 sticky left-[40px] z-20 bg-purple-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Nama Guru</th>
+                                        <th colspan="30" id="header-tanggal-rekap" class="px-2 py-2 text-center border-r border-purple-200">Tanggal</th>
+                                        <th colspan="6" class="px-2 py-2 text-center border-l border-purple-200">Total Sesi</th>
+                                    </tr>
+                                    <tr id="header-hari-rekap" class="bg-purple-50 border-b border-purple-200">
+                                        <!-- Javascript fills this with 1-30 and Total Headers -->
                                     </tr>
                                 </thead>
-                                <tbody id="table-rekap-absen-guru" class="divide-y divide-gray-100 bg-white"></tbody>
+                                <tbody id="table-rekap-absen-guru" class="divide-y divide-gray-200 bg-white relative z-0"></tbody>
                             </table>
                         </div>
                         <div class="p-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-2"><button onclick="window.hapusRekapAbsenGuruBulanIni()" class="w-full sm:w-auto bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-4 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 shadow-sm transition-colors"><i class="fa-solid fa-trash-can"></i> Hapus Data Bulan Ini</button></div>
-                    </div>
+                    <div class="mb-4">
+                            <label class="text-sm font-semibold mr-2">Bulan:</label>
+                                <input type="month" id="filter-bulan-rekap" onchange="window.renderRekapAbsensi()" class="border p-2 rounded">
+                                </div>
+
+                                <!-- Ganti <table id="..."> lama Anda dengan div kosong ini -->
+                                <div id="wadah-tabel-rekap"></div>
                 </div>
 
                 <!-- TAB HONOR GURU -->
@@ -1449,11 +1454,11 @@
             const set = window.appState.pengaturan || {};
             let mode = set.kalender_mode || (set.kalender_manual_aktif ? 'manual' : 'kemenag'); 
             const kemenagData = {
-                "1444": { start: "2022-07-30", days: [30,29,29,30,30,29,30,29,30,29,30,29] },
+                "1444": { start: "2022-07-30", days: [30,29,30,29,30,29,30,29,30,29,30,29] },
                 "1445": { start: "2023-07-19", days: [30,29,30,29,30,29,30,29,30,29,30,29] },
                 "1446": { start: "2024-07-07", days: [30,29,30,29,30,29,30,29,30,29,30,29] },
                 "1447": { start: "2025-06-26", days: [30,29,30,29,30,29,30,29,30,29,30,29] },
-                "1448": { start: "2026-06-16", days: [30,29,29,30,30,29,30,30,30,29,30,29] },
+                "1448": { start: "2026-06-16", days: [30,29,29,29,30,29,30,29,30,29,30,29] },
                 "1449": { start: "2027-06-05", days: [30,29,30,29,30,29,30,29,30,29,30,29] },
                 "1450": { start: "2028-05-25", days: [30,29,30,29,30,29,30,29,30,29,30,29] }
             };
@@ -1718,7 +1723,7 @@
             return ids;
         };
 
-        window.updateDashboardStats = () => {
+           window.updateDashboardStats = () => {
             const st=window.appState;
             const hc=window.getHijriComponents(new Date()), de=document.getElementById('current-hijri-date-dashboard'); if(de)de.innerText=`${hc.d} ${["Muharram", "Safar", "Rabi'ul Awal", "Rabi'ul Akhir", "Jumadil Awal", "Jumadil Akhir", "Rajab", "Sya'ban", "Ramadhan", "Syawal", "Dzulqa'dah", "Dzulhijjah"][hc.m-1]} ${hc.y} H`;
             
@@ -1866,22 +1871,24 @@
         };
         window.updateAllViews = () => {
             const st=window.appState, isa=window.currentUser&&window.currentUser.role==='admin'; window.updateDashboardStats(); window.applyLogoToUI();
-            const eg=document.getElementById('table-guru'); if(eg&&st.guru) { const ad=isa||(window.currentUser&&window.currentUser.akses&&window.currentUser.akses.guru); eg.innerHTML=st.guru.map(g=>`<tr class="hover:bg-gray-50 border-b border-gray-100"><td class="px-6 py-4 font-medium text-gray-900 text-xs">${g.nip}</td><td class="px-6 py-4 flex items-center gap-3"><img src="${g.foto||'https://ui-avatars.com/api/?name=Guru&background=cbd5e1'}" class="w-10 h-10 rounded-full object-cover border border-purple-200"><div><span class="font-bold text-sm block">${g.nama}</span><span class="text-xs text-gray-500 font-normal">${g.jabatan||'-'} | ${g.hp||'-'} ${g.jarak?` | Jarak: ${g.jarak} km`:''} ${g.tunjangan?` | Tunjangan: ${window.formatRp(g.tunjangan)}`:''}</span></div></td><td class="px-6 py-4 text-right"><button onclick="window.editGuru('${g.id}')" class="text-blue-500 bg-blue-50 p-2 rounded-lg hover:bg-blue-100"><i class="fa-solid fa-pen"></i></button>${ad?`<button onclick="window.hapusGuru('${g.id}')" class="text-red-500 bg-red-50 p-2 rounded-lg ml-1 hover:bg-red-100"><i class="fa-solid fa-trash"></i></button>`:''}</td></tr>`).join(''); }
+            const eg=document.getElementById('table-guru'); if(eg&&st.guru) { const ad=isa||(window.currentUser&&window.currentUser.akses&&window.currentUser.akses.guru); eg.innerHTML=st.guru.map(g=>`<tr class="hover:bg-gray-50 border-b border-gray-100"><td class="px-6 py-4 font-medium text-gray-900 text-xs">${g.nip}</td><td class="px-6 py-4 flex items-center gap-3"><img src="${g.foto||'https://ui-avatars.com/api/?name=Guru&background=cbd5e1'}" class="w-10 h-10 rounded-full object-cover border border-purple-200"><div><span class="font-bold text-sm block">${g.nama}</span><span class="text-xs text-gray-500 font-normal">${g.jabatan||'-'} ${g.inisial?` | Kode: <b class="text-purple-700">${g.inisial}</b>`:''} | ${g.hp||'-'} ${g.jarak?` | Jarak: ${g.jarak} km`:''} ${g.tunjangan?` | Tunjangan: ${window.formatRp(g.tunjangan)}`:''}</span></div></td><td class="px-6 py-4 text-right"><button onclick="window.editGuru('${g.id}')" class="text-blue-500 bg-blue-50 p-2 rounded-lg hover:bg-blue-100"><i class="fa-solid fa-pen"></i></button>${ad?`<button onclick="window.hapusGuru('${g.id}')" class="text-red-500 bg-red-50 p-2 rounded-lg ml-1 hover:bg-red-100"><i class="fa-solid fa-trash"></i></button>`:''}</td></tr>`).join(''); }
             const sg=document.getElementById('select-guru-idcard'); if(sg){let o=`<option value="">-- Pilih Nama Guru --</option>`;if(st.guru)st.guru.forEach(g=>o+=`<option value="${g.id}">${g.nama} - ${g.jabatan}</option>`);sg.innerHTML=o;}
             const stG=document.getElementById('tabungan-guru-id'), sfG=document.getElementById('filter-guru-tabungan'); if(stG&&sfG){let os=`<option value="">-- Pilih Guru --</option>`, of=`<option value="">Semua Guru</option>`;if(st.guru)st.guru.forEach(g=>{os+=`<option value="${g.id}">${g.nama}</option>`;of+=`<option value="${g.id}">${g.nama}</option>`;});stG.innerHTML=os;sfG.innerHTML=of;}
             const er=document.getElementById('filter-riwayat-guru'); if(er){const cv=er.value;let o=`<option value="">-- Pilih Guru --</option>`;if(st.guru)st.guru.forEach(g=>o+=`<option value="${g.id}">${g.nama}</option>`);er.innerHTML=o;if(window.currentUser&&window.currentUser.role==='guru'){er.value=window.currentUser.id_guru;er.disabled=true;}else{er.value=cv;er.disabled=false;}}
             ['renderAbsenGuru','renderJadwalGuru','renderJadwalKelas','renderRekapAbsenGuru','renderHonorGuru','renderTabungan','renderGridRiwayat', 'renderMurid', 'renderAbsenMurid', 'renderRekapMurid', 'renderAgendaRapatSelect', 'renderLogLogin'].forEach(f=>{if(typeof window[f]==='function')window[f]();});
         };
 
-        window.resetFormGuru = () => { document.getElementById('guru-mode').value='add'; document.getElementById('guru-id').value=''; document.getElementById('guru-nip').value=''; document.getElementById('guru-nama').value=''; document.getElementById('guru-jabatan').value=''; document.getElementById('guru-hp').value=''; document.getElementById('guru-jarak').value=''; document.getElementById('guru-tunjangan').value=''; window.tempFotoGuru=''; document.getElementById('preview-foto-container').classList.add('hidden'); document.getElementById('preview-foto-img').src=''; document.getElementById('btn-hapus-foto-guru').classList.add('hidden'); document.getElementById('btn-submit-guru').innerText='Simpan Data Guru'; document.getElementById('btn-cancel-guru').classList.add('hidden'); };
+        window.resetFormGuru = () => { document.getElementById('guru-mode').value='add'; document.getElementById('guru-id').value=''; document.getElementById('guru-nip').value=''; document.getElementById('guru-nama').value=''; document.getElementById('guru-jabatan').value=''; document.getElementById('guru-hp').value=''; document.getElementById('guru-jarak').value=''; document.getElementById('guru-tunjangan').value=''; window.tempFotoGuru=''; document.getElementById('preview-foto-container').classList.add('hidden'); document.getElementById('preview-foto-img').src=''; document.getElementById('btn-hapus-foto-guru').classList.add('hidden'); if(document.getElementById('guru-inisial')) document.getElementById('guru-inisial').value=''; document.getElementById('btn-submit-guru').innerText='Simpan Data Guru'; document.getElementById('btn-cancel-guru').classList.add('hidden'); };
         window.simpanGuru = (e) => { 
             e.preventDefault(); 
             const m=document.getElementById('guru-mode').value, id=document.getElementById('guru-id').value, nip=document.getElementById('guru-nip').value.trim(), nama=document.getElementById('guru-nama').value.trim(), jab=document.getElementById('guru-jabatan').value.trim(), hp=document.getElementById('guru-hp').value.trim(), jarak=parseFloat(document.getElementById('guru-jarak').value)||0, tunj=parseInt(document.getElementById('guru-tunjangan').value)||0, f=window.tempFotoGuru||''; 
-            if(m==='add')window.appState.guru.push({id:Date.now().toString(),nip,nama,jabatan:jab,hp,jarak,tunjangan:tunj,foto:f}); 
-            else {const i=window.appState.guru.findIndex(g=>String(g.id)===String(id));if(i>-1)window.appState.guru[i]={...window.appState.guru[i],nip,nama,jabatan:jab,hp,jarak,tunjangan:tunj,foto:f};} 
+            const inisial = document.getElementById('guru-inisial') ? document.getElementById('guru-inisial').value.toUpperCase() : '';
+            if(m==='add')window.appState.guru.push({id:Date.now().toString(),nip,nama,jabatan:jab,hp,jarak,tunjangan:tunj,foto:f, inisial: inisial}); 
+            else {const i=window.appState.guru.findIndex(g=>String(g.id)===String(id));if(i>-1)window.appState.guru[i]={...window.appState.guru[i],nip,nama,jabatan:jab,hp,jarak,tunjangan:tunj,foto:f, inisial: inisial};} 
             window.saveState(); window.updateAllViews(); window.resetFormGuru(); window.showAlert('Berhasil','Data guru disimpan.','success'); 
         };
-        window.editGuru = (id) => { const g=window.appState.guru.find(x=>String(x.id)===String(id)); if(!g)return; document.getElementById('guru-mode').value='edit'; document.getElementById('guru-id').value=g.id; document.getElementById('guru-nip').value=g.nip||''; document.getElementById('guru-nama').value=g.nama||''; document.getElementById('guru-jabatan').value=g.jabatan||''; document.getElementById('guru-hp').value=g.hp||''; document.getElementById('guru-jarak').value=g.jarak!==undefined?g.jarak:''; document.getElementById('guru-tunjangan').value=g.tunjangan||''; document.getElementById('btn-submit-guru').innerText='Perbarui Guru'; document.getElementById('btn-cancel-guru').classList.remove('hidden'); if(g.foto){document.getElementById('preview-foto-img').src=g.foto;document.getElementById('preview-foto-container').classList.remove('hidden');document.getElementById('btn-hapus-foto-guru').classList.remove('hidden');window.tempFotoGuru=g.foto;}else{document.getElementById('preview-foto-container').classList.add('hidden');document.getElementById('btn-hapus-foto-guru').classList.add('hidden');window.tempFotoGuru='';} document.getElementById('tab-guru').scrollIntoView(); };
+        window.editGuru = (id) => { const g=window.appState.guru.find(x=>String(x.id)===String(id)); if(!g)return; document.getElementById('guru-mode').value='edit'; document.getElementById('guru-id').value=g.id; document.getElementById('guru-nip').value=g.nip||''; document.getElementById('guru-nama').value=g.nama||''; document.getElementById('guru-jabatan').value=g.jabatan||''; document.getElementById('guru-hp').value=g.hp||''; document.getElementById('guru-jarak').value=g.jarak!==undefined?g.jarak:''; document.getElementById('guru-tunjangan').value=g.tunjangan||''; if(document.getElementById('guru-inisial')) document.getElementById('guru-inisial').value=g.inisial||''; document.getElementById('btn-submit-guru').innerText='Perbarui Guru'; document.getElementById('btn-cancel-guru').classList.remove('hidden'); if(g.foto){document.getElementById('preview-foto-img').src=g.foto;document.getElementById('preview-foto-container').classList.remove('hidden');document.getElementById('btn-hapus-foto-guru').classList.remove('hidden');window.tempFotoGuru=g.foto;}else{document.getElementById('preview-foto-container').classList.add('hidden');document.getElementById('btn-hapus-foto-guru').classList.add('hidden');window.tempFotoGuru='';} document.getElementById('tab-guru').scrollIntoView(); };
+        
         window.hapusGuru = (id) => window.showConfirm("Hapus", "Yakin ingin menghapus guru ini?", () => { window.appState.guru=window.appState.guru.filter(g=>String(g.id)!==String(id)); window.saveState(); window.updateAllViews(); });
 
         // LOGIKA MURID
@@ -2372,7 +2379,7 @@
                     
                     if(ct >= ws && ct <= et) {
                         let curIw = `Tepat Waktu`;
-                        if (ct > st) { curIw = / ${Math.floor((ct - st)/60000)} mnt`; }
+                        if (ct > st) { curIw = `/ ${Math.floor((ct - st)/60000)} mnt`; }
                         validSessions.push({ jamKe: s.jamKe, iw: curIw });
                     }
                 }
@@ -2494,11 +2501,22 @@
             const c=document.getElementById('table-rekap-absen-guru'), sm=document.getElementById('filter-bulan-hijri'), sy=document.getElementById('filter-tahun-hijri'); if(!c||!sm||!sy)return;
             
             const st = window.appState;
-            const rd=st.guru.map(g=>({id:g.id,nama:g.nama,target:0,hadir:0,izin:0,sakit:0,cuti:0,alpa:0}));
+            
+            let teacherSessions = {};
+            (st.guru||[]).forEach(g => {
+                teacherSessions[g.id] = {
+                    nama: g.nama,
+                    1: { target:0, hadir:0, izin:0, sakit:0, cuti:0, alpa:0, detail: {} },
+                    2: { target:0, hadir:0, izin:0, sakit:0, cuti:0, alpa:0, detail: {} },
+                    3: { target:0, hadir:0, izin:0, sakit:0, cuti:0, alpa:0, detail: {} }
+                };
+            });
+
             const dt=window.getDatesInHijriMonth(parseInt(sy.value),parseInt(sm.value));
             const t=new Date(); t.setHours(0,0,0,0);
             
-            dt.forEach(d=>{
+            dt.forEach((d, idx)=>{
+                const dayNum = idx + 1;
                 const nh=['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][d.getDay()];
                 const ds=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
                 const da=((st.absensi_guru||[]).find(a=>a.tanggal===ds)||{data:[]}).data;
@@ -2510,37 +2528,141 @@
                 const apRapot=ah.some(a=>a.ket.toLowerCase().includes('pembagian rapot') || a.ket.toLowerCase().includes('pembagian rapor'));
                 const isLibur=ah.some(a=>a.tipe==='Libur');
 
+                // Set Default L (Libur) atau '.' untuk setiap sesi
+                if (isLibur && !isRapat && !apRapot) {
+                    (st.guru||[]).forEach(gr => {
+                        teacherSessions[gr.id][1].detail[dayNum] = 'L';
+                        teacherSessions[gr.id][2].detail[dayNum] = 'L';
+                        teacherSessions[gr.id][3].detail[dayNum] = 'L';
+                    });
+                } else {
+                    (st.guru||[]).forEach(gr => {
+                        teacherSessions[gr.id][1].detail[dayNum] = '.';
+                        teacherSessions[gr.id][2].detail[dayNum] = '.';
+                        teacherSessions[gr.id][3].detail[dayNum] = '.';
+                    });
+                }
+
                 // KALKULASI SETIAP SESI SECARA SPESIFIK
                 [1, 2, 3].forEach(sesi => {
                     const scheduledIds = window.getScheduledIds(st, nh, sesi, apRapot, isRapat, isLibur);
                     
-                    rd.forEach(gr => {
+                    (st.guru||[]).forEach(gr => {
+                        const tsData = teacherSessions[gr.id][sesi];
                         const isScheduled = scheduledIds.has(String(gr.id));
                         
                         // TARGET MENGAJAR HANYA BERTAMBAH JIKA TIDAK LIBUR DAN BUKAN RAPOT
-                        if (isScheduled && !apRapot) gr.target++; 
+                        if (isScheduled && !apRapot) tsData.target++; 
 
                         if (ip) {
                             const ex = da.find(x => String(x.id_guru) === String(gr.id));
+                            let dayStatus = null;
+
                             if (ex && ex[`status_${sesi}`]) {
                                 const stat = ex[`status_${sesi}`];
                                 if (isScheduled) {
-                                    if(stat==='Hadir') gr.hadir++; else if(stat==='Izin') gr.izin++; else if(stat==='Sakit') gr.sakit++; else if(stat==='Cuti') gr.cuti++; else gr.alpa++;
+                                    if(stat==='Hadir') { tsData.hadir++; dayStatus='H'; }
+                                    else if(stat==='Izin') { tsData.izin++; dayStatus='I'; }
+                                    else if(stat==='Sakit') { tsData.sakit++; dayStatus='S'; }
+                                    else if(stat==='Cuti') { tsData.cuti++; dayStatus='C'; }
+                                    else { tsData.alpa++; dayStatus='A'; }
                                 } else {
                                     // Hitung juga guru pengganti / diluar jadwal jika mereka hadir
-                                    if(stat==='Hadir') gr.hadir++;
+                                    if(stat==='Hadir') { tsData.hadir++; dayStatus='H'; }
                                 }
                             } else {
                                 // Hanya berikan Alpa jika dia terjadwal namun tidak ada data absen sama sekali
-                                if (isScheduled) gr.alpa++; 
+                                if (isScheduled) { tsData.alpa++; dayStatus='A'; }
+                            }
+
+                            if (dayStatus) {
+                                tsData.detail[dayNum] = dayStatus;
                             }
                         }
                     });
                 });
             });
+
+            // Rebuild Header Tanggal
+            const headerHari = document.getElementById('header-hari-rekap');
+            const thTanggal = document.getElementById('header-tanggal-rekap');
             
-            c.innerHTML=rd.length===0?'<tr><td colspan="8" class="text-center py-8">Belum ada data guru.</td></tr>':rd.map((g,i)=>`<tr class="border-b border-gray-100 hover:bg-purple-50/30"><td class="px-4 py-3 text-center">${i+1}</td><td class="px-4 py-3"><div class="flex justify-between items-center"><span class="font-bold">${g.nama}</span><button onclick="window.bukaModalRiwayat('${g.id}')" class="text-[10px] bg-purple-100 text-purple-700 px-2 py-1 rounded hover:bg-purple-200 transition-colors shadow-sm" title="Lihat Riwayat"><i class="fa-solid fa-clock-rotate-left"></i></button></div></td><td class="px-4 py-3 text-center text-purple-700 font-bold bg-purple-50/30">${g.target}</td><td class="px-4 py-3 text-center text-blue-700 font-bold">${g.izin}</td><td class="px-4 py-3 text-center text-orange-700 font-bold">${g.sakit}</td><td class="px-4 py-3 text-center text-indigo-700 font-bold">${g.cuti}</td><td class="px-4 py-3 text-center text-red-700 font-bold">${g.alpa}</td><td class="px-4 py-3 text-center text-green-700 font-bold">${g.hadir}</td></tr>`).join('');
+            if (headerHari && thTanggal) {
+                thTanggal.colSpan = dt.length;
+                let hariHtml = '';
+                for(let i=1; i<=dt.length; i++) {
+                    hariHtml += `<th class="px-1 py-1 text-center border-r border-purple-200 text-[10px] min-w-[20px] max-w-[24px] bg-purple-50/50">${i}</th>`;
+                }
+                hariHtml += `
+                    <th class="px-1 py-1 text-center min-w-[24px] bg-blue-100 text-blue-800 text-[10px] border-r border-purple-100 border-l border-purple-200">I</th>
+                    <th class="px-1 py-1 text-center min-w-[24px] bg-orange-100 text-orange-800 text-[10px] border-r border-purple-100">S</th>
+                    <th class="px-1 py-1 text-center min-w-[24px] bg-indigo-100 text-indigo-800 text-[10px] border-r border-purple-100">C</th>
+                    <th class="px-1 py-1 text-center min-w-[24px] bg-red-100 text-red-800 text-[10px] border-r border-purple-100">A</th>
+                    <th class="px-1 py-1 text-center min-w-[24px] bg-green-100 text-green-800 text-[10px] border-r border-purple-100">H</th>
+                    <th class="px-1 py-1 text-center min-w-[32px] bg-gray-100 text-gray-800 border-l border-gray-300 text-[10px]">Tgt</th>
+                `;
+                headerHari.innerHTML = hariHtml;
+            }
+            
+            let html = '';
+            let no = 1;
+            (st.guru||[]).forEach((g) => {
+                let activeSessions = [];
+                [1, 2, 3].forEach(sesi => {
+                    const tsData = teacherSessions[g.id][sesi];
+                    // Tampilkan baris sesi jika ada target, atau ada riwayat absen jenis apapun
+                    if (tsData.target > 0 || tsData.hadir > 0 || tsData.izin > 0 || tsData.sakit > 0 || tsData.cuti > 0 || tsData.alpa > 0) {
+                        activeSessions.push(sesi);
+                    }
+                });
+
+                if (activeSessions.length === 0) activeSessions = [1];
+
+                activeSessions.forEach((sesi, idx) => {
+                    const tsData = teacherSessions[g.id][sesi];
+                    let detailHtml = '';
+                    for(let day=1; day<=dt.length; day++) {
+                        const stDetail = tsData.detail[day] || '.';
+                        let cls = 'text-gray-300';
+                        let text = stDetail;
+                        if (stDetail === 'H') cls = 'text-green-600 font-bold bg-green-50/50';
+                        else if (stDetail === 'I') cls = 'text-blue-600 font-bold bg-blue-50/50';
+                        else if (stDetail === 'S') cls = 'text-orange-600 font-bold bg-orange-50/50';
+                        else if (stDetail === 'C') cls = 'text-indigo-600 font-bold bg-indigo-50/50';
+                        else if (stDetail === 'A') cls = 'text-red-600 font-bold bg-red-50/50';
+                        else if (stDetail === 'L') { cls = 'text-red-400 bg-red-50/30 font-bold'; text = 'X'; }
+                        else { text = ''; }
+                        
+                        detailHtml += `<td class="px-0 py-2 text-center border-r border-gray-200 text-[10px] ${cls}">${text}</td>`;
+                    }
+
+                    html += `<tr class="border-b border-gray-200 hover:bg-purple-50/30">`;
+                    if (idx === 0) {
+                        html += `
+                        <td rowspan="${activeSessions.length}" class="px-1 py-2 text-center sticky left-0 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10 text-[10px] sm:text-[11px] font-bold text-gray-500 border-r border-gray-200 align-middle">${no++}</td>
+                        <td rowspan="${activeSessions.length}" class="px-2 py-2 sticky left-[40px] bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10 border-r border-gray-200 align-middle">
+                            <div class="flex justify-between items-center w-[130px] sm:w-[150px] truncate">
+                                <span class="font-bold text-[10px] sm:text-[11px] truncate text-gray-800" title="${g.nama}">${g.nama}</span>
+                                <button onclick="window.bukaModalRiwayat('${g.id}')" class="text-[9px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded hover:bg-purple-200 transition-colors shrink-0 ml-1" title="Lihat Riwayat"><i class="fa-solid fa-clock-rotate-left"></i></button>
+                            </div>
+                        </td>`;
+                    }
+                    html += `
+                        <td class="px-1 py-2 text-center font-bold text-purple-700 text-[10px] border-r border-gray-200 bg-purple-50/30 sticky left-[200px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10 align-middle">${sesi}</td>
+                        ${detailHtml}
+                        <td class="px-1 py-2 text-center text-blue-700 font-bold text-[10px] sm:text-[11px] border-r border-gray-100 border-l border-purple-200">${tsData.izin}</td>
+                        <td class="px-1 py-2 text-center text-orange-700 font-bold text-[10px] sm:text-[11px] border-r border-gray-100">${tsData.sakit}</td>
+                        <td class="px-1 py-2 text-center text-indigo-700 font-bold text-[10px] sm:text-[11px] border-r border-gray-100">${tsData.cuti}</td>
+                        <td class="px-1 py-2 text-center text-red-700 font-bold text-[10px] sm:text-[11px] border-r border-gray-100">${tsData.alpa}</td>
+                        <td class="px-1 py-2 text-center text-green-700 font-bold bg-green-50/50 text-[10px] sm:text-[11px] border-r border-gray-100">${tsData.hadir}</td>
+                        <td class="px-1 py-2 text-center text-purple-700 font-bold bg-purple-50/50 text-[10px] sm:text-[11px] border-l border-gray-300">${tsData.target}</td>
+                    </tr>`;
+                });
+            });
+
+            c.innerHTML = html === '' ? `<tr><td colspan="${dt.length + 9}" class="text-center py-8 text-gray-500">Belum ada data guru.</td></tr>` : html;
         };
+        
         window.hapusRekapAbsenGuruBulanIni = () => { const sm=document.getElementById('filter-bulan-hijri'), sy=document.getElementById('filter-tahun-hijri'); if(!sm||!sy)return; window.showConfirm('Hapus Rekap',`Reset absen bulan terpilih?`,()=>{ const dt=window.getDatesInHijriMonth(parseInt(sy.value),parseInt(sm.value)).map(d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`); window.appState.absensi_guru=window.appState.absensi_guru.filter(a=>!dt.includes(a.tanggal)); window.saveState(); window.renderRekapAbsenGuru(); }); };
 
         window.bukaModalRiwayat = (guruId) => {
@@ -3501,14 +3623,14 @@
         // EXCEL EXPORT
         window.cetakRekapExcel = () => {
             try {
-                const table = document.getElementById("table-rekap-absen-guru");
+                const table = document.getElementById("table-rekap-absen-guru").closest('table');
                 if(!table) return window.showAlert("Gagal", "Tabel tidak ditemukan", "error");
                 const ws = XLSX.utils.table_to_sheet(table);
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Rekap_Guru");
                 const sy = document.getElementById('filter-tahun-hijri').value;
                 const sm = document.getElementById('filter-bulan-hijri').options[document.getElementById('filter-bulan-hijri').selectedIndex].text;
-                XLSX.writeFile(wb, `Rekap_Absen_Guru_${sm}_${sy}.xlsx`);
+                XLSX.writeFile(wb, `Rincian_Rekap_Absen_Guru_${sm}_${sy}.xlsx`);
             } catch(err) { window.showAlert("Gagal", "Terjadi kesalahan saat memproses Excel", "error"); }
         };
 
@@ -3520,17 +3642,36 @@
                 
                 window.showAlert('Memproses', 'Menyiapkan dokumen PDF...', 'info');
                 
-                // Menghilangkan batasan scroll sementara saat foto tabel (agar full)
-                const tableContainer = tableEl.parentElement;
-                const originalOverflow = tableContainer.style.overflow;
-                tableContainer.style.overflow = 'visible';
+                // Kloning container untuk dirender tanpa batas ukuran layar & overflow (Mencegah Error/Terpotong karena tabel lebar)
+                const targetContainer = document.getElementById('cetak-area-rekap-guru');
+                const clone = targetContainer.cloneNode(true);
+                clone.style.position = 'absolute';
+                clone.style.top = '-9999px';
+                clone.style.left = '0';
+                clone.style.width = '1400px'; // Paksa lebar Desktop agar tabel rincian presisi
+                clone.style.height = 'auto';
+                clone.classList.remove('overflow-hidden', 'shadow-sm', 'rounded-2xl');
                 
-                html2canvas(tableEl, {scale: 2, useCORS: true}).then(canvas => {
-                    tableContainer.style.overflow = originalOverflow; // Kembalikan efek scroll
+                // Hapus batasan scroll di div bagian dalam
+                const innerDiv = clone.querySelector('div.overflow-x-auto');
+                if (innerDiv) {
+                    innerDiv.classList.remove('overflow-x-auto', 'hide-scrollbar');
+                    innerDiv.style.overflow = 'visible';
+                    innerDiv.style.width = '100%';
+                }
+
+                // Sembunyikan tombol hapus data bulan ini di PDF
+                const btnHapusDiv = clone.querySelector('.p-4.border-t');
+                if (btnHapusDiv) btnHapusDiv.style.display = 'none';
+
+                document.body.appendChild(clone);
+                
+                html2canvas(clone.querySelector('table'), {scale: 2, useCORS: true}).then(canvas => {
+                    if (document.body.contains(clone)) document.body.removeChild(clone);
                     
                     const imgData = canvas.toDataURL('image/png');
                     const { jsPDF } = window.jspdf;
-                    const pdf = new jsPDF('p', 'mm', 'a4'); // Format A4 Portrait
+                    const pdf = new jsPDF('l', 'mm', 'a4'); // Format A4 Landscape
                     const pdfWidth = pdf.internal.pageSize.getWidth();
                     
                     const sy = document.getElementById('filter-tahun-hijri').value;
@@ -3539,22 +3680,21 @@
                     // Menambahkan Judul Laporan ke PDF
                     pdf.setFont("helvetica", "bold");
                     pdf.setFontSize(14);
-                    pdf.text(`REKAP ABSENSI GURU`, pdfWidth/2, 15, {align: 'center'});
+                    pdf.text(`RINCIAN REKAP ABSENSI GURU`, pdfWidth/2, 15, {align: 'center'});
                     pdf.setFontSize(11);
                     pdf.setFont("helvetica", "normal");
                     pdf.text(`Bulan: ${sm} ${sy}`, pdfWidth/2, 22, {align: 'center'});
                     
-                    // Menyesuaikan ukuran gambar tabel agar pas di kertas A4
                     const margin = 10; // Jarak tepi kanan-kiri
                     const availableWidth = pdfWidth - (margin * 2);
-                    const imgHeight = (canvas.height * availableWidth) / canvas.width;
+                    const imgHeightRatio = (canvas.height * availableWidth) / canvas.width;
                     
-                    pdf.addImage(imgData, 'PNG', margin, 30, availableWidth, imgHeight);
-                    pdf.save(`Rekap_Absen_Guru_${sm}_${sy}.pdf`);
+                    pdf.addImage(imgData, 'PNG', margin, 30, availableWidth, imgHeightRatio);
+                    pdf.save(`Rincian_Rekap_Absen_Guru_${sm}_${sy}.pdf`);
                     
                     setTimeout(() => window.showAlert('Berhasil', 'Rekap PDF berhasil diunduh.', 'success'), 500);
                 }).catch(e => {
-                    tableContainer.style.overflow = originalOverflow;
+                    if (document.body.contains(clone)) document.body.removeChild(clone);
                     window.showAlert('Gagal', 'Terjadi kesalahan saat memproses PDF.', 'error');
                 });
             } catch(err) { window.showAlert("Gagal", "Terjadi kesalahan sistem", "error"); }
