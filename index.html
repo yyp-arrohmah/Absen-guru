@@ -491,22 +491,6 @@
         </div>
     </div>
 
-    <!-- MODAL PORTAL OPERATOR -->
-    <div id="modal-portal-operator" class="fixed inset-0 bg-emerald-50/90 backdrop-blur-sm z-[100095] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-[2rem] shadow-2xl p-8 max-w-2xl w-full text-center relative border border-emerald-100">
-            <button id="btn-close-portal-operator" onclick="document.getElementById('modal-portal-operator').classList.replace('flex','hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 w-10 h-10 rounded-full flex items-center justify-center transition-colors"><i class="fa-solid fa-xmark"></i></button>
-            <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-600 text-4xl shadow-sm"><i class="fa-solid fa-users-gear"></i></div>
-            <h2 id="op-welcome-text" class="text-2xl font-bold text-emerald-900 mb-2">Selamat Datang</h2>
-            <p class="text-sm text-gray-500 mb-8">Pilih menu akses cepat untuk mengelola data operasional Madrasah.</p>
-            <div id="op-grid-menu" class="grid grid-cols-2 sm:grid-cols-4 gap-4 justify-center max-h-[50vh] overflow-y-auto px-2 pb-4">
-                <!-- Menu operator dirender di sini -->
-            </div>
-            <div class="mt-6 pt-6 border-t border-emerald-50">
-                <button onclick="window.prosesLogout()" class="px-6 py-2.5 bg-red-50 text-red-600 hover:bg-red-100 font-bold rounded-xl text-sm transition-colors border border-red-100 shadow-sm"><i class="fa-solid fa-arrow-right-from-bracket mr-2"></i>Keluar</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Scanner Camera -->
     <div id="scanner-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[99999] hidden flex-col items-center justify-center p-4">
         <div class="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-sm w-full relative">
@@ -1665,18 +1649,6 @@
                 }
                 window.switchTab(fT, document.getElementById(fB));
                 const ds = document.getElementById('dash-stats-container'); if(ds) ds.classList.remove('hidden'); const dt = document.getElementById('dash-title-container'); if(dt) dt.classList.remove('hidden');
-                const pOp = document.getElementById('modal-portal-operator'); 
-                if(pOp) { 
-                    if (h_dashboard && !hasOtherAccess) {
-                        // Jangan tampilkan portal jika hanya punya akses ke Dashboard
-                        pOp.classList.replace('flex', 'hidden');
-                    } else {
-                        document.getElementById('op-welcome-text').innerText = `Selamat Datang, ${window.currentUser.user}`; 
-                        pOp.classList.replace('hidden', 'flex'); 
-                        if (anyKhidmah || h_pengaturan) document.getElementById('btn-close-portal-operator').classList.remove('hidden'); else document.getElementById('btn-close-portal-operator').classList.add('hidden'); 
-                        window.renderOpGridRiwayat(); 
-                    }
-                }
             } else { 
                 const ds = document.getElementById('dash-stats-container'); if(ds) ds.classList.remove('hidden'); const dt = document.getElementById('dash-title-container'); if(dt) dt.classList.remove('hidden'); window.switchTab('dashboard',document.getElementById('nav-btn-dashboard')); 
             }
@@ -1696,7 +1668,7 @@
                 if(window.appState.log_login.length > 200) window.appState.log_login.pop();
                 window.saveState();
             }
-            window.currentUser=null; document.getElementById('login-pass').value=''; document.getElementById('main-app').classList.add('hidden'); document.getElementById('modal-riwayat-guru').classList.remove('flex'); document.getElementById('modal-riwayat-guru').classList.add('hidden'); const mo=document.getElementById('modal-portal-operator'); if(mo){mo.classList.remove('flex');mo.classList.add('hidden');} document.getElementById('login-screen').classList.remove('hidden'); 
+            window.currentUser=null; document.getElementById('login-pass').value=''; document.getElementById('main-app').classList.add('hidden'); document.getElementById('modal-riwayat-guru').classList.remove('flex'); document.getElementById('modal-riwayat-guru').classList.add('hidden'); document.getElementById('login-screen').classList.remove('hidden'); 
         });
 
         window.getScheduledIds = (st, nh, sesi, apRapot, isRapat, isLibur) => {
@@ -2934,56 +2906,39 @@
                     const i = r.data.findIndex(d => String(d.id_guru) === String(g.id)); 
                     let td = i > -1 ? r.data[i] : null;
                     
-                    let sesiAktif = null;
-                    let finalInfoWaktu = cw.infoWaktu;
-
-                    // 1. CARI SESI: Cari Sesi Kosong ATAU Sesi yang BISA DITIMPA (Izin/Sakit -> Hadir)
-                    if (cw.scheduleList && cw.scheduleList.length > 0) {
-                        const unrecorded = cw.scheduleList.find(s => 
-                            !td || 
-                            !td[`status_${s.jamKe}`] || 
-                            (td[`status_${s.jamKe}`] !== 'Hadir' && fs === 'Hadir')
-                        );
-                        
-                        if (unrecorded) {
-                            sesiAktif = unrecorded.jamKe; // Ketemu sesi yang akan diisi (Jam 1, 2, atau 3)
-                            const isExactTime = cw.validSessions && cw.validSessions.find(vs => vs.jamKe === sesiAktif);
-                            finalInfoWaktu = isExactTime ? isExactTime.iw : "Hadir (Susulan)";
-                        } else {
-                            if(!silent) window.showToast('Penuh', `Guru: ${g.nama} sudah mengisi seluruh sesi hari ini`, 'error');
-                            return;
-                        }
-                    } else if (cw.targetJam) {
-                        sesiAktif = cw.targetJam;
-                    }
-
-                    // 2. VALIDASI AKHIR & TIMPA STATUS
-                    if (sesiAktif && td && td[`status_${sesiAktif}`]) {
-                        if (td[`status_${sesiAktif}`] !== 'Hadir' && fs === 'Hadir') {
-                            // Izinkan (Status lama akan ditimpa)
-                        } else {
-                            if(!silent) { window.showToast('Sudah Tercatat', `Guru: ${g.nama} sudah tercatat ${td[`status_${sesiAktif}`]} di Sesi Ke-${sesiAktif}`, 'error'); return; }
-                            return;
-                        }
-                    } else if (!sesiAktif && td && td['status_1']) {
-                        if (td['status_1'] !== 'Hadir' && fs === 'Hadir') {
-                            // Izinkan (Status lama akan ditimpa)
-                        } else {
-                            if(!silent) { window.showToast('Sudah Tercatat', `Guru: ${g.nama} sudah tercatat ${td['status_1']} hari ini`, 'error'); return; }
-                            return;
-                        }
-                    }
-                    
-                    // 3. EKSEKUSI PENYIMPANAN
                     if(!td){ td = {id_guru: parseInt(g.id)}; r.data.push(td); }
-                    
-                    if (sesiAktif) { 
-                        td[`status_${sesiAktif}`] = fs; 
-                        td[`info_${sesiAktif}`] = finalInfoWaktu; 
-                    } else { 
-                        td['status_1'] = fs; td['info_1'] = finalInfoWaktu; 
-                        if(cw.hasJam2) { td['status_2'] = fs; td['info_2'] = finalInfoWaktu; } 
-                        if(cw.hasJam3) { td['status_3'] = fs; td['info_3'] = finalInfoWaktu; } 
+
+                    let updatedSessions = [];
+
+                    // Mengisi semua sesi yang dijadwalkan sekaligus (1x Klik / 1x Scan)
+                    if (cw.scheduleList && cw.scheduleList.length > 0) {
+                        cw.scheduleList.forEach(s => {
+                            const jn = s.jamKe;
+                            const curStatus = td[`status_${jn}`];
+                            // Update jika masih kosong ATAU jika sebelumnya statusnya bukan Hadir (misal menimpa izin/alpa menjadi Hadir)
+                            if (!curStatus || (curStatus !== 'Hadir' && fs === 'Hadir')) {
+                                td[`status_${jn}`] = fs;
+                                const isExactTime = cw.validSessions && cw.validSessions.find(vs => vs.jamKe === jn);
+                                td[`info_${jn}`] = isExactTime ? isExactTime.iw : (fs === 'Hadir' ? "Hadir (1x Klik)" : fs);
+                                updatedSessions.push(jn);
+                            }
+                        });
+                    } else if (cw.targetJam) {
+                        if (!td[`status_${cw.targetJam}`] || (td[`status_${cw.targetJam}`] !== 'Hadir' && fs === 'Hadir')) {
+                            td[`status_${cw.targetJam}`] = fs;
+                            td[`info_${cw.targetJam}`] = cw.infoWaktu || fs;
+                            updatedSessions.push(cw.targetJam);
+                        }
+                    } else {
+                        // Fallback jika scheduleList kosong tapi jadwal diperbolehkan (Acara Khusus/Rapat)
+                        if (!td['status_1'] || (td['status_1'] !== 'Hadir' && fs === 'Hadir')) { td['status_1'] = fs; td['info_1'] = cw.infoWaktu || fs; updatedSessions.push(1); }
+                        if (cw.hasJam2 && (!td['status_2'] || (td['status_2'] !== 'Hadir' && fs === 'Hadir'))) { td['status_2'] = fs; td['info_2'] = cw.infoWaktu || fs; updatedSessions.push(2); }
+                        if (cw.hasJam3 && (!td['status_3'] || (td['status_3'] !== 'Hadir' && fs === 'Hadir'))) { td['status_3'] = fs; td['info_3'] = cw.infoWaktu || fs; updatedSessions.push(3); }
+                    }
+
+                    if (updatedSessions.length === 0) {
+                        if(!silent) window.showToast('Sudah Tercatat', `Guru: ${g.nama} sudah tercatat di seluruh sesi hari ini`, 'error');
+                        return;
                     }
                     
                     window.saveState(); 
@@ -2991,7 +2946,7 @@
                     window.updateDashboardStats(); 
                     
                     if(fs === 'Hadir') window.playHadirSound(); else window.playBeep();
-                    if(!silent) { window.showToast('Berhasil', `${g.nama} - Sesi ${sesiAktif || 1} ${fs.toUpperCase()}`, 'success'); return cw; }
+                    if(!silent) { window.showToast('Berhasil', `${g.nama} - Sesi ${updatedSessions.join(', ')} ${fs.toUpperCase()}`, 'success'); return cw; }
                     
                     return cw;
                 }
@@ -3003,6 +2958,16 @@
 
         window.openScanner = (mode) => { activeScannerMode = mode; document.getElementById('scanner-modal').classList.replace('hidden', 'flex'); if(!html5QrCode) html5QrCode = new Html5Qrcode("reader"); html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 250 } }, (text) => { window.closeScanner(); window.processScanResult(text); }, () => {}).catch(err => document.getElementById('scanner-hint').innerText="Gagal akses kamera."); };
         window.closeScanner = () => { if(html5QrCode){html5QrCode.stop().then(()=>html5QrCode.clear()).catch(e=>{});} document.getElementById('scanner-modal').classList.replace('flex','hidden'); };
+
+        window.prosesAbsenGuruManual = (e) => {
+            e.preventDefault();
+            const input = document.getElementById('input-absen-guru-manual');
+            if (input && input.value.trim()) {
+                activeScannerMode = 'absen-guru-tab';
+                window.processScanResult(input.value);
+                input.value = '';
+            }
+        };
 
         window.tempStatusSurat = '';
         window.bukaPengajuanDariRiwayat = (sesi = 'all', jenis = 'Izin') => { window.tutupLuarRadiusModal(); window.tempScanText = window.currentRiwayatGuruId; activeScannerMode = 'absen-cepat'; window.tempSuratSesi = sesi; window.bukaFormSurat(jenis); document.getElementById('modal-riwayat-guru').classList.replace('flex','hidden'); };
@@ -4175,36 +4140,6 @@
             }
 
             modal.classList.replace('hidden', 'flex');
-        };
-
-        window.renderOpGridRiwayat = () => {
-            const c = document.getElementById('op-grid-menu'); if(!c) return;
-            const ak = window.currentUser?.akses || {};
-            const menus = [
-                { id: 'dashboard', icon: 'fa-chart-pie', text: 'Beranda', color: 'blue', tab: 'dashboard', btn: 'nav-btn-dashboard' },
-                { id: 'kalender', icon: 'fa-calendar-moon', text: 'Kalender', color: 'emerald', tab: 'kalender', btn: 'nav-btn-kalender' },
-                { id: 'guru', icon: 'fa-user-tie', text: 'Data Guru', color: 'purple', tab: 'guru', btn: 'nav-btn-guru' },
-                { id: 'log_login', icon: 'fa-right-to-bracket', text: 'Log Akses', color: 'purple', tab: 'log-login', btn: 'nav-btn-log-login' },
-                { id: 'riwayat', icon: 'fa-clock-rotate-left', text: 'Riwayat Guru', color: 'purple', tab: 'riwayat-guru', btn: 'nav-btn-riwayat-guru' },
-                { id: 'absen', icon: 'fa-calendar-check', text: 'Absen Guru', color: 'purple', tab: 'absen-guru', btn: 'nav-btn-absen-guru' },
-                { id: 'jadwal_guru', icon: 'fa-calendar-days', text: 'Jadwal Guru', color: 'purple', tab: 'jadwal-guru', btn: 'nav-btn-jadwal-guru' },
-                { id: 'jadwal_kelas', icon: 'fa-layer-group', text: 'Jadwal Kelas', color: 'emerald', tab: 'jadwal-kelas', btn: 'nav-btn-jadwal-kelas' },
-                { id: 'rekap', icon: 'fa-list-check', text: 'Rekap Guru', color: 'purple', tab: 'rekap-absen-guru', btn: 'nav-btn-rekap-absen-guru' },
-                { id: 'honor', icon: 'fa-file-invoice-dollar', text: 'Honor Guru', color: 'purple', tab: 'honor-guru', btn: 'nav-btn-honor-guru' },
-                { id: 'tabungan', icon: 'fa-piggy-bank', text: 'Tabungan', color: 'purple', tab: 'tabungan', btn: 'nav-btn-tabungan' },
-                { id: 'idcard', icon: 'fa-id-badge', text: 'Cetak ID', color: 'purple', tab: 'idcard', btn: 'nav-btn-idcard' },
-                { id: 'surat', icon: 'fa-envelope-open-text', text: 'Surat', color: 'emerald', tab: 'surat', btn: 'nav-btn-surat' },
-                { id: 'murid', icon: 'fa-users', text: 'Data Murid', color: 'orange', tab: 'murid', btn: 'nav-btn-murid' },
-                { id: 'absen_murid', icon: 'fa-user-check', text: 'Absen Murid', color: 'orange', tab: 'absen-murid', btn: 'nav-btn-absen-murid' },
-                { id: 'rekap_murid', icon: 'fa-list-check', text: 'Rekap Murid', color: 'orange', tab: 'rekap-murid', btn: 'nav-btn-rekap-murid' },
-                { id: 'pengaturan', icon: 'fa-gear', text: 'Pengaturan', color: 'gray', click: "window.bukaModalPengaturan('lokasi'); document.getElementById('modal-portal-operator').classList.replace('flex','hidden');" }
-            ];
-            
-            c.innerHTML = menus.filter(m => ak[m.id]).map(m => {
-                const action = m.click ? m.click : `window.switchTab('${m.tab}', document.getElementById('${m.btn}')); document.getElementById('modal-portal-operator').classList.replace('flex','hidden');`;
-                return `<div onclick="${action}" class="bg-${m.color}-50 border border-${m.color}-100 hover:bg-${m.color}-100 p-4 rounded-xl cursor-pointer transition-colors flex flex-col items-center justify-center gap-2 group"><i class="fa-solid ${m.icon} text-2xl text-${m.color}-600 group-hover:scale-110 transition-transform"></i><span class="text-xs font-bold text-${m.color}-900">${m.text}</span></div>`;
-            }).join('');
-            if(c.innerHTML === '') c.innerHTML = '<div class="col-span-full text-gray-500 text-sm">Tidak ada akses menu.</div>';
         };
 
         window.renderLogLogin = () => {
