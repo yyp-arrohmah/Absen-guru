@@ -1790,7 +1790,7 @@
             window.currentUser=null; document.getElementById('login-pass').value=''; document.getElementById('main-app').classList.add('hidden'); document.getElementById('modal-riwayat-guru').classList.remove('flex'); document.getElementById('modal-riwayat-guru').classList.add('hidden'); document.getElementById('login-screen').classList.remove('hidden'); 
         });
 
-        window.getScheduledIds = (st, nh, sesi, apRapot, isRapat, isLibur) => {
+        window.getScheduledIds = (st, nh, sesi, apRapot, isRapat, isLibur, isAcara) => {
             let ids = new Set();
             (st.guru||[]).forEach(g => {
                 const j = (st.jadwal_guru||[]).find(jx => jx.hari === nh && String(jx.id_guru) === String(g.id));
@@ -1800,6 +1800,8 @@
                 } else if (isRapat) {
                     if (sesi === 1 && j && j.jam.includes('Jam 1') && !window.isJamPiket(j.jam, 1)) isTarget = true;
                     if (sesi === 2) isTarget = true; // Rapat ditugaskan di Sesi 2 untuk semua guru
+                } else if (isAcara) {
+                    isTarget = false; // Jika acara/ujian, tidak wajib (opsional)
                 } else if (!isLibur) {
                     if (j && j.jam.includes(`Jam ${sesi}`) && !window.isJamPiket(j.jam, sesi)) isTarget = true;
                 }
@@ -1822,6 +1824,7 @@
             const isRapat = agenda.some(a=>a.tipe==='Rapat'||a.ket.toLowerCase().includes('rapat'));
             const apRapot = agenda.some(a=>a.ket.toLowerCase().includes('pembagian rapot') || a.ket.toLowerCase().includes('pembagian rapor'));
             const isLibur = agenda.some(a=>a.tipe==='Libur');
+            const isAcara = agenda.some(a=>a.tipe==='Acara'||a.ket.toLowerCase().includes('acara')||a.ket.toLowerCase().includes('ujian')||a.ket.toLowerCase().includes('imda'));
 
             // Object untuk menampung statistik per sesi
             let statsSesi = {
@@ -1832,7 +1835,7 @@
 
             // Hitung untuk masing-masing Sesi 1, 2, dan 3
             [1, 2, 3].forEach(sesi => {
-                let scheduledIds = window.getScheduledIds(st, nh, sesi, apRapot, isRapat, isLibur);
+                let scheduledIds = window.getScheduledIds(st, nh, sesi, apRapot, isRapat, isLibur, isAcara);
                 statsSesi[sesi].target = scheduledIds.size;
 
                 scheduledIds.forEach(id => {
@@ -2355,18 +2358,18 @@
             const ar = ah.find(a => a.tipe === 'Rapat' || (a.ket || '').toLowerCase().includes('rapat'));
             const apRapot = ah.find(a => (a.ket || '').toLowerCase().includes('pembagian rapot') || (a.ket || '').toLowerCase().includes('pembagian rapor'));
             const il = ah.find(a => a.tipe === 'Libur');
-            const ac = ah.find(a => a.tipe === 'Acara' || (a.ket || '').toLowerCase().includes('acara')); 
+            const ac = ah.find(a => a.tipe === 'Acara' || (a.ket || '').toLowerCase().includes('acara') || (a.ket || '').toLowerCase().includes('ujian') || (a.ket || '').toLowerCase().includes('imda')); 
 
-            // 1. CEK ACARA MADRASAH (SEMUA GURU BISA ABSEN)
+            // 1. CEK ACARA MADRASAH / UJIAN (SEMUA GURU BISA ABSEN)
             if (ac) {
                 return {
                     allowed: true,
                     infoWaktu: `Hadir (${ac.ket})`,
-                    targetJam: 1, // Masuk ke Sesi 1 secara otomatis
-                    hasJam2: false, 
+                    targetJam: null, // Masuk ke sesi yang dipilih otomatis saat scan
+                    hasJam2: true, 
                     hasJam3: false,
-                    validSessions: [{ jamKe: 1, iw: `Hadir (${ac.ket})` }],
-                    scheduleList: [{ jamKe: 1, start: '00:00', end: '23:59' }] // Waktu scan bebas seharian
+                    validSessions: [{ jamKe: 1, iw: `Hadir (${ac.ket})` }, { jamKe: 2, iw: `Hadir (${ac.ket})` }],
+                    scheduleList: [{ jamKe: 1, start: '00:00', end: '23:59' }, { jamKe: 2, start: '00:00', end: '23:59' }] // Waktu scan bebas seharian untuk 2 sesi
                 };
             }
 
@@ -2485,12 +2488,13 @@
             const ar=ah.find(a=>a.tipe==='Rapat'||a.ket.toLowerCase().includes('rapat'));
             const apRapot=ah.find(a=>a.ket.toLowerCase().includes('pembagian rapot') || a.ket.toLowerCase().includes('pembagian rapor'));
             const il=ah.find(a=>a.tipe==='Libur');
+            const ac=ah.find(a=>a.tipe==='Acara'||(a.ket||'').toLowerCase().includes('acara')||(a.ket||'').toLowerCase().includes('ujian')||(a.ket||'').toLowerCase().includes('imda'));
             const jh=(window.appState.jadwal_guru||[]).filter(j=>j.hari===nh), ijt=new Set(jh.map(j=>String(j.id_guru)));
             
-            if(il && !ar && !apRapot) { c.innerHTML=`<tr><td colspan="3" class="px-4 py-12 text-center text-red-600 font-bold bg-red-50/50"><i class="fa-solid fa-calendar-xmark text-5xl mb-4 block opacity-80 text-red-300"></i>Hari ini Libur (${il.ket})<br><span class="text-sm font-normal text-red-500 mt-1 block">Semua sesi absensi ditiadakan.</span></td></tr>`; return; }
+            if(il && !ar && !apRapot && !ac) { c.innerHTML=`<tr><td colspan="3" class="px-4 py-12 text-center text-red-600 font-bold bg-red-50/50"><i class="fa-solid fa-calendar-xmark text-5xl mb-4 block opacity-80 text-red-300"></i>Hari ini Libur (${il.ket})<br><span class="text-sm font-normal text-red-500 mt-1 block">Semua sesi absensi ditiadakan.</span></td></tr>`; return; }
 
             let gt = [];
-            if (apRapot || ar) {
+            if (apRapot || ar || ac) {
                 gt = window.appState.guru;
             } else {
                 gt = window.appState.guru.filter(g=>ijt.has(String(g.id))||rh.data.some(dx=>String(dx.id_guru)===String(g.id)));
@@ -2536,6 +2540,11 @@
                         if (m) infoJam1 = m[0] + '<br>';
                     }
                     jadwalInfo = `${infoJam1}<span class="text-yellow-600 font-bold"><i class="fa-solid fa-users-viewfinder"></i> ${ar.ket.toUpperCase()} (15:00 - 17:00)</span>`;
+                } else if(ac) {
+                    h1 = true;
+                    h2 = true;
+                    h3 = false;
+                    jadwalInfo = `<span class="text-blue-600 font-bold"><i class="fa-solid fa-star"></i> ${ac.ket.toUpperCase()} (Bebas / 2 Sesi)</span>`;
                 }
 
                 // Terapkan info pengganti ke UI Absensi
@@ -2569,8 +2578,9 @@
             const il=ah.find(a=>a.tipe==='Libur');
             const ar=ah.find(a=>a.tipe==='Rapat'||a.ket.toLowerCase().includes('rapat'));
             const apRapot=ah.find(a=>a.ket.toLowerCase().includes('pembagian rapot') || a.ket.toLowerCase().includes('pembagian rapor'));
+            const ac=ah.find(a=>a.tipe==='Acara'||(a.ket||'').toLowerCase().includes('acara')||(a.ket||'').toLowerCase().includes('ujian')||(a.ket||'').toLowerCase().includes('imda'));
             
-            if(il && !ar && !apRapot) return window.showAlert('Gagal Menyimpan',`Hari ini Libur (${il.ket}).\nSistem menolak seluruh input absensi.`,'error');
+            if(il && !ar && !apRapot && !ac) return window.showAlert('Gagal Menyimpan',`Hari ini Libur (${il.ket}).\nSistem menolak seluruh input absensi.`,'error');
             
             if(!window.appState.absensi_guru)window.appState.absensi_guru=[]; let r=window.appState.absensi_guru.find(a=>a.tanggal===tgl); const da=[];
             document.querySelectorAll('.absen-guru-row').forEach(row=>{
@@ -2612,9 +2622,10 @@
                 const isRapat=ah.some(a=>a.tipe==='Rapat'||a.ket.toLowerCase().includes('rapat'));
                 const apRapot=ah.some(a=>a.ket.toLowerCase().includes('pembagian rapot') || a.ket.toLowerCase().includes('pembagian rapor'));
                 const isLibur=ah.some(a=>a.tipe==='Libur');
+                const isAcara=ah.some(a=>a.tipe==='Acara'||a.ket.toLowerCase().includes('acara')||a.ket.toLowerCase().includes('ujian')||a.ket.toLowerCase().includes('imda'));
 
                 // Set Default L (Libur) atau '.' untuk setiap sesi
-                if (isLibur && !isRapat && !apRapot) {
+                if (isLibur && !isRapat && !apRapot && !isAcara) {
                     (st.guru||[]).forEach(gr => {
                         teacherSessions[gr.id][1].detail[dayNum] = 'L';
                         teacherSessions[gr.id][2].detail[dayNum] = 'L';
@@ -2630,7 +2641,7 @@
 
                 // KALKULASI SETIAP SESI SECARA SPESIFIK
                 [1, 2, 3].forEach(sesi => {
-                    const scheduledIds = window.getScheduledIds(st, nh, sesi, apRapot, isRapat, isLibur);
+                    const scheduledIds = window.getScheduledIds(st, nh, sesi, apRapot, isRapat, isLibur, isAcara);
                     
                     (st.guru||[]).forEach(gr => {
                         const tsData = teacherSessions[gr.id][sesi];
@@ -2784,7 +2795,7 @@
             document.getElementById('profil-riwayat-nama').innerText = g.nama||'-'; document.getElementById('profil-riwayat-jabatan').innerText = g.jabatan||'Guru'; document.getElementById('profil-riwayat-nip').innerText = g.nip||'-'; document.getElementById('profil-riwayat-hp').innerText = g.hp||'-';
             const t=new Date(), hc=window.getHijriComponents(t), nh=['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][t.getDay()], ts=window.getTodayInputFormat();
             const jh=(window.appState.jadwal_guru||[]).find(j=>j.hari===nh&&String(j.id_guru)===String(guruId));
-            const ah=(window.appState.agenda||[]).filter(a=>a.tgl===ts), ar=ah.find(a=>a.tipe==='Rapat'||a.ket.toLowerCase().includes('rapat')), il=ah.find(a=>a.tipe==='Libur');
+            const ah=(window.appState.agenda||[]).filter(a=>a.tgl===ts), ar=ah.find(a=>a.tipe==='Rapat'||a.ket.toLowerCase().includes('rapat')), il=ah.find(a=>a.tipe==='Libur'), ac=ah.find(a=>a.tipe==='Acara'||(a.ket||'').toLowerCase().includes('acara')||(a.ket||'').toLowerCase().includes('ujian')||(a.ket||'').toLowerCase().includes('imda'));
             const ej=document.getElementById('profil-riwayat-jadwal-hari-ini'); 
             if(ej){
                 if(ar) {
@@ -2794,6 +2805,8 @@
                         if (m) infoJam1 = m[0].replace(/<(hr|br).*?>/g,' &bull; ') + '<br>';
                     }
                     ej.innerHTML=`${infoJam1}<span class="text-yellow-600 font-bold"><i class="fa-solid fa-users-viewfinder"></i> ${ar.ket.toUpperCase()} (15:00 - 17:00)</span>`;
+                } else if(ac) {
+                    ej.innerHTML=`<span class="text-blue-500 font-bold"><i class="fa-solid fa-star"></i> ${ac.ket.toUpperCase()}</span>`;
                 } else if(il) {
                     ej.innerHTML=`<span class="text-red-500"><i class="fa-solid fa-calendar-xmark"></i> LIBUR (${il.ket})</span>`; 
                 } else if(jh) {
@@ -2807,7 +2820,7 @@
             const ct=document.getElementById('table-riwayat-guru'); if(rw.length===0)ct.innerHTML='<tr><td colspan="7" class="text-center py-8 text-gray-500">Belum ada data absensi untuk guru ini.</td></tr>'; else ct.innerHTML=rw.map((r,i)=>{
                 const gb=(s)=>s==='Hadir'?`<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold">HADIR</span>`:s==='Izin'?`<span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold">IZIN</span>`:s==='Sakit'?`<span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-[10px] font-bold">SAKIT</span>`:s==='Cuti'?`<span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-[10px] font-bold">CUTI</span>`:s==='-'?`<span class="text-gray-400 font-bold">-</span>`:`<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-bold">${s.toUpperCase()}</span>`; 
                 const p=r.t.split('-'),d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2])),nhr=['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][d.getDay()]; let hs='';try{const hcd=window.getHijriComponents(d);hs=`${hcd.d} ${["Muharram", "Safar", "Rabi'ul Awal", "Rabi'ul Akhir", "Jumadil Awal", "Jumadil Akhir", "Rajab", "Sya'ban", "Ramadhan", "Syawal", "Dzulqa'dah", "Dzulhijjah"][hcd.m-1]} ${hcd.y} H`;}catch(e){} const tf=`<div class="font-bold text-purple-700 leading-tight mb-1">${hs}</div><div class="text-[11px] text-gray-500">${nhr}, ${p[2]}/${p[1]}/${p[0]}</div>`, it=[r.i1,r.i2,r.i3].filter(x=>x&&x.trim()!==''&&!x.includes('Tepat Waktu')).join(', ')||'-'; 
-                const j=(window.appState.jadwal_guru||[]).find(jx=>jx.hari===nhr&&String(jx.id_guru)===String(guruId)), a=(window.appState.agenda||[]).filter(ax=>ax.tgl===r.t), rp=a.find(ax=>ax.tipe==='Rapat'||ax.ket.toLowerCase().includes('rapat')), lb=a.find(ax=>ax.tipe==='Libur'); 
+                const j=(window.appState.jadwal_guru||[]).find(jx=>jx.hari===nhr&&String(jx.id_guru)===String(guruId)), a=(window.appState.agenda||[]).filter(ax=>ax.tgl===r.t), rp=a.find(ax=>ax.tipe==='Rapat'||ax.ket.toLowerCase().includes('rapat')), lb=a.find(ax=>ax.tipe==='Libur'), acx=a.find(ax=>ax.tipe==='Acara'||(ax.ket||'').toLowerCase().includes('acara')||(ax.ket||'').toLowerCase().includes('ujian')||(ax.ket||'').toLowerCase().includes('imda')); 
                 let dj=j?j.jam.replace(/<hr.*?>/g,'<br>'):'<span class="text-gray-400 italic">Kosong</span>'; 
                 if(rp){
                     let jam1Info = '';
@@ -2816,6 +2829,8 @@
                         if (m) jam1Info = `<div class="opacity-75 text-[10px] mb-1">${m[0].replace(/<(hr|br).*?>/g,' ')}</div>`;
                     }
                     dj=`${jam1Info}<div class="text-yellow-700 font-bold text-[10px] mb-1">RAPAT (${rp.ket})</div>`;
+                } else if(acx) {
+                    dj=`<div class="text-blue-600 font-bold text-[10px] mb-1">${acx.ket.toUpperCase()}</div>`;
                 } else if(lb) {
                     dj=`<div class="text-red-600 font-bold text-[10px] mb-1">LIBUR</div>`; 
                 } else if(j) {
@@ -3618,14 +3633,14 @@
                 let hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][tglDate.getDay()];
                 if (hari === 'Minggu') hari = 'Ahad'; 
 
-                // CEK AGENDA: Apakah ada agenda Libur atau Acara di tanggal ini?
-                const isLibur = (window.appState.agenda || []).some(a => 
+                // CEK AGENDA: Apakah ada agenda Libur atau Acara/Ujian di tanggal ini?
+                const isLiburAcara = (window.appState.agenda || []).some(a => 
                     a.tgl === tglStr && 
-                    (a.tipe === 'Libur' || a.tipe === 'Acara' || (a.ket || '').toLowerCase().includes('libur'))
+                    (a.tipe === 'Libur' || a.tipe === 'Acara' || (a.ket || '').toLowerCase().includes('libur') || (a.ket || '').toLowerCase().includes('acara') || (a.ket || '').toLowerCase().includes('ujian') || (a.ket || '').toLowerCase().includes('imda'))
                 );
 
                 // Jika BUKAN Libur/Acara, tambahkan sesi ke target mengajar
-                if(!isLibur) {
+                if(!isLiburAcara) {
                     const jadwal = (window.appState.jadwal_guru || []).filter(j => String(j.id_guru) === String(guruId) && j.hari === hari);
                     jadwal.forEach(j => {
                         if((j.jam||'').includes('Jam 1')) totalTarget++;
@@ -4161,8 +4176,9 @@
             const isRapat = agenda.some(a=>a.tipe==='Rapat'||a.ket.toLowerCase().includes('rapat'));
             const apRapot = agenda.some(a=>a.ket.toLowerCase().includes('pembagian rapot') || a.ket.toLowerCase().includes('pembagian rapor'));
             const isLibur = agenda.some(a=>a.tipe==='Libur');
+            const isAcara = agenda.some(a=>a.tipe==='Acara'||a.ket.toLowerCase().includes('acara')||a.ket.toLowerCase().includes('ujian'));
 
-            let scheduledIds = window.getScheduledIds(st, nh, sesi, apRapot, isRapat, isLibur);
+            let scheduledIds = window.getScheduledIds(st, nh, sesi, apRapot, isRapat, isLibur, isAcara);
             let resultList = [];
 
             if (targetStatus === 'Jadwal') {
