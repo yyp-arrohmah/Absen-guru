@@ -1330,7 +1330,7 @@
         // SISTEM SINKRONISASI LATAR BELAKANG (AUTO-SYNC & OFFLINE SUPPORT)
         // ===============================================================
         window.isOnline = navigator.onLine;
-        window.pendingSync = false;
+        window.pendingSync = localStorage.getItem('pendingSyncFlag') === 'true';
 
         window.updateNetworkStatus = () => {
             window.isOnline = navigator.onLine;
@@ -1358,6 +1358,22 @@
         window.addEventListener('online', window.updateNetworkStatus);
         window.addEventListener('offline', window.updateNetworkStatus);
 
+        // FITUR BARU: Deteksi saat tab kembali dibuka/aktif
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && navigator.onLine && window.pendingSync) {
+                console.log("Tab aktif: Memproses data tertunda...");
+                window.saveState(true);
+            }
+        });
+
+        // FITUR BARU: Mencegah tab ditutup jika masih ada data mengantri
+        window.addEventListener('beforeunload', (e) => {
+            if (window.pendingSync || window.localDataIsDirty) {
+                e.preventDefault();
+                e.returnValue = 'Masih ada data absensi yang sedang disimpan ke Cloud. Yakin ingin keluar?';
+            }
+        });
+
         window.saveState = async (force = false) => {
             window.localDataIsDirty = true;
             const currentReqId = ++saveRequestId;
@@ -1370,6 +1386,7 @@
             // Logika Offline: Cegah request Firebase jika terputus
             if (!navigator.onLine && !force) {
                 window.pendingSync = true;
+                localStorage.setItem('pendingSyncFlag', 'true');
                 if (syncBadge) { 
                     syncBadge.innerHTML = '<i class="fa-solid fa-hdd mr-2 text-yellow-400"></i>Tersimpan di Perangkat (Menunggu Online)'; 
                     syncBadge.classList.remove('opacity-0'); 
@@ -1388,9 +1405,11 @@
                 try {
                     await set(ref(db, 'MadrasahData/'), window.appState);
                     window.pendingSync = false;
+                    localStorage.removeItem('pendingSyncFlag');
                     if (syncBadge) syncBadge.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-2 text-green-400"></i>Data Tersinkronisasi!';
                 } catch(e) {
                     window.pendingSync = true;
+                    localStorage.setItem('pendingSyncFlag', 'true');
                     if (syncBadge) syncBadge.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-2 text-red-400"></i>Gagal Sync (Akan diulang otomatis)';
                 }
                 if (syncBadge) setTimeout(() => syncBadge.classList.add('opacity-0'), 2500);
@@ -1399,27 +1418,34 @@
                 if (currentReqId === saveRequestId) {
                     setTimeout(() => { window.localDataIsDirty = false; }, 500); // Jeda agar gema (echo) dari onValue server terlewati
                 }
-            }, 1000); 
+            }, 500); // Kurangi jeda debounce untuk meminimalisir data hilang saat tab ditutup tiba-tiba
         };
 
-        // Auto-sync Interval (Setiap 3 menit sistem mengecek data yang belum ter-upload)
+        // Auto-sync Interval (Setiap 1 menit sistem mengecek data yang belum ter-upload)
         setInterval(() => {
             if (navigator.onLine && window.pendingSync) {
                 console.log("Auto-Sync: Melakukan sinkronisasi data tertunda di latar belakang...");
                 window.saveState(true);
             }
-        }, 3 * 60 * 1000);
+        }, 1 * 60 * 1000); // Dipercepat menjadi 1 Menit
 
         let isFirstLoad = true;
         window.initCloudDatabase = async () => {
             const loader = document.getElementById('startup-loader');
             const localData = localStorage.getItem('CloudMadrasahData');
+            const hasOfflineData = localStorage.getItem('pendingSyncFlag') === 'true';
             
             // 1. Muat data lokal secara instan agar UI langsung responsif
             if(localData && isFirstLoad) { 
                 try { 
                     const p = JSON.parse(localData); window.appState = {...window.appState, ...p}; 
                     if(p.pengaturan) window.appState.pengaturan = {...window.appState.pengaturan, ...p.pengaturan}; 
+                    
+                    // PENANGANAN KRUSIAL: Amankan data offline yang belum terupload
+                    if (hasOfflineData && navigator.onLine) {
+                        console.log("Ditemukan data offline. Memaksa upload sebelum sinkronisasi server...");
+                        window.saveState(true);
+                    }
                 } catch(e){} 
             }
 
@@ -1428,7 +1454,8 @@
                 const dbRef = ref(db, 'MadrasahData');
                 onValue(dbRef, (snapshot) => {
                     // PENCEGAHAN OVERWRITE: Abaikan pembaruan server jika sedang ada proses simpan antre
-                    if (window.localDataIsDirty) {
+                    // atau masih ada data offline yang menolak tertimpa
+                    if (window.localDataIsDirty || localStorage.getItem('pendingSyncFlag') === 'true') {
                         console.log("Mengabaikan pembaruan server sementara karena ada data lokal yang belum tersimpan.");
                         return;
                     }
