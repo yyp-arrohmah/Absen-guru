@@ -1873,7 +1873,7 @@
                     if (sesi === 1 && j && j.jam.includes('Jam 1') && !window.isJamPiket(j.jam, 1)) isTarget = true;
                     if (sesi === 2) isTarget = true; // Rapat ditugaskan di Sesi 2 untuk semua guru
                 } else if (isAcara) {
-                    if (sesi === 1 || sesi === 2) isTarget = true; // Seluruh guru menjadi target untuk Sesi 1 dan 2 saat ada acara/ujian
+                    isTarget = false; // Saat acara sekolah, kehadiran bersifat fleksibel (tidak wajib/tidak otomatis alpa)
                 } else if (!isLibur) {
                     if (j && j.jam.includes(`Jam ${sesi}`) && !window.isJamPiket(j.jam, sesi)) isTarget = true;
                 }
@@ -1927,6 +1927,10 @@
                 dataAbsen.forEach(absen => {
                     if (!scheduledIds.has(String(absen.id_guru))) {
                         if (absen[`status_${sesi}`] === 'Hadir') statsSesi[sesi].h++; 
+                        else if (absen[`status_${sesi}`] === 'Izin') statsSesi[sesi].iz++;
+                        else if (absen[`status_${sesi}`] === 'Sakit') statsSesi[sesi].sk++;
+                        else if (absen[`status_${sesi}`] === 'Cuti') statsSesi[sesi].ct++;
+                        else if (absen[`status_${sesi}`] === 'Alpa') statsSesi[sesi].al++;
                     }
                 });
             });
@@ -2736,8 +2740,12 @@
                                     else if(stat==='Cuti') { tsData.cuti++; dayStatus='C'; }
                                     else { tsData.alpa++; dayStatus='A'; }
                                 } else {
-                                    // Hitung juga guru pengganti / diluar jadwal jika mereka hadir
+                                    // Hitung juga guru pengganti / diluar jadwal jika mereka hadir/izin/dsb
                                     if(stat==='Hadir') { tsData.hadir++; dayStatus='H'; }
+                                    else if(stat==='Izin') { tsData.izin++; dayStatus='I'; }
+                                    else if(stat==='Sakit') { tsData.sakit++; dayStatus='S'; }
+                                    else if(stat==='Cuti') { tsData.cuti++; dayStatus='C'; }
+                                    else if(stat==='Alpa') { tsData.alpa++; dayStatus='A'; }
                                 }
                             } else {
                                 // Hanya berikan Alpa jika dia terjadwal namun tidak ada data absen sama sekali
@@ -2931,6 +2939,8 @@
                 else if (rpx) {
                     h1 = jx ? jx.jam.includes('Jam 1') && !window.isJamPiket(jx.jam, 1) : false;
                     h2 = true;
+                } else if (acx) {
+                    // Saat acara sekolah, kehadiran bersifat fleksibel (tidak wajib)
                 } else if (jx) {
                     h1 = jx.jam.includes('Jam 1') && !window.isJamPiket(jx.jam, 1);
                     h2 = jx.jam.includes('Jam 2') && !window.isJamPiket(jx.jam, 2);
@@ -2941,9 +2951,19 @@
                 if(ip){
                     const ex=da.find(x=>String(x.id_guru)===String(guruId)); 
                     if(ex){
-                        if(h1){const s1=ex.status_1;if(s1==='Hadir')th++;else if(s1==='Izin')ti++;else if(s1==='Sakit')ts2++;else if(s1==='Cuti')tc++;else ta++;}
-                        if(h2){const s2=ex.status_2;if(s2==='Hadir')th++;else if(s2==='Izin')ti++;else if(s2==='Sakit')ts2++;else if(s2==='Cuti')tc++;else ta++;}
-                        if(h3){const s3=ex.status_3;if(s3==='Hadir')th++;else if(s3==='Izin')ti++;else if(s3==='Sakit')ts2++;else if(s3==='Cuti')tc++;else ta++;}
+                        [1,2,3].forEach(sesi => {
+                            const isTgt = (sesi===1 && h1) || (sesi===2 && h2) || (sesi===3 && h3);
+                            const st = ex[`status_${sesi}`];
+                            if (st) {
+                                if(st==='Hadir') th++;
+                                else if(st==='Izin') ti++;
+                                else if(st==='Sakit') ts2++;
+                                else if(st==='Cuti') tc++;
+                                else if(st==='Alpa') ta++;
+                            } else if (isTgt) {
+                                ta++;
+                            }
+                        });
                     } else {
                         if(h1)ta++;if(h2)ta++;if(h3)ta++;
                     }
