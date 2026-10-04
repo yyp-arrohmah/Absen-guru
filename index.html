@@ -3208,7 +3208,7 @@
         };
 
         window.tempStatusSurat = '';
-        window.bukaPengajuanDariRiwayat = (sesi = 'all', jenis = 'Izin') => { window.tutupLuarRadiusModal(); window.tempScanText = window.currentRiwayatGuruId; activeScannerMode = 'absen-cepat'; window.tempSuratSesi = sesi; window.bukaFormSurat(jenis); document.getElementById('modal-riwayat-guru').classList.replace('flex','hidden'); };
+        window.bukaPengajuanDariRiwayat = (sesi = 'all', jenis = 'Izin') => { window.tutupLuarRadiusModal(); window.tempScanText = String(window.currentRiwayatGuruId); activeScannerMode = 'absen-cepat'; window.tempSuratSesi = sesi; window.bukaFormSurat(jenis); document.getElementById('modal-riwayat-guru').classList.replace('flex','hidden'); };
         window.bukaFormSurat = (jenis) => {
             window.tutupLuarRadiusModal(); window.tempStatusSurat = jenis; document.getElementById('modal-surat-keterangan').classList.replace('hidden', 'flex');
             document.getElementById('title-surat-modal').innerText = `Formulir ${jenis}`; document.getElementById('header-surat-modal').className = `p-4 text-white flex justify-between items-center ${jenis==='Cuti'?'bg-indigo-600':jenis==='Izin'?'bg-blue-600':'bg-orange-600'}`;
@@ -3226,7 +3226,7 @@
             if(cs1 && cs2 && cs3) { if(selSesi.length === 0) return window.showAlert('Gagal', 'Pilih minimal satu sesi untuk pengajuan.', 'error'); } else { selSesi = [1, 2, 3]; }
             if(!al) return window.showAlert('Gagal', 'Alasan wajib diisi.', 'error'); 
             document.getElementById('modal-surat-keterangan').classList.replace('flex','hidden');
-            let idLokal = window.tempScanText.trim(); if(window.tempScanText.includes('mmuibt.net')){try{idLokal=atob(window.tempScanText.split('id=')[1]).split('#')[0];}catch(e){}}
+            let idLokal = String(window.tempScanText).trim(); if(idLokal.includes('mmuibt.net')){try{idLokal=atob(idLokal.split('id=')[1]).split('#')[0];}catch(e){}}
             const g = window.appState.guru.find(x => String(x.nip)===idLokal || String(x.id)===idLokal); if(!g) return;
             const baseDate = new Date(); const currDay = ['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][baseDate.getDay()];
             const jToday = (window.appState.jadwal_guru||[]).find(j => j.hari === currDay && String(j.id_guru) === String(g.id)); let isPast = false;
@@ -3237,8 +3237,6 @@
             for(let i=0; i<hr; i++) {
                 const targetD = new Date(baseDate); targetD.setDate(baseDate.getDate() + i); const tgl = `${targetD.getFullYear()}-${String(targetD.getMonth()+1).padStart(2,'0')}-${String(targetD.getDate()).padStart(2,'0')}`;
                 
-                const dName = ['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][targetD.getDay()];
-                const jData = (window.appState.jadwal_guru||[]).find(j => j.hari === dName && String(j.id_guru) === String(g.id));
                 const ah = (window.appState.agenda||[]).filter(a => a.tgl === tgl);
                 const ar = ah.find(a => a.tipe === 'Rapat' || (a.ket||'').toLowerCase().includes('rapat'));
                 const apRapot = ah.find(a => (a.ket||'').toLowerCase().includes('pembagian rapot') || (a.ket||'').toLowerCase().includes('pembagian rapor'));
@@ -3251,18 +3249,9 @@
                 let info = (i===0) ? al : `Lanjutan ${st} (${i+1} dari ${hr} hr) - ${al}`; 
                 
                 selSesi.forEach(sn => { 
-                    let isSched = false;
-                    if (apRapot && (sn === 1 || sn === 2)) isSched = true;
-                    else if (ar) {
-                        if (sn === 1 && jData && jData.jam.includes('Jam 1')) isSched = true;
-                        if (sn === 2) isSched = true;
-                    } else if (jData && jData.jam.includes(`Jam ${sn}`)) {
-                        isSched = true;
-                    }
-                    if (isSched) {
-                        td[`status_${sn}`] = st; td[`info_${sn}`] = info; 
-                        if (i === 0 && !sesiTercatat.includes(sn)) sesiTercatat.push(sn);
-                    }
+                    td[`status_${sn}`] = st; 
+                    td[`info_${sn}`] = info; 
+                    if (i === 0 && !sesiTercatat.includes(sn)) sesiTercatat.push(sn);
                 });
             }
             window.saveState(); window.renderAbsenGuru(); window.updateDashboardStats();
