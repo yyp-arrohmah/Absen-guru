@@ -915,10 +915,15 @@
                 
                 <!-- TAB SURAT MENYURAT -->
                 <div id="tab-surat" class="tab-content max-w-7xl mx-auto scroll-mt-6">
-                    <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-                        <div><h2 class="text-2xl font-bold text-gray-800"><i class="fa-solid fa-envelope-open-text text-emerald-500 mr-2"></i>Surat Menyurat</h2><p class="text-gray-500 text-sm">Buat dan cetak surat undangan resmi otomatis berdasarkan agenda rapat.</p></div>
+                    <div class="mb-4 flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+                        <div><h2 class="text-2xl font-bold text-gray-800"><i class="fa-solid fa-envelope-open-text text-emerald-500 mr-2"></i>Surat Menyurat</h2><p class="text-gray-500 text-sm">Pilih jenis surat yang ingin dibuat dan dicetak.</p></div>
+                        <div class="flex gap-2 bg-white p-1 rounded-xl shadow-sm border border-gray-100 w-full md:w-auto">
+                            <button id="btn-tab-surat-rapat" onclick="window.switchSubTabSurat('rapat')" class="flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-bold bg-emerald-100 text-emerald-700 transition-colors">Undangan Rapat</button>
+                            <button id="btn-tab-surat-izin" onclick="window.switchSubTabSurat('izin')" class="flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-50 bg-transparent transition-colors">Izin Murid</button>
+                        </div>
                     </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <div id="container-surat-rapat" class="grid grid-cols-1 lg:grid-cols-3 gap-6 block">
                         <div class="lg:col-span-1 space-y-4">
                             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
                                 <h3 class="font-bold text-gray-800"><i class="fa-solid fa-pen-to-square text-emerald-500 mr-2"></i>Form Undangan Rapat</h3>
@@ -991,6 +996,74 @@
                                         <p>Mengetahui,</p>
                                         <p id="prev-ttd-jabatan" class="mb-16">Kepala Madrasah</p>
                                         <p class="font-bold underline" id="prev-ttd-nama">Nama Lengkap</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="container-surat-izin" class="grid grid-cols-1 lg:grid-cols-3 gap-6 hidden">
+                        <div class="lg:col-span-1 space-y-4">
+                            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                                <h3 class="font-bold text-gray-800"><i class="fa-solid fa-pen-to-square text-emerald-500 mr-2"></i>Form Surat Izin Siswa</h3>
+                                <div><label class="block text-xs font-bold text-gray-700 mb-1">Kelas</label><select id="surat-izin-kelas" class="w-full border border-gray-300 p-2.5 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-sm" onchange="window.renderSelectMuridSuratIzin()"><option value="">-- Pilih Kelas --</option></select></div>
+                                <div><label class="block text-xs font-bold text-gray-700 mb-1">Nama Murid</label><select id="surat-izin-murid" class="w-full border border-gray-300 p-2.5 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-sm" onchange="window.autofillSuratIzin()"><option value="">-- Pilih Murid --</option></select></div>
+                                <div><label class="block text-xs font-bold text-gray-700 mb-1">Tanggal Izin</label><input type="date" id="surat-izin-tgl" class="w-full border border-gray-300 p-2.5 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 text-sm" onchange="window.previewSuratIzin()"></div>
+                                <div><label class="block text-xs font-bold text-gray-700 mb-1">Jenis Keterangan</label><select id="surat-izin-jenis" class="w-full border border-gray-300 p-2.5 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-sm" onchange="window.previewSuratIzin()"><option value="Izin">Izin</option><option value="Sakit">Sakit</option></select></div>
+                                <div><label class="block text-xs font-bold text-gray-700 mb-1">Alasan Lengkap</label><textarea id="surat-izin-alasan" class="w-full border border-gray-300 p-2.5 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 text-sm h-20 resize-none" placeholder="Cth: Sakit demam berdarah / Ada acara keluarga" onkeyup="window.previewSuratIzin()"></textarea></div>
+                                <div><label class="block text-xs font-bold text-gray-700 mb-1">Nama Wali Murid (Ttd)</label><input type="text" id="surat-izin-wali" class="w-full border border-gray-300 p-2.5 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 text-sm" placeholder="Otomatis terisi jika ada" onkeyup="window.previewSuratIzin()"></div>
+                                <button onclick="window.downloadSuratIzinPDF()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition-colors shadow-md text-sm"><i class="fa-solid fa-file-pdf mr-2"></i>Cetak PDF</button>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-2 overflow-x-auto flex justify-center bg-gray-200 p-4 rounded-2xl border border-gray-300">
+                            <div id="printable-surat-izin" class="bg-white text-black font-serif relative shadow-xl mx-auto flex-shrink-0" style="width: 210mm; min-width: 210mm; height: 297mm; min-height: 297mm; padding: 2cm 2.5cm; box-sizing: border-box; font-family: 'Times New Roman', Times, serif; overflow: hidden;">
+                                
+                                <!-- Kop Surat -->
+                                <div class="flex items-center justify-between border-b-4 border-black pb-4 mb-1">
+                                    <img id="kop-logo-izin" src="" class="w-20 h-20 object-contain" alt="Logo">
+                                    <div class="text-center flex-1">
+                                        <h2 class="text-base font-bold uppercase tracking-wider">Madrasah Miftahul Ulum Arrohmah</h2>
+                                        <h1 class="text-lg font-black uppercase tracking-widest mt-0.5">Yayasan Pendidikan Arrohmah</h1>
+                                        <p class="text-xs mt-1">Dusun Karang Anom Mrawan Tapen Bondowoso</p>
+                                        <p class="text-[11px] mt-0.5">Kode pos: 68283 | Email: yyp.arrohmah@gmail.com | Telp: (021) 1234567</p>
+                                    </div>
+                                    <div class="w-20"></div> <!-- Spacer -->
+                                </div>
+                                <div class="border-b-[1px] border-black mb-6"></div>
+                                
+                                <div class="flex justify-end text-sm mb-6">
+                                    <div id="prev-izin-tgl-surat">Bondowoso, ...</div>
+                                </div>
+                                
+                                <div class="text-sm mb-8">
+                                    <p>Kepada Yth,</p>
+                                    <p><b>Wali Kelas <span id="prev-izin-kelas-tujuan">...</span></b></p>
+                                    <p>Di Tempat</p>
+                                </div>
+                                
+                                <div class="text-sm leading-relaxed mb-6 text-justify">
+                                    <p class="mb-4">Assalamu'alaikum Warahmatullahi Wabarakatuh,</p>
+                                    <p class="mb-4">Dengan hormat, saya yang bertanda tangan di bawah ini selaku wali murid dari:</p>
+                                    
+                                    <table class="border-none ml-6 mb-4">
+                                        <tr><td class="pr-4 py-1">Nama</td><td>: <b id="prev-izin-nama">...</b></td></tr>
+                                        <tr><td class="pr-4 py-1">NIS/NISN</td><td>: <span id="prev-izin-nis">...</span></td></tr>
+                                        <tr><td class="pr-4 py-1">Kelas</td><td>: <span id="prev-izin-kelas">...</span></td></tr>
+                                    </table>
+                                    
+                                    <p class="mb-4">Memberitahukan bahwa anak kami tidak dapat mengikuti kegiatan belajar mengajar sebagaimana mestinya pada hari <b id="prev-izin-hari">...</b> dikarenakan <b id="prev-izin-alasan">...</b>.</p>
+                                    
+                                    <p class="mb-4">Oleh karena itu, kami memohon kesediaan Bapak/Ibu Wali Kelas untuk memberikan izin kepada anak kami.</p>
+                                    
+                                    <p>Demikian surat ini kami sampaikan, agar dapat dimaklumi. Atas perhatian dan kebijaksanaannya, kami ucapkan terima kasih.</p>
+                                    <p class="mt-4">Wassalamu'alaikum Warahmatullahi Wabarakatuh.</p>
+                                </div>
+                                
+                                <div class="flex justify-end mt-16 text-sm text-center">
+                                    <div class="w-48">
+                                        <p>Hormat kami,</p>
+                                        <p class="mb-20 text-xs text-gray-400">Wali Murid</p>
+                                        <p class="font-bold underline" id="prev-izin-ttd-nama">...</p>
                                     </div>
                                 </div>
                             </div>
@@ -4535,6 +4608,150 @@
                 
                 pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
                 pdf.save(`Surat_${hal.replace(/\s+/g,'_')}.pdf`);
+            });
+        };
+
+        // FUNGSI SURAT IZIN MURID
+        window.switchSubTabSurat = (tab) => {
+            const btnRapat = document.getElementById('btn-tab-surat-rapat');
+            const btnIzin = document.getElementById('btn-tab-surat-izin');
+            const conRapat = document.getElementById('container-surat-rapat');
+            const conIzin = document.getElementById('container-surat-izin');
+
+            if (tab === 'rapat') {
+                btnRapat.classList.add('bg-emerald-100', 'text-emerald-700');
+                btnRapat.classList.remove('text-gray-500', 'hover:bg-gray-50', 'bg-transparent');
+                btnIzin.classList.add('text-gray-500', 'hover:bg-gray-50', 'bg-transparent');
+                btnIzin.classList.remove('bg-emerald-100', 'text-emerald-700');
+                
+                conRapat.classList.remove('hidden');
+                conIzin.classList.add('hidden');
+            } else {
+                btnIzin.classList.add('bg-emerald-100', 'text-emerald-700');
+                btnIzin.classList.remove('text-gray-500', 'hover:bg-gray-50', 'bg-transparent');
+                btnRapat.classList.add('text-gray-500', 'hover:bg-gray-50', 'bg-transparent');
+                btnRapat.classList.remove('bg-emerald-100', 'text-emerald-700');
+                
+                conRapat.classList.add('hidden');
+                conIzin.classList.remove('hidden');
+                
+                window.renderSelectKelasSuratIzin();
+                document.getElementById('surat-izin-tgl').value = window.getTodayInputFormat();
+                window.previewSuratIzin();
+            }
+        };
+
+        window.renderSelectKelasSuratIzin = () => {
+            const select = document.getElementById('surat-izin-kelas');
+            if (!select) return;
+            const curVal = select.value;
+            const kelasArr = ["Kelas Shifir", "Kelas Shifir A", "Kelas Shifir B", "Kelas Shifir C", "Kelas 1 A", "Kelas 1 B", "Kelas 1 C", "Kelas 1 D", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5", "Kelas 6"];
+            select.innerHTML = '<option value="">-- Pilih Kelas --</option>' + kelasArr.map(k => `<option value="${k}">${k}</option>`).join('');
+            if (curVal) select.value = curVal;
+        };
+
+        window.renderSelectMuridSuratIzin = () => {
+            const kls = document.getElementById('surat-izin-kelas').value;
+            const select = document.getElementById('surat-izin-murid');
+            if (!select) return;
+            
+            if (!kls) {
+                select.innerHTML = '<option value="">-- Pilih Murid --</option>';
+                window.autofillSuratIzin();
+                return;
+            }
+            
+            const muridList = (window.appState.siswa || []).filter(s => s.kelas === kls).sort((a,b)=>a.nama.localeCompare(b.nama));
+            select.innerHTML = '<option value="">-- Pilih Murid --</option>' + muridList.map(m => `<option value="${m.id}">${m.nama}</option>`).join('');
+            window.autofillSuratIzin();
+        };
+
+        window.autofillSuratIzin = () => {
+            const id = document.getElementById('surat-izin-murid').value;
+            if (id) {
+                const murid = (window.appState.siswa || []).find(s => String(s.id) === String(id));
+                if (murid) {
+                    document.getElementById('surat-izin-wali').value = murid.wali || 'Bapak/Ibu Wali Murid';
+                }
+            } else {
+                document.getElementById('surat-izin-wali').value = '';
+            }
+            window.previewSuratIzin();
+        };
+
+        window.previewSuratIzin = () => {
+            const id = document.getElementById('surat-izin-murid').value;
+            const tgl = document.getElementById('surat-izin-tgl').value || window.getTodayInputFormat();
+            const alasan = document.getElementById('surat-izin-alasan').value || '...';
+            const wali = document.getElementById('surat-izin-wali').value || '...';
+            const kelas = document.getElementById('surat-izin-kelas').value || '...';
+            
+            const p = tgl.split('-');
+            const d = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2]));
+            const mNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+            const dNames = ['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+            
+            const hariStr = dNames[d.getDay()];
+            const tglMasehiStr = `${d.getDate()} ${mNames[d.getMonth()]} ${d.getFullYear()}`;
+            
+            // Konversi ke format Hijriyah
+            const h = window.getHijriComponents(d);
+            const mNamesHijri = ["Muharram", "Safar", "Rabi'ul Awal", "Rabi'ul Akhir", "Jumadil Awal", "Jumadil Akhir", "Rajab", "Sya'ban", "Ramadhan", "Syawal", "Dzulqa'dah", "Dzulhijjah"];
+            const tglHijriStr = `${h.d} ${mNamesHijri[h.m-1]} ${h.y} H`;
+            
+            // Setel tanggal kop surat (Kanan atas) menjadi Hijriyah
+            const pTgl = document.getElementById('prev-izin-tgl-surat'); if(pTgl) pTgl.innerText = `Bondowoso, ${tglHijriStr}`;
+            const pKelas = document.getElementById('prev-izin-kelas-tujuan'); if(pKelas) pKelas.innerText = kelas;
+            
+            if (id) {
+                const murid = (window.appState.siswa || []).find(s => String(s.id) === String(id));
+                if (murid) {
+                    const pNama = document.getElementById('prev-izin-nama'); if(pNama) pNama.innerText = murid.nama;
+                    const pNis = document.getElementById('prev-izin-nis'); if(pNis) pNis.innerText = murid.nis || '-';
+                    const pKls = document.getElementById('prev-izin-kelas'); if(pKls) pKls.innerText = murid.kelas || '-';
+                }
+            } else {
+                const pNama = document.getElementById('prev-izin-nama'); if(pNama) pNama.innerText = '...';
+                const pNis = document.getElementById('prev-izin-nis'); if(pNis) pNis.innerText = '...';
+                const pKls = document.getElementById('prev-izin-kelas'); if(pKls) pKls.innerText = '...';
+            }
+            
+            // Tampilkan Masehi & Hijriyah di dalam paragraf isi surat
+            const pHari = document.getElementById('prev-izin-hari'); if(pHari) pHari.innerText = `${hariStr}, ${tglHijriStr} / ${tglMasehiStr}`;
+            const pAlasan = document.getElementById('prev-izin-alasan'); if(pAlasan) pAlasan.innerText = alasan;
+            const pWali = document.getElementById('prev-izin-ttd-nama'); if(pWali) pWali.innerText = wali;
+            
+            const logo = window.appState?.pengaturan?.logo || '';
+            const kopLogoIzin = document.getElementById('kop-logo-izin');
+            if (kopLogoIzin) {
+                if (logo) {
+                    kopLogoIzin.src = logo;
+                    kopLogoIzin.style.display = 'block';
+                } else {
+                    kopLogoIzin.style.display = 'none';
+                }
+            }
+        };
+
+        window.downloadSuratIzinPDF = () => {
+            const target = document.getElementById('printable-surat-izin');
+            const pNama = document.getElementById('prev-izin-nama');
+            const nama = pNama ? pNama.innerText : 'Murid';
+            
+            if(nama === '...') return window.showAlert('Peringatan', 'Harap pilih nama murid terlebih dahulu.', 'warning');
+            
+            window.showAlert('Memproses', 'Menyiapkan surat izin dalam format PDF...', 'info');
+            window.previewSuratIzin();
+            
+            html2canvas(target, {scale: 3, useCORS: true}).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save(`Surat_Izin_${nama.replace(/\s+/g,'_')}.pdf`);
             });
         };
 
