@@ -1477,13 +1477,11 @@
             catch(e) { if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') setTimeout(() => window.showAlert('Penyimpanan Penuh', 'Penyimpanan lokal penuh. Mohon perkecil ukuran foto.', 'error'), 500); }
             
             // PERBAIKAN KRUSIAL: Set flag tertunda SECARA INSTAN sebelum mencoba akses jaringan.
-            // Hal ini mencegah hilangnya data jika browser ditutup saat koneksi "menggantung" (false online).
             window.pendingSync = true;
             localStorage.setItem('pendingSyncFlag', 'true');
 
             const syncBadge = document.getElementById('cloud-sync-status');
             
-            // Logika Offline: Cegah request Firebase jika terputus
             if (!navigator.onLine && !force) {
                 if (syncBadge) { 
                     syncBadge.innerHTML = '<i class="fa-solid fa-hdd mr-2 text-yellow-400"></i>Tersimpan di Perangkat (Menunggu Online)'; 
@@ -1503,7 +1501,6 @@
                 try {
                     await set(ref(db, 'MadrasahData/'), window.appState);
                     
-                    // Jika kode mencapai baris ini, berarti data BERHASIL masuk ke server
                     window.pendingSync = false;
                     localStorage.removeItem('pendingSyncFlag');
                     if (syncBadge) syncBadge.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-2 text-green-400"></i>Data Tersinkronisasi!';
@@ -1514,20 +1511,11 @@
                 }
                 if (syncBadge) setTimeout(() => syncBadge.classList.add('opacity-0'), 2500);
                 
-                // Lepaskan flag dirty HANYA jika tidak ada request save baru yang masuk
                 if (currentReqId === saveRequestId) {
-                    setTimeout(() => { window.localDataIsDirty = false; }, 500); // Jeda agar gema (echo) dari onValue server terlewati
+                    setTimeout(() => { window.localDataIsDirty = false; }, 500);
                 }
-            }, 500); // Kurangi jeda debounce untuk meminimalisir data hilang saat tab ditutup tiba-tiba
+            }, 500);
         };
-
-        // Auto-sync Interval (Setiap 1 menit sistem mengecek data yang belum ter-upload)
-        setInterval(() => {
-            if (navigator.onLine && window.pendingSync) {
-                console.log("Auto-Sync: Melakukan sinkronisasi data tertunda di latar belakang...");
-                window.saveState(true);
-            }
-        }, 1 * 60 * 1000); // Dipercepat menjadi 1 Menit
 
         let isFirstLoad = true;
         window.initCloudDatabase = async () => {
@@ -2731,13 +2719,41 @@
             
             if(il && !ar && !apRapot && !ac) return window.showAlert('Gagal Menyimpan',`Hari ini Libur (${il.ket}).\nSistem menolak seluruh input absensi.`,'error');
             
-            if(!window.appState.absensi_guru)window.appState.absensi_guru=[]; let r=window.appState.absensi_guru.find(a=>a.tanggal===tgl); const da=[];
-            document.querySelectorAll('.absen-guru-row').forEach(row=>{
-                const id=parseInt(row.dataset.id), ex=r?r.data.find(d=>parseInt(d.id_guru)===id):null; let nd={id_guru:id};
-                [1,2,3].forEach(jn=>{ const si=row.querySelector(`input[name="absen_guru_${id}_jam${jn}"]:checked`); if(si){nd[`status_${jn}`]=si.value;nd[`info_${jn}`]=(ex&&ex[`status_${jn}`]===si.value)?(ex[`info_${jn}`]||''):'';}else if(ex&&ex[`status_${jn}`]){nd[`status_${jn}`]=ex[`status_${jn}`];nd[`info_${jn}`]=ex[`info_${jn}`];} });
-                if(nd.status_1||nd.status_2||nd.status_3)da.push(nd);
+            if(!window.appState.absensi_guru)window.appState.absensi_guru=[]; 
+            let r=window.appState.absensi_guru.find(a=>a.tanggal===tgl); 
+            if(!r) {
+                r = {tanggal: tgl, data: []};
+                window.appState.absensi_guru.push(r);
+            }
+            
+            // PERBAIKAN: Gunakan Map agar data lama tidak tertimpa/hilang dan sinkronisasi baris tersimpan sempurna secara utuh
+            const existingDataMap = new Map(r.data.map(d => [String(d.id_guru), {...d}]));
+
+            document.querySelectorAll('.absen-guru-row').forEach(row => {
+                const id = parseInt(row.dataset.id);
+                let nd = existingDataMap.get(String(id)) || { id_guru: id };
+                let hasChange = false;
+
+                [1,2,3].forEach(jn => {
+                    const si = row.querySelector(`input[name="absen_guru_${id}_jam${jn}"]:checked`);
+                    if(si) {
+                        nd[`status_${jn}`] = si.value;
+                        const ex = existingDataMap.get(String(id));
+                        nd[`info_${jn}`] = (ex && ex[`status_${jn}`] === si.value) ? (ex[`info_${jn}`] || '') : '';
+                        hasChange = true;
+                    }
+                });
+
+                if(hasChange || nd.status_1 || nd.status_2 || nd.status_3) {
+                    existingDataMap.set(String(id), nd);
+                }
             });
-            if(r)r.data=da; else window.appState.absensi_guru.push({tanggal:tgl,data:da}); window.saveState(); window.updateDashboardStats(); window.showAlert('Berhasil','Absensi disimpan.','success');
+
+            r.data = Array.from(existingDataMap.values());
+            window.saveState(); 
+            window.renderAbsenGuru(); 
+            window.updateDashboardStats(); 
+            window.showAlert('Berhasil','Absensi disimpan dengan aman.','success');
         };
         window.hapusAbsenGuru = () => { const tgl=document.getElementById('tgl-absen-guru').value; if(!tgl)return; window.showConfirm('Hapus',`Reset absen tgl ${tgl}?`,()=>{window.appState.absensi_guru=window.appState.absensi_guru.filter(a=>a.tanggal!==tgl);window.saveState();window.renderAbsenGuru();window.updateDashboardStats();}); };
         
