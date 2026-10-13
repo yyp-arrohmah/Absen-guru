@@ -2713,41 +2713,48 @@
             }).join('');
         };
         window.simpanAbsenGuru = () => {
-            const tgl=document.getElementById('tgl-absen-guru').value; if(!tgl)return window.showAlert('Gagal','Pilih tanggal.','error');
-            const ah=(window.appState.agenda||[]).filter(a=>a.tgl===tgl);
-            const il=ah.find(a=>a.tipe==='Libur');
-            const ar=ah.find(a=>a.tipe==='Rapat'||(a.ket||'').toLowerCase().includes('rapat'));
-            const apRapot=ah.find(a=>(a.ket||'').toLowerCase().includes('pembagian rapot') || (a.ket||'').toLowerCase().includes('pembagian rapor'));
-            const ac=ah.find(a=>a.tipe==='Acara'||(a.ket||'').toLowerCase().includes('acara')||(a.ket||'').toLowerCase().includes('ujian')||(a.ket||'').toLowerCase().includes('imda'));
+            const tgl = document.getElementById('tgl-absen-guru').value; 
+            if (!tgl) return window.showAlert('Gagal', 'Pilih tanggal.', 'error');
             
-            if(il && !ar && !apRapot && !ac) return window.showAlert('Gagal Menyimpan',`Hari ini Libur (${il.ket}).\nSistem menolak seluruh input absensi.`,'error');
+            const ah = (window.appState.agenda || []).filter(a => a.tgl === tgl);
+            const il = ah.find(a => a.tipe === 'Libur');
+            const ar = ah.find(a => a.tipe === 'Rapat' || (a.ket || '').toLowerCase().includes('rapat'));
+            const apRapot = ah.find(a => (a.ket || '').toLowerCase().includes('pembagian rapot') || (a.ket || '').toLowerCase().includes('pembagian rapor'));
+            const ac = ah.find(a => a.tipe === 'Acara' || (a.ket || '').toLowerCase().includes('acara') || (a.ket || '').toLowerCase().includes('ujian') || (a.ket || '').toLowerCase().includes('imda'));
             
-            if(!window.appState.absensi_guru)window.appState.absensi_guru=[]; 
-            let r=window.appState.absensi_guru.find(a=>a.tanggal===tgl); 
-            if(!r) {
-                r = {tanggal: tgl, data: []};
+            if (il && !ar && !apRapot && !ac) return window.showAlert('Gagal Menyimpan', `Hari ini Libur (${il.ket}).\nSistem menolak seluruh input absensi.`, 'error');
+            
+            if (!window.appState.absensi_guru) window.appState.absensi_guru = []; 
+            let r = window.appState.absensi_guru.find(a => a.tanggal === tgl); 
+            if (!r) {
+                r = { tanggal: tgl, data: [] };
                 window.appState.absensi_guru.push(r);
             }
             
-            // PERBAIKAN: Gunakan Map agar data lama tidak tertimpa/hilang dan sinkronisasi baris tersimpan sempurna secara utuh
-            const existingDataMap = new Map(r.data.map(d => [String(d.id_guru), {...d}]));
+            // PERBAIKAN: Gunakan existingDataMap HANYA sebagai referensi data lama
+            const existingDataMap = new Map((r.data || []).map(d => [String(d.id_guru), { ...d }]));
 
             document.querySelectorAll('.absen-guru-row').forEach(row => {
                 const id = parseInt(row.dataset.id);
+                // Ambil data yang sudah ada di database sebelumnya, jika tidak ada buat kosong
                 let nd = existingDataMap.get(String(id)) || { id_guru: id };
-                let hasChange = false;
+                let isModified = false;
 
-                [1,2,3].forEach(jn => {
+                [1, 2, 3].forEach(jn => {
                     const si = row.querySelector(`input[name="absen_guru_${id}_jam${jn}"]:checked`);
-                    if(si) {
+                    
+                    // HANYA perbarui jika radio button pada baris ini BENAR-BENAR DIPILIH OLEH USER
+                    if (si) {
                         nd[`status_${jn}`] = si.value;
                         const ex = existingDataMap.get(String(id));
                         nd[`info_${jn}`] = (ex && ex[`status_${jn}`] === si.value) ? (ex[`info_${jn}`] || '') : '';
-                        hasChange = true;
+                        isModified = true;
                     }
                 });
 
-                if(hasChange || nd.status_1 || nd.status_2 || nd.status_3) {
+                // HANYA simpan ke Map jika ada input absen baru dari form ini,
+                // jika tidak, JANGAN ditimpa, biarkan Map menyimpan data dari database sebelumnya
+                if (isModified) {
                     existingDataMap.set(String(id), nd);
                 }
             });
@@ -2756,7 +2763,7 @@
             window.saveState(); 
             window.renderAbsenGuru(); 
             window.updateDashboardStats(); 
-            window.showAlert('Berhasil','Absensi disimpan dengan aman.','success');
+            window.showAlert('Berhasil', 'Absensi disimpan dengan aman.', 'success');
         };
         window.hapusAbsenGuru = () => { const tgl=document.getElementById('tgl-absen-guru').value; if(!tgl)return; window.showConfirm('Hapus',`Reset absen tgl ${tgl}?`,()=>{window.appState.absensi_guru=window.appState.absensi_guru.filter(a=>a.tanggal!==tgl);window.saveState();window.renderAbsenGuru();window.updateDashboardStats();}); };
         
