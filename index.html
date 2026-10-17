@@ -2737,7 +2737,7 @@
             document.querySelectorAll('.absen-guru-row').forEach(row => {
                 const id = parseInt(row.dataset.id);
                 // Ambil data yang sudah ada di database sebelumnya, jika tidak ada buat kosong
-                let nd = existingDataMap.get(String(id)) || { id_guru: id };
+                let nd = existingDataMap.get(id)) || { id_guru: id };
                 let isModified = false;
 
                 [1, 2, 3].forEach(jn => {
@@ -2746,7 +2746,7 @@
                     // HANYA perbarui jika radio button pada baris ini BENAR-BENAR DIPILIH OLEH USER
                     if (si) {
                         nd[`status_${jn}`] = si.value;
-                        const ex = existingDataMap.get(String(id));
+                        const ex = existingDataMap.get(id));
                         nd[`info_${jn}`] = (ex && ex[`status_${jn}`] === si.value) ? (ex[`info_${jn}`] || '') : '';
                         isModified = true;
                     }
@@ -2755,7 +2755,7 @@
                 // HANYA simpan ke Map jika ada input absen baru dari form ini,
                 // jika tidak, JANGAN ditimpa, biarkan Map menyimpan data dari database sebelumnya
                 if (isModified) {
-                    existingDataMap.set(String(id), nd);
+                    existingDataMap.set(id), nd);
                 }
             });
 
