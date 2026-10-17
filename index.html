@@ -2712,7 +2712,7 @@
                 return`<tr class="absen-guru-row border-b border-gray-100" data-id="${g.id}"><td class="px-4 py-3 text-center align-top">${i+1}</td><td class="px-4 py-3 font-bold align-top">${g.nama}<br><span class="text-xs text-gray-500">${g.jabatan}</span><div class="mt-2 text-[10px] text-gray-400"><b>Jadwal:</b><br>${jadwalInfo}</div></td><td class="px-4 py-3 align-top flex flex-col sm:flex-row gap-2">${ui(1,h1,info1)}${ui(2,h2,info2)}${ui(3,h3,info3)}</td></tr>`;
             }).join('');
         };
-        window.simpanAbsenGuru = () => {
+       window.simpanAbsenGuru = () => {
             const tgl = document.getElementById('tgl-absen-guru').value; 
             if (!tgl) return window.showAlert('Gagal', 'Pilih tanggal.', 'error');
             
@@ -2735,9 +2735,9 @@
             const existingDataMap = new Map((r.data || []).map(d => [String(d.id_guru), { ...d }]));
 
             document.querySelectorAll('.absen-guru-row').forEach(row => {
-                const id = parseInt(row.dataset.id);
+                const id = String(row.dataset.id);
                 // Ambil data yang sudah ada di database sebelumnya, jika tidak ada buat kosong
-                let nd = existingDataMap.get(id)) || { id_guru: id };
+                let nd = existingDataMap.get(id) || { id_guru: id };
                 let isModified = false;
 
                 [1, 2, 3].forEach(jn => {
@@ -2746,7 +2746,7 @@
                     // HANYA perbarui jika radio button pada baris ini BENAR-BENAR DIPILIH OLEH USER
                     if (si) {
                         nd[`status_${jn}`] = si.value;
-                        const ex = existingDataMap.get(id));
+                        const ex = existingDataMap.get(id);
                         nd[`info_${jn}`] = (ex && ex[`status_${jn}`] === si.value) ? (ex[`info_${jn}`] || '') : '';
                         isModified = true;
                     }
@@ -2755,7 +2755,7 @@
                 // HANYA simpan ke Map jika ada input absen baru dari form ini,
                 // jika tidak, JANGAN ditimpa, biarkan Map menyimpan data dari database sebelumnya
                 if (isModified) {
-                    existingDataMap.set(id), nd);
+                    existingDataMap.set(id, nd);
                 }
             });
 
