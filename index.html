@@ -2765,6 +2765,43 @@
             window.updateDashboardStats(); 
             window.showAlert('Berhasil', 'Absensi disimpan dengan aman.', 'success');
         };
+        // TAMBAHKAN/PERBAIKI FUNGSI INI UNTUK MENU PORTAL
+        window.simpanAbsenPortal = (idGuru, tgl, status, jamKe, info = '') => {
+            if (!tgl) return window.showAlert('Gagal', 'Tanggal tidak valid.', 'error');
+            
+            if (!window.appState.absensi_guru) window.appState.absensi_guru = []; 
+            let r = window.appState.absensi_guru.find(a => a.tanggal === tgl); 
+            if (!r) {
+                r = { tanggal: tgl, data: [] };
+                window.appState.absensi_guru.push(r);
+            }
+
+            // Gunakan Map untuk mengamankan data guru lain pada hari yang sama
+            const existingDataMap = new Map((r.data || []).map(d => [String(d.id_guru), { ...d }]));
+            
+            // Konversi ID guru ke String agar tidak rusak (menjadi NaN)
+            const safeId = String(idGuru);
+            
+            // Ambil data absen guru ini jika sudah ada sebelumnya (misal sudah absen jam 1), atau buat baru
+            let nd = existingDataMap.get(safeId) || { id_guru: safeId };
+            
+            // Terapkan status baru pada jam/sesi yang dipilih
+            nd[`status_${jamKe}`] = status;
+            nd[`info_${jamKe}`] = info;
+
+            // Simpan kembali data guru ini ke dalam antrean harian
+            existingDataMap.set(safeId, nd);
+            
+            // Perbarui array utama
+            r.data = Array.from(existingDataMap.values());
+            
+            window.saveState();
+            
+            // Jika ada fungsi render ulang spesifik untuk portal, panggil di sini
+            if(typeof window.renderPortalRiwayat === 'function') window.renderPortalRiwayat();
+            
+            window.showAlert('Berhasil', 'Status ' + status + ' berhasil disimpan dengan aman.', 'success');
+        };
         window.hapusAbsenGuru = () => { const tgl=document.getElementById('tgl-absen-guru').value; if(!tgl)return; window.showConfirm('Hapus',`Reset absen tgl ${tgl}?`,()=>{window.appState.absensi_guru=window.appState.absensi_guru.filter(a=>a.tanggal!==tgl);window.saveState();window.renderAbsenGuru();window.updateDashboardStats();}); };
         
         window.renderRekapAbsenGuru = () => {
