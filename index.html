@@ -2712,6 +2712,82 @@
                 return`<tr class="absen-guru-row border-b border-gray-100" data-id="${g.id}"><td class="px-4 py-3 text-center align-top">${i+1}</td><td class="px-4 py-3 font-bold align-top">${g.nama}<br><span class="text-xs text-gray-500">${g.jabatan}</span><div class="mt-2 text-[10px] text-gray-400"><b>Jadwal:</b><br>${jadwalInfo}</div></td><td class="px-4 py-3 align-top flex flex-col sm:flex-row gap-2">${ui(1,h1,info1)}${ui(2,h2,info2)}${ui(3,h3,info3)}</td></tr>`;
             }).join('');
         };
+        let syncDebounceTimer = null;
+        const pendingSyncPaths = new Set();
+        let isSyncingToCloud = false;
+        let retrySyncTimeout = null;
+
+        // System Optimasi Simpan State & Sinkronisasi Cepat (Level Lanjut)
+        window.saveState = function(targetNode = null) {
+            // 1. Simpan langsung ke memori lokal browser (Optimistic UI - sangat cepat, 0ms delay)
+            try {
+                localStorage.setItem('appState', JSON.stringify(window.appState));
+            } catch (e) {
+                console.warn('Gagal menyimpan ke localStorage:', e);
+            }
+
+            // Kumpulkan daftar antrean (batching) jalur data mana saja yang berubah
+            if (targetNode) {
+                pendingSyncPaths.add(targetNode);
+            } else {
+                pendingSyncPaths.add('__FULL_UPDATE__');
+            }
+
+            // 2. Jeda waktu yang lebih longgar (800ms) untuk menampung klik beruntun tanpa spam ke server
+            clearTimeout(syncDebounceTimer);
+            syncDebounceTimer = setTimeout(() => {
+                // Lempar ke antrean paling belakang agar tidak memblokir pergerakan layar pengguna
+                setTimeout(() => window.syncToCloud(), 0);
+            }, 800);
+        };
+
+        window.syncToCloud = async function() {
+            if (!window.db) return;
+
+            // PENGUNCI KEAMANAN JARINGAN: 
+            // Jika sedang mengirim data, tunda pengiriman baru agar tidak terjadi kemacetan/tabrakan data
+            if (isSyncingToCloud) {
+                clearTimeout(retrySyncTimeout);
+                retrySyncTimeout = setTimeout(() => window.syncToCloud(), 1000);
+                return;
+            }
+
+            isSyncingToCloud = true;
+
+            try {
+                if (pendingSyncPaths.size > 0 && typeof firebaseUpdate === 'function' && typeof firebaseRef === 'function') {
+                    const updates = {};
+                    let requiresFullSync = false;
+
+                    pendingSyncPaths.forEach(node => {
+                        if (node === '__FULL_UPDATE__') {
+                            requiresFullSync = true;
+                        } else if (window.appState[node] !== undefined) {
+                            updates['appState/' + node] = window.appState[node];
+                        }
+                    });
+                    
+                    // Bersihkan antrean segera setelah data disalin
+                    pendingSyncPaths.clear();
+
+                    if (!requiresFullSync && Object.keys(updates).length > 0) {
+                        await firebaseUpdate(firebaseRef(window.db), updates);
+                        isSyncingToCloud = false;
+                        return;
+                    }
+                }
+
+                // Fallback sync: Jika ada perubahan menyeluruh
+                if (typeof firebaseSet === 'function' && typeof firebaseRef === 'function') {
+                    await firebaseSet(firebaseRef(window.db, 'appState'), window.appState);
+                }
+            } catch (err) {
+                console.error('Sinkronisasi cloud latar belakang gagal/terhambat:', err);
+            } finally {
+                // Buka pengunci setelah selesai, agar data antrean berikutnya bisa dikirim
+                isSyncingToCloud = false;
+            }
+        };
        window.simpanAbsenGuru = () => {
             const tgl = document.getElementById('tgl-absen-guru').value; 
             if (!tgl) return window.showAlert('Gagal', 'Pilih tanggal.', 'error');
