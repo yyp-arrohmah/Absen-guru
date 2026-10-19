@@ -2802,6 +2802,74 @@
             
             window.showAlert('Berhasil', 'Status ' + status + ' berhasil disimpan dengan aman.', 'success');
         };
+        window.tampilkanDetailAbsensiGuru = (status) => {
+            const tglElement = document.getElementById('tgl-absen-guru');
+            const tgl = tglElement && tglElement.value ? tglElement.value : new Date().toISOString().split('T')[0];
+            
+            let daftarGuru = [];
+            const dataHarian = (window.appState.absensi_guru || []).find(a => a.tanggal === tgl);
+            
+            if (window.appState.guru) {
+                window.appState.guru.forEach(g => {
+                    const absen = (dataHarian?.data || []).find(d => String(d.id_guru) === String(g.id));
+                    let statusGuru = 'Alpa'; // Default dianggap Alpa jika tidak absen
+                    
+                    if (absen) {
+                        // Cari apakah ada sesi yang cocok dengan status yang diketuk
+                        if (Object.values(absen).some(v => String(v).toLowerCase() === status.toLowerCase())) {
+                            statusGuru = status;
+                        } else if (absen.status_1) {
+                            statusGuru = absen.status_1;
+                        }
+                    }
+                    
+                    // Jika cocok, masukkan nama guru ke dalam daftar
+                    if (statusGuru.toLowerCase() === status.toLowerCase()) {
+                        daftarGuru.push(g.nama);
+                    }
+                });
+            }
+            
+            // Susun nama-nama menjadi teks rapi ke bawah
+            const pesanTeks = daftarGuru.length > 0 
+                ? daftarGuru.map((nama, i) => `${i+1}. ${nama}`).join('\n') 
+                : `Tidak ada guru dengan status ${status} pada tanggal ini.`;
+                
+            window.showAlert(`Detail: ${status}`, pesanTeks, 'info');
+        };
+
+        const fungsiAsliUpdateDashboard = window.updateDashboardStats;
+        window.updateDashboardStats = () => {
+            // 1. Jalankan fungsi pembaruan dashboard yang sudah ada
+            if(typeof fungsiAsliUpdateDashboard === 'function') {
+                fungsiAsliUpdateDashboard();
+            }
+            
+            // 2. Beri sedikit jeda agar Grafik (Chart) selesai digambar di layar
+            setTimeout(() => {
+                // 3. Cari elemen kanvas grafik dan pasang fungsi ketuk/klik
+                document.querySelectorAll('canvas').forEach(canvas => {
+                    // Pastikan tidak menduplikasi event jika di-render ulang
+                    canvas.onclick = (evt) => {
+                        if (typeof Chart !== 'undefined') {
+                            const chartInstance = Chart.getChart(canvas);
+                            if (chartInstance) {
+                                // Deteksi bagian grafik mana yang disentuh
+                                const poinAktif = chartInstance.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+                                if (poinAktif && poinAktif.length > 0) {
+                                    // Ambil label status (Hadir, Izin, dsb) dari bagian yang diketuk
+                                    const labelDiklik = chartInstance.data.labels[poinAktif[0].index];
+                                    if (labelDiklik) {
+                                        window.tampilkanDetailAbsensiGuru(labelDiklik);
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    canvas.style.cursor = 'pointer'; // Beri indikator kursor bisa diklik
+                });
+            }, 600);
+        };
         window.hapusAbsenGuru = () => { const tgl=document.getElementById('tgl-absen-guru').value; if(!tgl)return; window.showConfirm('Hapus',`Reset absen tgl ${tgl}?`,()=>{window.appState.absensi_guru=window.appState.absensi_guru.filter(a=>a.tanggal!==tgl);window.saveState();window.renderAbsenGuru();window.updateDashboardStats();}); };
         
         window.renderRekapAbsenGuru = () => {
