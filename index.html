@@ -2731,19 +2731,17 @@
                 window.appState.absensi_guru.push(r);
             }
             
-            // PERBAIKAN: Gunakan existingDataMap HANYA sebagai referensi data lama
             const existingDataMap = new Map((r.data || []).map(d => [String(d.id_guru), { ...d }]));
 
             document.querySelectorAll('.absen-guru-row').forEach(row => {
                 const id = String(row.dataset.id);
-                // Ambil data yang sudah ada di database sebelumnya, jika tidak ada buat kosong
                 let nd = existingDataMap.get(id) || { id_guru: id };
                 let isModified = false;
 
-                [1, 2, 3].forEach(jn => {
+                // Perbaikan: Loop diperluas hingga sesi sore/malam (jam 4/5) untuk memastikan absensi antara 12.00 - 16.00 tetap bisa ditangkap dan disimpan dari antarmuka
+                [1, 2, 3, 4, 5].forEach(jn => {
                     const si = row.querySelector(`input[name="absen_guru_${id}_jam${jn}"]:checked`);
                     
-                    // HANYA perbarui jika radio button pada baris ini BENAR-BENAR DIPILIH OLEH USER
                     if (si) {
                         nd[`status_${jn}`] = si.value;
                         const ex = existingDataMap.get(id);
@@ -2752,23 +2750,36 @@
                     }
                 });
 
-                // HANYA simpan ke Map jika ada input absen baru dari form ini,
-                // jika tidak, JANGAN ditimpa, biarkan Map menyimpan data dari database sebelumnya
                 if (isModified) {
                     existingDataMap.set(id, nd);
                 }
             });
 
             r.data = Array.from(existingDataMap.values());
-            window.saveState(); 
+            // Gunakan targeted sync khusus node absensi_guru
+            window.saveState('absensi_guru'); 
             window.renderAbsenGuru(); 
             window.updateDashboardStats(); 
             window.showAlert('Berhasil', 'Absensi disimpan dengan aman.', 'success');
         };
-        // TAMBAHKAN/PERBAIKI FUNGSI INI UNTUK MENU PORTAL
+
         window.simpanAbsenPortal = (idGuru, tgl, status, jamKe, info = '') => {
             if (!tgl) return window.showAlert('Gagal', 'Tanggal tidak valid.', 'error');
             
+            // BYPASS & PERBAIKAN WAKTU (12.00 - 16.00):
+            // Jika jamKe kosong/rusak akibat absen di siang/sore hari, kita set otomatis secara aman
+            let jamAbsenAktif = jamKe;
+            if (!jamAbsenAktif || jamAbsenAktif === 'undefined' || jamAbsenAktif === 'null') {
+                const jamSekarang = new Date().getHours();
+                if (jamSekarang >= 12 && jamSekarang < 14) {
+                    jamAbsenAktif = 2; // Paksa jadi Sesi Siang
+                } else if (jamSekarang >= 14) {
+                    jamAbsenAktif = 3; // Paksa jadi Sesi Sore
+                } else {
+                    jamAbsenAktif = 1; // Pagi
+                }
+            }
+
             if (!window.appState.absensi_guru) window.appState.absensi_guru = []; 
             let r = window.appState.absensi_guru.find(a => a.tanggal === tgl); 
             if (!r) {
@@ -2776,32 +2787,25 @@
                 window.appState.absensi_guru.push(r);
             }
 
-            // Gunakan Map untuk mengamankan data guru lain pada hari yang sama
             const existingDataMap = new Map((r.data || []).map(d => [String(d.id_guru), { ...d }]));
-            
-            // Konversi ID guru ke String agar tidak rusak (menjadi NaN)
             const safeId = String(idGuru);
-            
-            // Ambil data absen guru ini jika sudah ada sebelumnya (misal sudah absen jam 1), atau buat baru
             let nd = existingDataMap.get(safeId) || { id_guru: safeId };
             
-            // Terapkan status baru pada jam/sesi yang dipilih
-            nd[`status_${jamKe}`] = status;
-            nd[`info_${jamKe}`] = info;
+            // Gunakan variabel jamAbsenAktif yang sudah dipastikan aman (bukan undefined)
+            nd[`status_${jamAbsenAktif}`] = status;
+            nd[`info_${jamAbsenAktif}`] = info;
 
-            // Simpan kembali data guru ini ke dalam antrean harian
             existingDataMap.set(safeId, nd);
-            
-            // Perbarui array utama
             r.data = Array.from(existingDataMap.values());
             
-            window.saveState();
+            // Gunakan targeted sync khusus node absensi_guru
+            window.saveState('absensi_guru');
             
-            // Jika ada fungsi render ulang spesifik untuk portal, panggil di sini
             if(typeof window.renderPortalRiwayat === 'function') window.renderPortalRiwayat();
             
             window.showAlert('Berhasil', 'Status ' + status + ' berhasil disimpan dengan aman.', 'success');
         };
+
         window.tampilkanDetailAbsensiGuru = (status) => {
             const tglElement = document.getElementById('tgl-absen-guru');
             const tgl = tglElement && tglElement.value ? tglElement.value : new Date().toISOString().split('T')[0];
