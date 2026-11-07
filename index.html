@@ -974,8 +974,8 @@
                 const hari = String(targetDate.getDate()).padStart(2, '0');
                 const tanggalTarget = `${tahun}-${bulan}-${hari}`;
 
-                // Arahkan referensi menggunakan tanggal target
-                const absensiRef = ref(db, `MadrasahData/absensi_guru/${currentUsername}/${tanggalTarget}`);
+                // Arahkan referensi menggunakan tanggal target sebagai folder utama penyimpan
+                const absensiRef = ref(db, `MadrasahData/absensi_guru/${tanggalTarget}/${currentUsername}`);
                 
                 // Cek ke Firebase apakah sudah ada data absen di tanggal ini
                 const cekSnapshot = await get(absensiRef);
@@ -1324,7 +1324,7 @@
             try {
                 // Ambil data dari dua tempat (Folder absensi_guru lama di luar dan folder baru di dalam MadrasahData)
                 const absensiRef = ref(db, `absensi_guru`);
-                const absensiBaruRef = ref(db, `MadrasahData/absensi_guru/${currentUsername}`);
+                const absensiBaruRef = ref(db, `MadrasahData/absensi_guru`);
                 
                 const [snapshot, snapshotBaru] = await Promise.all([
                     get(absensiRef),
@@ -1369,12 +1369,7 @@
 
                 // 2. Ambil data dari struktur absen baru hari ini
                 if (snapshotBaru.exists()) {
-                    const dataBaru = snapshotBaru.val();
-                    for (let key in dataBaru) {
-                        if (dataBaru[key] && typeof dataBaru[key] === 'object') {
-                            dataArray.push(dataBaru[key]);
-                        }
-                    }
+                    kumpulkanRiwayat(snapshotBaru.val());
                 }
                 
                 // Urutkan gabungan data dari waktu terbaru ke terlama
@@ -1538,7 +1533,7 @@
             try {
                 // Ambil data absensi
                 const absensiRef = ref(db, `absensi_guru`);
-                const absensiBaruRef = ref(db, `MadrasahData/absensi_guru/${currentUsername}`);
+                const absensiBaruRef = ref(db, `MadrasahData/absensi_guru`);
                 
                 const [snapshot, snapshotBaru] = await Promise.all([
                     get(absensiRef),
@@ -1570,12 +1565,7 @@
                 if (snapshot.exists()) kumpulkanRekap(snapshot.val());
                 
                 if (snapshotBaru.exists()) {
-                    const dataBaru = snapshotBaru.val();
-                    for (let key in dataBaru) {
-                        if (dataBaru[key] && typeof dataBaru[key] === 'object') {
-                            dataArray.push({ ...dataBaru[key], _keyDate: key });
-                        }
-                    }
+                    kumpulkanRekap(snapshotBaru.val());
                 }
 
                 // Variabel Penghitung
