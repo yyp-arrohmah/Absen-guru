@@ -1069,43 +1069,23 @@
                             return; // Batalkan proses absen
                         }
 
-                        // 2. Cek apakah waktu saat ini >= 30 menit sebelum jam masuk (jam paling awal)
-                        let earliestTime = null;
-                        const timeRegex = /([0-9]{1,2})[:.]([0-9]{2})/; // Mencari format jam (contoh: 07:00 atau 07.00)
+                        // 2. Cek apakah waktu saat ini berada di antara jam 13:00 - 17:00
+                        const sekarang = new Date();
+                        
+                        const jamMulai = new Date();
+                        jamMulai.setHours(13, 0, 0, 0); // Jam 13:00:00
+                        
+                        const jamBatas = new Date();
+                        jamBatas.setHours(17, 0, 0, 0); // Jam 17:00:00
 
-                        jadwalHariIni.forEach(text => {
-                            const match = text.match(timeRegex);
-                            if (match) {
-                                const jam = parseInt(match[1]);
-                                const menit = parseInt(match[2]);
-                                const waktuJadwal = new Date();
-                                waktuJadwal.setHours(jam, menit, 0, 0);
+                        if (sekarang < jamMulai) {
+                            showToast("Gagal: Absen Hadir baru dibuka mulai pukul 13.00.", true);
+                            return; // Batalkan proses absen
+                        }
 
-                                // Cari waktu yang paling awal di hari ini
-                                if (!earliestTime || waktuJadwal < earliestTime) {
-                                    earliestTime = waktuJadwal;
-                                }
-                            }
-                        });
-
-                        // Jika ditemukan jam pada teks jadwal
-                        if (earliestTime) {
-                            const sekarang = new Date();
-                            const selisihMenit = (earliestTime - sekarang) / 60000;
-
-                            // Jika waktu sekarang masih lebih dari 30 menit sebelum jam masuk, TOLAK!
-                            if (selisihMenit > 30) {
-                                const jamFormat = String(earliestTime.getHours()).padStart(2, '0') + ':' + String(earliestTime.getMinutes()).padStart(2, '0');
-                                showToast(`Gagal: Absen Hadir dibuka 30 menit sebelum jam masuk (${jamFormat}).`, true);
-                                return; // Batalkan proses absen
-                            }
-
-                            // Jika waktu sekarang sudah melewati 30 menit dari jam masuk, TOLAK!
-                            if (selisihMenit < -30) {
-                                const jamFormat = String(earliestTime.getHours()).padStart(2, '0') + ':' + String(earliestTime.getMinutes()).padStart(2, '0');
-                                showToast(`Gagal: Waktu Absen Hadir habis! (Maks 30 menit setelah ${jamFormat}).`, true);
-                                return; // Batalkan proses absen
-                            }
+                        if (sekarang > jamBatas) {
+                            showToast("Gagal: Waktu Absen Hadir telah habis (Batas 17.00).", true);
+                            return; // Batalkan proses absen
                         }
 
                         // Jika lolos semua syarat (Punya jadwal & Waktu sudah masuk kriteria), eksekusi absen
